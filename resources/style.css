@@ -1,0 +1,316 @@
+body {
+  margin : 5px 10px 10px 10px;
+  padding : 0px;
+  font-family      : verdana, arial, helvetica, sans-serif;
+/*  font-size        : 20px; */
+}
+
+div#header {
+  border-bottom : 0px solid #fff0c0;
+  color         : #707070;
+  background    : #fff;
+}
+
+div#header td {
+  color         : #707070;
+  background    : inherit;
+}
+
+div#header a:link, a:active, a:visited {
+  text-decoration  : none;
+  background-color : inherit;
+  color            : #0050BB;
+}
+
+div#header a:hover {
+  color            : #00CC99;
+  text-decoration  : none;
+  background-color : inherit;
+}
+
+div#footer {
+  margin-left	 : 210px;
+  margin-top	 : 15px;
+  margin-bottom	 : 5px;
+  border-top     : 1px solid #ccc;
+  padding-top	 : 3px;
+}
+
+div#footer p {
+  color         : #707070;
+  background    : #fff;
+  text-align    : right;
+}
+
+div#footer a:link, a:active, a:visited {
+  text-decoration  : none;
+  background-color : #fff;
+  color            : #0099CC;
+}
+
+div#footer a:hover {
+  text-decoration  : none;
+  background-color : #fff;
+  color            : #00CC99;
+}
+
+div#bottomLinks {
+  margin-left	 : 210px;
+  margin-top	 : 30px;
+  margin-bottom	 : 3px;
+  color          : #707070;
+  background     : #fff;
+}
+
+div#bottomLinks a:link, a:active, a:visited {
+  text-decoration  : none;
+  background-color : #fff;
+  color            : #0099CC;
+}
+
+div#bottomLinks a:hover {
+  color            : #00CC99;
+  text-decoration  : none;
+  background-color : #fff;
+}
+
+div#bottomLinks td {
+  color            : #707070;
+  background       : #fff;
+}
+
+div#menu { 
+  position :  absolute;
+  left : 0px;
+  margin-left   : 10px;
+  margin-top    : 15px;
+  width : 170px;
+  background: #fff0c0 url("http://www.tf79.ch/logos/menu-bg.gif");
+  background-repeat: repeat-y;
+  background-position: right;
+  padding-left   : 5px;
+  padding-right  : 5px;
+  padding-bottom : 5px;
+  border : 0px solid #eee;
+  color: #606060;
+  text-align: left;
+  font-size: inherit;
+ }
+
+/* div#menu:before { content: "et Blam !"; } */
+
+div#menu a:link, a:active, a:visited { 
+  text-decoration  : none;
+  background-color : transparent;
+  color            : #606060;
+}                            
+
+div#menu a:hover { 
+  color            : #f06060;
+  text-decoration  : none;
+/*  background-color : transparent; */
+  background: #ffffd0 url("http://www.tf79.ch/logos/menu-h-bg.png");
+  background-repeat: repeat-y;
+  background-position: left;
+}                   
+
+div#menu img { 
+  border : none;
+  margin-right : 8px;
+/*  display : none; */
+ }
+
+div#menu h1  {
+  margin-top       : 5px;
+  margin-bottom    : 5px;
+  padding          : 0px;
+  border-bottom    : 0px solid #ccc;
+  font             : 1.1em verdana, arial, helvetica, sans-serif;
+  font-weight      : bold;
+  color            : #402080;
+  background: #ffffd0 url("http://www.tf79.ch/logos/menu-h-bg.png");
+  background-repeat: repeat-y;
+  background-position: right;
+}
+
+div#menu h2  {
+  margin-top       : 10px;
+  margin-bottom    : 4px;
+  border-bottom    : 0px solid #ccc;
+  padding          : 0px;
+  font             : 1.0em verdana, arial, helvetica, sans-serif;
+  font-weight      : bold;
+  color		   : #606060;
+  background: #ffffd0 url("http://www.tf79.ch/logos/menu-h-bg.png");
+  background-repeat: repeat-y;
+  background-position: right;
+}
+ 
+div#main {
+  border-left     : 0px solid #ccc;
+  padding-left    : 10px;
+  padding-right   : 10px;
+  background 	  : #fff;
+  color           : #000;
+  margin-left     : 200px;
+  margin-right    : 20px;
+  margin-top      : 5px;
+  /* voice-family    : "\"}\""; */
+  voice-family    : inherit;
+}
+
+html>body #main {
+  margin-left  : 200px;
+  margin-right : 20px;
+}
+
+div#main h1  {
+  margin-top       : 20px;
+  margin-bottom    : 15px;
+  padding          : 0px;
+  font             : 1.8em "trebuchet ms", verdana, arial, helvetica, sans-serif;
+  color            : #402080;
+  background       : #fff;
+}
+
+div#main h2  {
+  margin-top       : 20px;
+  margin-bottom    : 15px;
+  padding          : 0px;
+  font             : 1.6em "trebuchet ms", verdana, arial, helvetica, sans-serif;
+  color		   : #503090;
+  background       : #fff;
+}
+ 
+div#main h3  {
+  margin-top       : 15px;
+  margin-bottom    : 10px;
+  padding          : 0px;
+  font             : 1.4em arial, helvetica, sans-serif;
+  color		   : #6040A0;
+  background       : #fff;
+}
+
+div#main h4  {
+  margin-top       : 15px;
+  margin-bottom    : 5px;
+  padding          : 0px;
+  font             : 1.2em arial, helvetica, sans-serif;
+  color		   : #7050B0;
+  background       : #fff;
+}
+ 
+div#main p {
+  margin-top       : 0px;
+  margin-bottom    : 10px;
+  padding          : 0px;
+}
+
+div#main a:link {
+  color            : #002099;
+  text-decoration  : none;
+  background-color : inherit;
+}
+
+div#main a:visited, a:active {
+  color            : #0070BB;
+  text-decoration  : none;
+  background-color : inherit;
+}
+
+div#main a:hover {
+  color            : #00CC99;
+  text-decoration  : none;
+  background-color : inherit;
+}
+	
+div#main code {
+  font-size	: 1.1em;
+}
+
+div#main img { 
+   border : 0           
+}
+
+div#main img.rimg { 
+   float : right;
+   padding-left: 15px;
+}
+
+div#main img.center { 
+   display: block;
+   margin-left: auto;
+   margin-right: auto;
+}
+
+div#main ul { 
+     list-style-image: url("http://www.tf79.ch/logos/bullet.gif");
+     }
+
+div#main td { 
+   padding-bottom  :  0px;
+ }
+
+
+div#ingr {
+/*           width : 40%;  */
+           margin-top       : 0px;
+           margin-bottom    : 20px;
+           margin-left      : 20px;
+           margin-right     : 40px;
+           color     : #000;
+           background: #eeeedd;
+           border-width: 1px;
+           border-style: solid solid solid solid;
+           border-color: #ccc;
+           }
+
+div#recphoto {
+           float : right;
+           margin-left      : 20px;
+           margin-bottom    : 20px;           
+}
+
+div#recPays { 
+              margin-right  : 0px;
+              border-width: 0px;
+              border-style: solid solid solid solid;
+              border-color: #ccc;
+              text-align : right;
+              }
+
+div#footnotes {
+  margin-top       : 20px;
+  margin-bottom    : 10px;
+  margin-left      : 0px;
+  border-top       : 1px solid #ccc;
+}
+
+div#myTable td 
+{ 
+  margin-bottom  : 5px;
+  margin-right   : 10px;
+  color          : #000;
+  background: #eeeedd;
+  border-bottom : 1px solid #ccc;
+  }
+
+div#main table.galleryTable td
+{ 
+  padding-bottom  : 20px;
+}
+
+div#main .myErrorBox{
+	border:1px solid #a66;
+	background:#f66;
+	padding:15px;
+}
+
+div#main .myBox{
+	border:1px solid #ccd;
+	background:#eef;
+	padding:20px;
+}
+
+
+
