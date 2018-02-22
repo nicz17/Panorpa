@@ -172,8 +172,10 @@ public class HomePageExporter extends BaseExporter {
 		// Photo hardware
 		HtmlComposite divMatos = addBoxDiv(tdRight, "Matériel photo");
 		ul = divMatos.addList();
-		ul.addListItem().addText("Nikon D300");
-		ul.addListItem().addText("Nikon D800 (depuis novembre 2017)");
+		ul.addListItem().addLinkExternal("https://fr.wikipedia.org/wiki/Nikon_D300", "Nikon D300");
+		HtmlComposite li = ul.addListItem();
+		li.addLinkExternal("https://fr.wikipedia.org/wiki/Nikon_D800", "Nikon D800");
+		li.addText(" (depuis novembre 2017)");
 		ul.addListItem().addText("AF-S Micro Nikkor 105mm 1:2.8");
 		ul.addListItem().addText("AF-S Nikkor 80-400mm 1:4.5-5.6");
 		//ul.addListItem().addText("Sony Nex 5T");
