@@ -21,8 +21,8 @@ public class PicNameGenerator {
 	private static final Logger log = new Logger("PicNameGenerator", true);
 	public  static final String sExtension = ".jpg";
 	
-	private final Taxon taxon;
-	private final Set<String> setNames;
+	protected final Taxon taxon;
+	protected final Set<String> setNames;
 
 	/**
 	 * Constructor.
@@ -37,6 +37,7 @@ public class PicNameGenerator {
 	
 	/**
 	 * Generates the next available filename.
+	 * @param sPicNumber  the existing picture number (from the camera)
 	 * @return the next available filename.
 	 * @throws AppException if name generation failed
 	 */

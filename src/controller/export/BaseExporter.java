@@ -23,10 +23,16 @@ import controller.upload.UploadManager;
  */
 public class BaseExporter {
 	
+	/** Path of created html pages */
 	protected static final String htmlPath = Controller.htmlPath;
 	//protected static final String htmlPath = Controller.exportPath + "tests/";
 	
+	/** Number of columns in html thumbnail tables */
 	protected static final int nColumns = 4;
+	
+	/** Separator between latin and french taxon names */
+	protected static final String taxonNameSeparator = " &mdash; ";
+	
 	
 	protected DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG, Locale.FRANCE);
 	

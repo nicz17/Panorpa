@@ -21,6 +21,7 @@ public class TaxonUrlProvider {
 	private final Set<String> setClassInGalerieInsecte;
 	private final Set<String> setFamilyInHomoptera;
 	private final Set<String> setPhylumInInfoFlora;
+	private final Set<String> setPhylumInMycoDb;
 
 	public TaxonUrlProvider() {
 		setClassInGalerieInsecte = new HashSet<String>(Arrays.asList(
@@ -32,6 +33,9 @@ public class TaxonUrlProvider {
 		
 		setPhylumInInfoFlora = new HashSet<String>(Arrays.asList(
 				new String[]{"Lycopodiophyta", "Pteridophyta", "Pinophyta", "Magnoliophyta"}));
+		
+		setPhylumInMycoDb = new HashSet<String>(Arrays.asList(
+				new String[]{"Ascomycota", "Basidiomycota"}));
 	}
 	
 	/**
@@ -78,6 +82,10 @@ public class TaxonUrlProvider {
 				Taxon taxPhylum = taxClass.getAncestor(TaxonRank.PHYLUM);
 				if (setPhylumInInfoFlora.contains(taxPhylum.getName())) {
 					addLink(par, taxon, getInfoFloraUrl(taxon), "InfoFlora", "infoflora.ch");
+					
+				// link to mycoDB ?
+				} else if (setPhylumInMycoDb.contains(taxPhylum.getName())) {
+					addLink(par, taxon, getMycoDbUrl(taxon), "MycoDB", "mycodb.fr");
 				}
 			}
 		}
@@ -210,6 +218,14 @@ public class TaxonUrlProvider {
 		String sUrlName = taxon.getName().toLowerCase().replace(' ', '-');
 		// ex: https://www.infoflora.ch/fr/flore/hieracium-pilosella.html
 		url = "https://www.infoflora.ch/fr/flore/" + sUrlName + ".html";
+		return url;
+	}
+	
+	protected String getMycoDbUrl(Taxon taxon) {
+		String url = null;
+		String sUrlName = taxon.getName().replace(" ", "&espece=");
+		// ex: https://www.mycodb.fr/fiche.php?genre=Lycoperdon&espece=marginatum
+		url = "https://www.mycodb.fr/fiche.php?genre=" + sUrlName;
 		return url;
 	}
 	

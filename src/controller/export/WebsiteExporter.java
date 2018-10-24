@@ -83,8 +83,7 @@ public class WebsiteExporter extends BaseExporter {
 		String name = taxon.getName();
 		
 		html.addAnchor(name);
-		html.addTitle(2, rank.getGuiName() + " des " + taxon.getName() + " ou " + taxon.getNameFr());
-		//html.addTitle(getRankLevel(rank), name + " - " + taxon.getNameFr());
+		html.addTitle(2, rank.getGuiName() + " " + taxon.getName() + taxonNameSeparator + taxon.getNameFr());
 		
 		int nPics = taxon.getPicsCascade().size();
 		if (nPics > 0) {
@@ -132,7 +131,7 @@ public class WebsiteExporter extends BaseExporter {
 		final TreeSet<HerbierPic> tsOrderPics = phylum.getPicsCascade();
 		int nPics = tsOrderPics.size();
 
-		main.addTitle(1, "Phylum des " + name);
+		main.addTitle(1, "Phylum " + name + taxonNameSeparator + phylum.getNameFr());
 		main.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
 		
 		menu.addTitle(1, "Classification");
@@ -162,7 +161,7 @@ public class WebsiteExporter extends BaseExporter {
 		final TreeSet<HerbierPic> tsOrderPics = order.getPicsCascade();
 		int nPics = tsOrderPics.size();
 
-		main.addTitle(1, "Ordre des " + name);
+		main.addTitle(1, "Ordre des " + name + taxonNameSeparator + order.getNameFr());
 		main.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
 		
 		menu.addTitle(1, "Classification");
@@ -178,7 +177,7 @@ public class WebsiteExporter extends BaseExporter {
 			main.addAnchor(family.getName());
 			String title = family.getName();
 			if (!name.equals(family.getNameFr())) {
-				title += " : " + family.getNameFr();
+				title += taxonNameSeparator + family.getNameFr();
 			}
 			main.addTitle(2, "Famille des " + title);
 			main.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
@@ -663,7 +662,7 @@ public class WebsiteExporter extends BaseExporter {
 		
 		String title = name;
 		if (!name.equals(taxon.getNameFr())) {
-			title += " : " + taxon.getNameFr();
+			title += taxonNameSeparator + taxon.getNameFr();
 		}
 		main.addTitle(1, title);
 		

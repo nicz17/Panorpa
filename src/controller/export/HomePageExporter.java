@@ -74,7 +74,7 @@ public class HomePageExporter extends BaseExporter {
 		
 		// Categories
 		HtmlComposite divCategories = addBoxDiv(tdLeft, "Quelques catégories", "myBox myBox-wide");
-		HtmlComposite tableCat = divCategories.addFillTable(4);
+		HtmlComposite tableCat = divCategories.addFillTable(5);
 		
 		HtmlComposite ul = tableCat.addTableData().addList();
 		ul.addListItem().addLink("Pteridophyta.html", "Fougères", "Fougères");
@@ -89,16 +89,22 @@ public class HomePageExporter extends BaseExporter {
 		ul.addListItem().addLink("Asterales.html#Asteraceae", "Astéracées", "Astéracées");
 		
 		ul = tableCat.addTableData().addList();
-		ul.addListItem().addLink("Arthropoda.html#Insecta", "Insectes", "Insectes");
-		ul.addListItem().addLink("Araneae.html", "Araignées", "Araignées");
 		ul.addListItem().addLink("Chordata.html#Aves", "Oiseaux", "Oiseaux");
 		ul.addListItem().addLink("Chordata.html#Mammalia", "Mammifères", "Mammifères");
+		ul.addListItem().addLink("Araneae.html", "Araignées", "Araignées");
+		ul.addListItem().addLink("Opiliones.html", "Opilions ou faucheux", "Opilions");
 		
 		ul = tableCat.addTableData().addList();
+		ul.addListItem().addLink("Arthropoda.html#Insecta", "Insectes", "Insectes");
 		ul.addListItem().addLink("Diptera.html", "Mouches, syrphes, tipules", "Diptères");
 		ul.addListItem().addLink("Hymenoptera.html", "Abeilles, fourmis, guêpes", "Hyménoptères");
 		ul.addListItem().addLink("Lepidoptera.html", "Papillons", "Papillons");
+		
+		ul = tableCat.addTableData().addList();
+		ul.addListItem().addLink("Odonata.html", "Libellules et demoiselles", "Libellules");
 		ul.addListItem().addLink("Coleoptera.html", "Coléoptères", "Coléoptères");
+		ul.addListItem().addLink("Hemiptera.html", "Punaises", "Punaises");
+		ul.addListItem().addLink("Squamata.html", "Reptiles", "Reptiles");
 		
 		// About
 		HtmlComposite divAbout = addBoxDiv(tdLeft, "A propos de cette galerie");

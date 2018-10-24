@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Text;
@@ -40,6 +41,7 @@ import controller.Controller;
 import controller.DatabaseTools;
 import controller.FileManager;
 import controller.PicNameGenerator;
+import controller.PicNameGeneratorLast;
 import controller.TaxonCache;
 
 /**
@@ -63,6 +65,7 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 	private Vector<String> vecSelectedNames;
 	private File lastSelectedFile;
 	
+	private Text txtBaseName;
 	private Text txtName;
 	private Button btnRename;
 	private Button btnCompare;
@@ -153,7 +156,9 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 		};
 		searchBoxTaxon.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		
-		listExistingPics = widgetsFactory.createList(cRight, iCenterWidth, 400);		
+		Group gExistingPics = widgetsFactory.createGroup(cRight, "Photos existantes");
+		
+		listExistingPics = widgetsFactory.createList(gExistingPics, iCenterWidth, 400);		
 		lblDir = widgetsFactory.createLabel(cRight);
 		
 		btnNew.dispose();
@@ -171,6 +176,14 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 			}
 		};
 		
+		widgetsFactory.createLabel(cThird, "Base de nom :");
+		txtBaseName = widgetsFactory.createText(cThird, -1, new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				//enableWidgets();
+			}
+		});
+		
 		widgetsFactory.createLabel(cThird, "Sélectionner photo sous :");
 		txtName = widgetsFactory.createText(cThird, -1, new ModifyListener() {
 			@Override
@@ -179,21 +192,23 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 			}
 		});
 		
-		btnRename = widgetsFactory.createPushButton(cThird, "Préselection", "ok", new SelectionAdapter() {
+		Composite cButtonsRight = widgetsFactory.createComposite(cThird, 3, true, 6);
+		
+		btnRename = widgetsFactory.createPushButton(cButtonsRight, "Préselection", "ok", new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				renameSelection();
 			}
 		});
 		
-		btnCompare = widgetsFactory.createPushButton(cThird, "Comparer", "zoom", new SelectionAdapter() {
+		btnCompare = widgetsFactory.createPushButton(cButtonsRight, "Comparer", "zoom", new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				compareSelection();
 			}
 		});
 		
-		btnGimp = widgetsFactory.createPushButton(cThird, "Ouvrir avec Gimp", "gimp", new SelectionAdapter() {
+		btnGimp = widgetsFactory.createPushButton(cButtonsRight, "Ouvrir avec Gimp", "gimp", new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				openWithGimp();
@@ -312,9 +327,11 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 		
 		if (taxon != null) {
 			createNameGenerator();
+			txtBaseName.setText(nameGenerator.getBaseName());
 			generateName();
 		} else {
 			txtName.setText("");
+			txtBaseName.setText("");
 			nameGenerator = null;
 		}
 		
@@ -324,7 +341,8 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 	
 	private void createNameGenerator() {
 		if (selectedTaxon != null) {
-			nameGenerator = new PicNameGenerator(selectedTaxon);
+			//nameGenerator = new PicNameGenerator(selectedTaxon);
+			nameGenerator = new PicNameGeneratorLast(selectedTaxon);
 			loadExistingPics();
 		}
 	}
