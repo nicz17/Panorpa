@@ -6,11 +6,8 @@ import model.HerbierPic;
 import model.Location;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 
@@ -18,9 +15,7 @@ import view.base.AbstractModule;
 import view.base.PhotoBox;
 import view.base.ViewTools;
 
-import common.exceptions.ValidationException;
 import common.view.IncrementalSearchBox;
-import common.view.MessageBox;
 
 import controller.Controller;
 import controller.DatabaseTools;
@@ -51,17 +46,18 @@ public class ModulePics extends AbstractModule<HerbierPic> {
 	
 	@Override
 	protected void createObject() {
-		Runnable runExport = new Runnable() {
-			public void run() {
-				try {
-					Controller.getInstance().scanForNewPics();
-					showObjects();
-				} catch (ValidationException e) {
-					MessageBox.error(e.getMessage());
-				}
-			}
-		};
-		BusyIndicator.showWhile(getDisplay(), runExport);
+		showOpenFileDialog();
+//		Runnable runExport = new Runnable() {
+//			public void run() {
+//				try {
+//					Controller.getInstance().scanForNewPics();
+//					showObjects();
+//				} catch (ValidationException e) {
+//					MessageBox.error(e.getMessage());
+//				}
+//			}
+//		};
+//		BusyIndicator.showWhile(getDisplay(), runExport);
 	}
 	
 	@Override
@@ -116,12 +112,12 @@ public class ModulePics extends AbstractModule<HerbierPic> {
 		});
 	    defaultLocationSelector.load();
 	    
-	    widgetsFactory.createPushButton(cButtons, null, "folder", "Importer une photo", false, new SelectionAdapter() {
-	    	@Override
-	    	public void widgetSelected(SelectionEvent e) {
-	    		showOpenFileDialog();
-	    	}
-	    });
+//	    widgetsFactory.createPushButton(cButtons, null, "folder", "Importer une photo", false, new SelectionAdapter() {
+//	    	@Override
+//	    	public void widgetSelected(SelectionEvent e) {
+//	    		showOpenFileDialog();
+//	    	}
+//	    });
 	    
 	    searchBox = new IncrementalSearchBox(cButtons) {
 	    	public void onSearch() {
@@ -133,7 +129,7 @@ public class ModulePics extends AbstractModule<HerbierPic> {
 		//Controller.getInstance().addOptionListener(this);
 
 		orderByColumn(1);
-		setNewButtonTooltip("Importer les nouvelles images");
+		setNewButtonTooltip("Importer une nouvelle photo");
 	}
 
 	@Override

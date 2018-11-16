@@ -187,6 +187,7 @@ public class Controller {
 	 * Saves any new pictures to database.
 	 * 
 	 * @throws ValidationException  if saving new pictures fails.
+	 * @deprecated pics are imported one by one now.
 	 */
 	public void scanForNewPics() throws ValidationException {
 		log.info("Scanning for new pictures with default location " + defaultLocation);

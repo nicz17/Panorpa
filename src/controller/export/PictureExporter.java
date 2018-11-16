@@ -53,6 +53,7 @@ public class PictureExporter extends BaseExporter {
 		// menu
 		HtmlComposite menu = page.getMenuDiv();
 		menu.addTitle(2, menuTitle);
+		HtmlComposite menuTable = menu.addFillTable(4, "120px");
 		
 		// taxon list
 		HtmlComposite ul = null;
@@ -114,7 +115,7 @@ public class PictureExporter extends BaseExporter {
 			if (!letter.equals(currLetter)) {
 				main.addAnchor(letter).addTitle(2, letter);
 				ul = main.addList();
-				menu.addLink("#" + letter, "Aller à la lettre " + letter, letter + " ");
+				menuTable.addTableData().addLink("#" + letter, "Aller à la lettre " + letter, letter);
 				currLetter = letter;
 			}
 			

@@ -6,14 +6,17 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import model.AltitudeLevel;
+import model.Expedition;
 import model.HerbierPic;
 import model.Location;
 
 import common.base.Logger;
 import common.io.HtmlComposite;
 
+import controller.ExpeditionManager;
 import controller.LocationCache;
 
 /**
@@ -94,9 +97,29 @@ public class LocationExporter extends BaseExporter {
 		
 		main.addTitle(1, location.getName());
 		
-		main.addPar(location.getDescription());
-		main.addPar(location.getAltitudeLevel().getLabel() + ", altitude moyenne " + location.getAltitude() + "m");
-		main.addPar(location.getRegion() + ", " + location.getState());
+		HtmlComposite divDescription = addBoxDiv(main, "Description", "myBox myBox-wide");
+		divDescription.addPar(location.getDescription());
+		divDescription.addPar(location.getAltitudeLevel().getLabel() + 
+				", altitude " + (location.getAltitude() >= 700 ? "moyenne " : "") + location.getAltitude() + "m");
+		divDescription.addPar(location.getRegion() + ", " + location.getState());
+		
+		// TEST Expedition list
+		Vector<Expedition> vecExpeditions = ExpeditionManager.getInstance().buildExpeditions(location);
+		int nExpeditions = vecExpeditions.size();
+		if (nExpeditions > 0) {
+			HtmlComposite divExpeditions = addBoxDiv(main, "Expéditions");
+			if (nExpeditions > 8) {
+				divExpeditions.addPar("Observations fréquentes depuis le " 
+						+ dateFormat.format(vecExpeditions.lastElement().getDate()) + ".");
+			} else {
+				HtmlComposite ul = divExpeditions.addList();
+				for (Expedition exp : vecExpeditions) {
+					ul.addListItem().addText(dateFormat.format(exp.getDate()) + 
+							" <font color='gray'>(" + exp.getPics().size() + " photos)</font>");
+				}
+			}
+		}
+		// END TEST
 		
 		final Set<HerbierPic> tsPics = location.getPics();
 		int nPics = tsPics.size();
