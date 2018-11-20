@@ -33,6 +33,7 @@ public class LocationExporter extends BaseExporter {
 	}
 	
 	public void export() {
+		ExpeditionManager.getInstance().clearRecentExpeditions();
 		createLocationsPage();
 	}
 	

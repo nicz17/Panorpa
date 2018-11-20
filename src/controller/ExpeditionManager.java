@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
@@ -25,6 +26,9 @@ import common.io.SpecialChars;
 public class ExpeditionManager {
 	
 	private static final Logger log = new Logger("ExpeditionManager", true);
+	
+	// Map of recent expeditions by location
+	private final Map<Location, Expedition> mapRecentExpeditions;
 	
 	// Minimum number of photos to create an Expedition object
 	public static final int nMinPics = 5;
@@ -58,21 +62,41 @@ public class ExpeditionManager {
 		for (Date tAt : mapPicsByDate.keySet()) {
 			int nPics = mapPicsByDate.get(tAt).size();
 			if (nPics < nMinPics) {
-				log.info("Skipping date " + tAt + " with only " + nPics + " photos");
+				log.info("Skipping date " + tAt + " with only " + nPics + " photos for " + loc);
 			} else {
 				Expedition exp = new Expedition(loc, tAt, "", mapPicsByDate.get(tAt));
 				vecResult.add(exp);
 			}
 		}
 		
-		// Sort and return results
+		// Sort (most recent first) and return results
 		Collections.sort(vecResult);
 		log.info("Got " + vecResult.size() + " Expeditions for " + loc);
+		if (!vecResult.isEmpty()) {
+			mapRecentExpeditions.put(loc, vecResult.firstElement());
+		}
 		for (Expedition exp : vecResult) {
-			log.info("... " + exp);
+			log.debug("... " + exp);
 		}
 		
 		return vecResult;
+	}
+	
+	/**
+	 * Gets a list of the nMax most recent expeditions (one by location).
+	 * @param nMax  max number of expeditions returned
+	 * @return a list of expeditions
+	 */
+	public List<Expedition> getRecentExpeditions(int nMax) {
+		Vector<Expedition> vecExpeditions = new Vector<>();
+		
+		vecExpeditions.addAll(mapRecentExpeditions.values());
+		Collections.sort(vecExpeditions);
+		return vecExpeditions.subList(0, Math.min(vecExpeditions.size(), nMax));
+	}
+	
+	public void clearRecentExpeditions() {
+		mapRecentExpeditions.clear();
 	}
 	
 	private Date getDateWithoutTime(Date tAt) {
@@ -99,6 +123,7 @@ public class ExpeditionManager {
 	
 	/** Private singleton constructor */
 	private ExpeditionManager() {
+		mapRecentExpeditions = new HashMap<>();
 	}
 	
 	/**

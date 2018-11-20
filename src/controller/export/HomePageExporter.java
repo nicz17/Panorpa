@@ -3,14 +3,14 @@ package controller.export;
 import java.text.DateFormat;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Vector;
 
+import model.Expedition;
 import model.HerbierPic;
-import model.Location;
 import model.NamedValue;
 import model.Taxon;
 import model.TaxonRank;
@@ -20,7 +20,7 @@ import common.io.HtmlComposite;
 
 import controller.Controller;
 import controller.DataAccess;
-import controller.LocationCache;
+import controller.ExpeditionManager;
 import controller.PictureCache;
 import controller.TaxonCache;
 
@@ -156,21 +156,15 @@ public class HomePageExporter extends BaseExporter {
 			}
 		}
 		
-		// Latest locations
-		HtmlComposite divLocations = addBoxDiv(tdRight, "Derniers lieux");
-		Vector<Location> vecLocations = Controller.getInstance().getLatestLocations(nLatestLocations);
-		ul = divLocations.addList();
-		for (Location location : vecLocations) {
-			// get from cache to have list of pics
-			location = LocationCache.getInstance().getLocation(location.getIdx());
-			location.computeDateFirstPic();
+		// Latest expeditions
+		HtmlComposite divExpeditions = addBoxDiv(tdRight, "Expéditions récentes");
+		List<Expedition> vecExpeditions = ExpeditionManager.getInstance().getRecentExpeditions(nLatestLocations);
+		ul = divExpeditions.addList();
+		for (Expedition exp : vecExpeditions) {
 			HtmlComposite li = ul.addListItem();
-			String filename = "lieu" + location.getIdx() + ".html";
-			li.addLink(filename, location.getName(), location.getName());
-			Date dateFirstPic = location.getDateFirstPic();
-			if (dateFirstPic != null) {
-				li.addText(" <font color='gray'>" + dateFormat.format(dateFirstPic) + "</font>");
-			}
+			String filename = "lieu" + exp.getLocation().getIdx() + ".html";
+			li.addLink(filename, exp.getLocation().getName(), exp.getLocation().getName());
+			li.addText(" <font color='gray'>" + dateFormat.format(exp.getDate()) + "</font>");
 		}
 		
 		createSearchForm(tdRight);

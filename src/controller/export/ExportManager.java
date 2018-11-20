@@ -6,6 +6,7 @@ import java.util.Set;
 
 import model.Taxon;
 
+import common.base.Chronometer;
 import common.base.Logger;
 
 import controller.Controller;
@@ -20,13 +21,14 @@ public class ExportManager {
 	
 	private static final Logger log = new Logger("ExportManager", true);
 	
-	private WebsiteExporter    websiteExporter;
-	private PictureExporter    pictureExporter;
-	private HomePageExporter   homePageExporter;
-	private LocationExporter   locationExporter;
-	private HighchartsExporter highchartsExporter;
-	//private TaxonPicsExporter taxonPicsExporter;
-	//private BookExporter     bookExporter;
+	private WebsiteExporter      websiteExporter;
+	private PictureExporter      pictureExporter;
+	private HomePageExporter     homePageExporter;
+	private LocationExporter     locationExporter;
+	private ExpeditionsExporter  expeditionsExporter;
+	private HighchartsExporter   highchartsExporter;
+	//private TaxonPicsExporter   taxonPicsExporter;
+	//private BookExporter        bookExporter;
 	
 	/** the singleton instance */
 	private static ExportManager _instance = null;
@@ -40,17 +42,20 @@ public class ExportManager {
 			return;
 		}
 		
+		Chronometer chrono = new Chronometer();
 		cleanup();
 		
 		websiteExporter.export(taxa);
+		locationExporter.export();
 		homePageExporter.export();
 		pictureExporter.export();
-		locationExporter.export();
+		expeditionsExporter.export();
 		highchartsExporter.export();
 		//taxonPicsExporter.export();
 		//bookExporter.export();
 		
-		log.info("Done exporting.");
+		chrono.stop();
+		log.info("Done exporting in " + chrono.getElapsedTime() + " ms");
 	}
 	
 	/** Gets the singleton instance. */
@@ -85,11 +90,12 @@ public class ExportManager {
 	
 	/** Private singleton constructor */
 	private ExportManager() {
-		websiteExporter    = new WebsiteExporter();
-		pictureExporter    = new PictureExporter();
-		homePageExporter   = new HomePageExporter();
-		locationExporter   = new LocationExporter();
-		highchartsExporter = new HighchartsExporter();
+		websiteExporter     = new WebsiteExporter();
+		pictureExporter     = new PictureExporter();
+		homePageExporter    = new HomePageExporter();
+		locationExporter    = new LocationExporter();
+		highchartsExporter  = new HighchartsExporter();
+		expeditionsExporter = new ExpeditionsExporter();
 		//taxonPicsExporter = new TaxonPicsExporter();
 		//bookExporter      = new BookExporter();
 	}
