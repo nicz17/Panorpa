@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import model.AppParam;
 import model.DataObject;
+import model.Expedition;
 import model.HerbierPic;
 import model.Location;
 import model.Taxon;
@@ -76,6 +77,13 @@ public class DataObjectFactory {
 		return obj;
 	}
 	
+	/**
+	 * Creates a {@link Location} from the specified result-set.
+	 * 
+	 * @param rs the result-set with Location info
+	 * @return the created {@link Location}
+	 * @throws SQLException if fails to read results
+	 */
 	public Location createLocation(ResultSet rs) throws SQLException {
 		Location obj = new Location(rs.getInt("idxLocation"), 
 				rs.getString("locName"));
@@ -88,6 +96,25 @@ public class DataObjectFactory {
 		return obj;
 	}
 	
+	/**
+	 * Creates an {@link Expedition} from the specified result-set.
+	 * @param rs  the result-set with Expedition info
+	 * @return  the created {@link Expedition}
+	 * @throws SQLException if fails to read results
+	 */
+	public Expedition createExpedition(ResultSet rs) throws SQLException {
+		Expedition obj = null;
+		Location location = LocationCache.getInstance().getLocation(rs.getInt("expLocation"));
+		if (location != null) {
+			obj = new Expedition(rs.getInt("idxExpedition"), 
+					location, 
+					rs.getTimestamp("expFrom"), 
+					rs.getTimestamp("expTo"), 
+					rs.getString("expName"),  
+					rs.getString("expDesc"));
+		}
+		return obj;
+	}
 	
 	/**
 	 * Creates a {@link AppParam} from the specified result-set.
