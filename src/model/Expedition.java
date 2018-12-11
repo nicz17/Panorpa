@@ -82,9 +82,43 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 		return tTo;
 	}
 
+	public String getTitle() {
+		return sTitle;
+	}
+
 	public String getNotes() {
 		return sNotes;
 	}
+
+	public void setLocation(Location location) {
+		this.location = location;
+	}
+
+
+	public void setFrom(Date tFrom) {
+		this.tFrom = tFrom;
+	}
+
+
+	public void setTo(Date tTo) {
+		this.tTo = tTo;
+	}
+
+
+	public void setTitle(String sTitle) {
+		this.sTitle = sTitle;
+	}
+
+
+	public void setNotes(String sNotes) {
+		this.sNotes = sNotes;
+	}
+
+
+	public void setPics(Set<HerbierPic> vecPics) {
+		this.vecPics = vecPics;
+	}
+
 
 	public Set<HerbierPic> getPics() {
 		return vecPics;
@@ -95,7 +129,8 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 		return new String[] {
 				sTitle, 
 				location == null ? "Lieu inconnu" : location.getName(), 
-				Panorpa.dateFormat.format(tFrom)
+				Panorpa.dateFormat.format(tFrom), 
+				Panorpa.dateFormat.format(tTo)
 		};
 	}
 	
