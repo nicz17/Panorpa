@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import model.AppParam;
 import model.AppParamName;
+import model.Expedition;
 import model.HerbierPic;
 import model.Location;
 import model.StatItem;
@@ -110,6 +111,11 @@ public class Controller {
 	public Vector<Location> getLocations(eOrdering order, String filter) {
 		Vector<Location> vecLocations = DataAccess.getInstance().getLocations(null, order, filter);
 		return vecLocations;
+	}
+	
+	public Vector<Expedition> getExpeditions(eOrdering order, String filter) {
+		Vector<Expedition> vecExpeditions = DataAccess.getInstance().getExpeditions(null, order, filter);
+		return vecExpeditions;
 	}
 	
 	public Vector<Location> getLatestLocations(int nLatest) {

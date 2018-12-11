@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import model.AppParam;
 import model.AppParamName;
+import model.Expedition;
 import model.HerbierPic;
 import model.Location;
 import model.NamedValue;
@@ -409,6 +410,55 @@ public class DataAccess {
 		return idx;
 	}
 	
+	/**
+	 * Fetches Expeditions from database.
+	 * 
+	 * @param where   optional where-clause
+	 * @param eOrder  optional ordering object
+	 * @param filter  optional filter
+	 * @return
+	 */
+	public Vector<Expedition> getExpeditions(String where, eOrdering eOrder, String filter) {
+		Vector<Expedition> vecResult = new Vector<>();
+				
+		if (where == null) {
+			where = " WHERE 1=1 ";
+		}
+		where += getFilterWhere(filter, "expName", "expDesc");
+
+		String order = "";
+		if (eOrder != null) {
+			switch(eOrder) {
+			case BY_NAME: 
+				order = " ORDER BY expName ";
+				break;
+			default:
+				order = " ORDER BY expName ";
+				break;
+			}
+		}
+		
+		String query = "SELECT * FROM Expedition " +
+			where + order;
+		
+		try {
+			Connection conn = dbTools.getConnection();
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			rs.beforeFirst();
+			while (rs.next()) {
+				Expedition obj = objectFactory.createExpedition(rs);
+				vecResult.add(obj);
+			}
+			log.debug("Returning " + vecResult.size() + " expeditions");
+			stmt.close();
+			return vecResult;
+			
+		} catch (SQLException e) {
+			log.error("Fetching expeditions failed: " + e.getMessage());
+		}
+		return null;
+	}
 
 	protected AppParam getAppParam(AppParamName apName) {
 		String query = "SELECT * FROM AppParam WHERE apName = '" + apName.getDbName() + "'";
@@ -629,6 +679,12 @@ public class DataAccess {
 		return 0;
 	}
 
+	/**
+	 * Gets a SQL filtering for the specified filter and fields.
+	 * @param filter  an optional filter (may be null)
+	 * @param fields  a list of fields to filter
+	 * @return an SQL filtering 
+	 */
 	private String getFilterWhere(String filter, String ... fields) {
 		if (filter == null || filter.isEmpty()) return " ";
 		String where = " AND (0=1";
