@@ -30,4 +30,10 @@ public interface DataListener {
 	 */
 	public void locationUpdated(int idx);
 	
+	/**
+	 * An Expedition was updated.
+	 * @param idx the index of the updated expedition
+	 */
+	public void expeditionUpdated(int idx);
+	
 }

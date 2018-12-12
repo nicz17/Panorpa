@@ -178,6 +178,10 @@ public class ModuleUpload extends SashModule implements DataListener {
 		
 	}
 	
+	@Override
+	public void expeditionUpdated(int idx) {
+	}
+	
 	private void backup() {
 		enableButtons(false);
 		try {

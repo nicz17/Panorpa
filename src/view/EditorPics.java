@@ -27,6 +27,7 @@ import controller.Controller;
  *
  */
 public class EditorPics extends AbstractEditor {
+	
 	private Text txtRemark;
 	private LocationSelector selLocation;
 	private Label lblName, lblNameFr, lblDate, lblFile, lblFamily;

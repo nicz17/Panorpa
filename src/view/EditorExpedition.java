@@ -1,9 +1,16 @@
 package view;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import model.Expedition;
 
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+
+import common.exceptions.ValidationException;
+import common.view.MessageBox;
 
 import view.base.AbstractEditor;
 import controller.Controller;
@@ -15,8 +22,12 @@ import controller.Controller;
  *
  */
 public class EditorExpedition extends AbstractEditor {
+	
+	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	
 	private Text txtTitle, txtNotes;
 	private LocationSelector selLocation;
+	private Label lblDateFrom, lblDateTo;
 	
 	private Expedition theObject;
 	
@@ -33,6 +44,12 @@ public class EditorExpedition extends AbstractEditor {
 		widgetsFactory.createLabel(cMain, "Lieu");
 		selLocation = new LocationSelector("LocationSelector", cMain, false, modifListener);
 
+		widgetsFactory.createLabel(cMain, "Début");
+		lblDateFrom = widgetsFactory.createLabel(cMain, 250);
+
+		widgetsFactory.createLabel(cMain, "Fin");
+		lblDateTo = widgetsFactory.createLabel(cMain, 250);
+
 		Controller.getInstance().addDataListener(this);
 	    selLocation.load();
 	}
@@ -48,12 +65,12 @@ public class EditorExpedition extends AbstractEditor {
 		theObject.setNotes(txtNotes.getText());
 		theObject.setLocation(selLocation.getValue());
 		
-//		try {
-//			Controller.getInstance().saveExpedition(theObject);
-//			enableWidgets(false);
-//		} catch (ValidationException e) {
-//			MessageBox.error(e.getMessage());
-//		}
+		try {
+			Controller.getInstance().saveExpedition(theObject);
+			enableWidgets(false);
+		} catch (ValidationException e) {
+			MessageBox.error(e.getMessage());
+		}
 	}
 
 	@Override
@@ -87,12 +104,16 @@ public class EditorExpedition extends AbstractEditor {
 			txtTitle.setText(obj.getTitle());
 			txtNotes.setText(obj.getNotes());
 			selLocation.setValue(obj.getLocation());
+			lblDateFrom.setText(obj.getDate() == null ? "-" : dateFormat.format(obj.getDate()));
+			lblDateTo.setText(obj.getDateTo() == null ? "-" : dateFormat.format(obj.getDateTo()));
 			enableWidgets(true);
 		} else {
 			theObject = null;
 			txtTitle.setText("");
 			txtNotes.setText("");
 			selLocation.clearDisplay();
+			lblDateFrom.setText("");
+			lblDateTo.setText("");
 			enableWidgets(false);
 		}
 	}

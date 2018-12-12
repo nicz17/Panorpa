@@ -353,7 +353,7 @@ public class DataAccess {
 	/**
 	 * Saves the specified {@link Location} to database.
 	 * 
-	 * @param obj  the picture to save
+	 * @param obj  the location to save
 	 * @return the database index of saved object
 	 */
 	protected int saveLocation(Location obj) {
@@ -458,6 +458,62 @@ public class DataAccess {
 			log.error("Fetching expeditions failed: " + e.getMessage());
 		}
 		return null;
+	}
+
+	/**
+	 * Saves the specified {@link Expedition} to database.
+	 * 
+	 * @param obj  the expedition to save
+	 * @return the database index of saved object
+	 */
+	protected int saveExpedition(Expedition obj) {
+		Connection conn = dbTools.getConnection();
+		log.info("Saving " + obj);
+
+		int idx = -1;
+		
+		try {
+			Statement stmt = conn.createStatement();
+			
+			if (obj.getIdx() > 0) {
+				// update existing
+				String query = String.format("UPDATE Expedition SET expName = %s, " +
+						"expDesc = %s, expLocation = %d, expFrom = %s, expTo = %s " +
+						"WHERE idxExpedition = %d", 
+						DatabaseTools.toSQLstring(obj.getTitle()), 
+						DatabaseTools.toSQLstring(obj.getNotes()),
+						obj.getLocation().getIdx(), 
+						DatabaseTools.toSqlDateTime(obj.getDate()), 
+						DatabaseTools.toSqlDateTime(obj.getDateTo()), 
+						obj.getIdx() );
+				log.debug("SQL: " + query);
+				stmt.execute(query);
+				idx = obj.getIdx();
+			} else {
+				// create new
+				String query = String.format("INSERT INTO Expedition " +
+						"(idxExpedition, expName, expDesc, expLocation, " +
+						"expFrom, expTo) " +
+						"VALUES (null, %s, %s, %d, %s, %s)", 
+						DatabaseTools.toSQLstring(obj.getTitle()), 
+						DatabaseTools.toSQLstring(obj.getNotes()),
+						obj.getLocation().getIdx(), 
+						DatabaseTools.toSqlDateTime(obj.getDate()), 
+						DatabaseTools.toSqlDateTime(obj.getDateTo()));
+				log.debug("SQL: " + query);
+				stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
+				
+				// GET ID
+				ResultSet rs = stmt.getGeneratedKeys();
+				if (rs.next())
+					idx = rs.getInt(1);
+				rs.close();
+			}
+			stmt.close();
+		} catch (SQLException e) {
+			log.error("Saving Expedition failed: " + e.getMessage());
+		}
+		return idx;
 	}
 
 	protected AppParam getAppParam(AppParamName apName) {

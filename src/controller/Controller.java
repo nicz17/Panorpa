@@ -428,6 +428,25 @@ public class Controller {
 	}
 
 	/**
+	 * Saves the specified expedition to database.
+	 * 
+	 * @param expedition  the expedition to save
+	 * @return  the database index
+	 * @throws ValidationException  if saving is invalid
+	 */
+	public int saveExpedition(Expedition expedition) throws ValidationException {
+		log.info("Saving " + expedition);
+
+		// TODO expeditionValidator.validateSave(expedition);
+
+		int idx = DataAccess.getInstance().saveExpedition(expedition);
+		//ExpeditionCache.getInstance().refresh(idx);
+
+		notifyDataListeners(UpdateType.LOCATION, idx);
+		return idx;
+	}
+
+	/**
 	 * Gets the application parameter with the specified name from database.
 	 * @param apName  the AppParam name
 	 * @return  the fetched AppParam
@@ -558,6 +577,9 @@ public class Controller {
 				break;
 			case LOCATION:
 				li.locationUpdated(idx);
+				break;
+			case EXPEDITION:
+				li.expeditionUpdated(idx);
 				break;
 			default:
 			}

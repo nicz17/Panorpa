@@ -1,6 +1,7 @@
 package model;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import view.Panorpa;
@@ -61,6 +62,7 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 		this.tTo = tTo;
 		this.sTitle = sTitle;
 		this.sNotes = sNotes;
+		this.vecPics = new HashSet<>();
 	}
 
 
@@ -136,7 +138,10 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 	
 	@Override
 	public String toString() {
-		String str = "Expedition at " + location.getName() + " on " + tFrom + ", " + vecPics.size() + " photos";
+		String str = "Expedition at " + 
+				(location == null ? "UNDEFINED location" : location.getName()) + 
+				" on " + tFrom + ", " + 
+				(vecPics == null ? "-" : vecPics.size()) + " photos";
 		return str;
 	}
 

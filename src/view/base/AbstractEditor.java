@@ -134,5 +134,9 @@ public abstract class AbstractEditor extends Composite implements DataListener {
 	@Override
 	public void locationUpdated(int idx) {
 	}
+	
+	@Override
+	public void expeditionUpdated(int idx) {
+	}
 
 }

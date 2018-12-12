@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -93,6 +94,27 @@ public class ExpeditionManager {
 		vecExpeditions.addAll(mapRecentExpeditions.values());
 		Collections.sort(vecExpeditions);
 		return vecExpeditions.subList(0, Math.min(vecExpeditions.size(), nMax));
+	}
+	
+	/**
+	 * Adds pictures to the specified expedition.
+	 * Any picture at the location matching the expedition date-range is added.
+	 * @param expedition  the expedition to update
+	 */
+	public void setExpeditionPics(Expedition expedition) {
+		log.info("Setting pics to " + expedition);
+		log.info("Location has " + expedition.getLocation().getPics().size() + " pics");
+		for (HerbierPic pic : expedition.getLocation().getPics()) {
+			//Date tShotAt = pic.getShotAt();
+			// TODO update picShotAt with times !
+			Date tShotAt = FileManager.getInstance().getShotAt(new File(Controller.picturesPath + pic.getFileName()));
+			//log.debug("... checking pic shot at " + tShotAt);
+			if (!tShotAt.before(expedition.getDate()) && !tShotAt.after(expedition.getDateTo())) {
+				expedition.getPics().add(pic);
+				//log.debug("... adding pic " + pic);
+			}
+		}
+		log.info("Expedition now has " + expedition.getPics().size() + " pics");
 	}
 	
 	public void clearRecentExpeditions() {

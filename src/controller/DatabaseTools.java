@@ -105,7 +105,8 @@ public class DatabaseTools {
 	public enum UpdateType {
 		PICTURE,
 		TAXON, 
-		LOCATION
+		LOCATION,
+		EXPEDITION
 	}
 
 	/**

@@ -31,5 +31,9 @@ public abstract class TabbedModule extends BaseModule implements DataListener {
 	@Override
 	public void locationUpdated(int idx) {
 	}
+	
+	@Override
+	public void expeditionUpdated(int idx) {
+	}
 
 }

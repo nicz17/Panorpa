@@ -120,6 +120,10 @@ public class ModuleTaxonsTree extends SashModule implements DataListener {
 	@Override
 	public void locationUpdated(int idx) {
 	}
+	
+	@Override
+	public void expeditionUpdated(int idx) {
+	}
 
 	@Override
 	public void selectObject(int idxTaxon) {
