@@ -430,7 +430,13 @@ public class DataAccess {
 		if (eOrder != null) {
 			switch(eOrder) {
 			case BY_NAME: 
-				order = " ORDER BY expName ";
+				order = " ORDER BY expName, expFrom ";
+				break;
+			case BY_LOCATION: 
+				order = " ORDER BY expLocation ";
+				break;
+			case BY_DATE: 
+				order = " ORDER BY expFrom DESC ";
 				break;
 			default:
 				order = " ORDER BY expName ";
@@ -483,7 +489,7 @@ public class DataAccess {
 						DatabaseTools.toSQLstring(obj.getTitle()), 
 						DatabaseTools.toSQLstring(obj.getNotes()),
 						obj.getLocation().getIdx(), 
-						DatabaseTools.toSqlDateTime(obj.getDate()), 
+						DatabaseTools.toSqlDateTime(obj.getDateFrom()), 
 						DatabaseTools.toSqlDateTime(obj.getDateTo()), 
 						obj.getIdx() );
 				log.debug("SQL: " + query);
@@ -498,7 +504,7 @@ public class DataAccess {
 						DatabaseTools.toSQLstring(obj.getTitle()), 
 						DatabaseTools.toSQLstring(obj.getNotes()),
 						obj.getLocation().getIdx(), 
-						DatabaseTools.toSqlDateTime(obj.getDate()), 
+						DatabaseTools.toSqlDateTime(obj.getDateFrom()), 
 						DatabaseTools.toSqlDateTime(obj.getDateTo()));
 				log.debug("SQL: " + query);
 				stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);

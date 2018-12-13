@@ -10,7 +10,9 @@ import model.Location;
 
 import common.io.HtmlComposite;
 
+import controller.Controller;
 import controller.ExpeditionManager;
+import controller.DatabaseTools.eOrdering;
 
 /**
  * Creates HTML pages for Expeditions.
@@ -33,9 +35,10 @@ public class ExpeditionsExporter extends BaseExporter {
 		
 		main.addTitle(1, "Expéditions récentes");
 		
-		List<Expedition> vecExpeditions = ExpeditionManager.getInstance().getRecentExpeditions(8);
-		
+		// List<Expedition> vecExpeditions = ExpeditionManager.getInstance().getRecentExpeditions(8);
+		List<Expedition> vecExpeditions = Controller.getInstance().getExpeditions(eOrdering.BY_DATE, null);
 		for (Expedition exp : vecExpeditions) {
+			ExpeditionManager.getInstance().setExpeditionPics(exp);
 			exportExpedition(exp, main);
 		}
 		
@@ -44,12 +47,15 @@ public class ExpeditionsExporter extends BaseExporter {
 	
 	private void exportExpedition(Expedition exp, HtmlComposite parent) {
 		Location loc = exp.getLocation();
-		HtmlComposite div = addBoxDiv(parent, dateFormat.format(exp.getDate()), "myBox myBox-wide");
+		HtmlComposite div = addBoxDiv(parent, exp.getTitle(), "myBox myBox-wide");
 		HtmlComposite par = div.addPar();
 		String filename = "lieu" + loc.getIdx() + ".html";
 		par.addLink(filename, loc.getName(), loc.getName());
-		par.addText(" <font color='gray'>&mdash; " + exp.getPics().size() + " photos</font>");
-		//div.addSpan("pics-count", String.valueOf(exp.getPics().size()) + " photos");
+		par.addText(" <font color='gray'>&mdash; ");
+		par.addText(dateFormat.format(exp.getDateFrom()));
+		par.addText(" &mdash; " + exp.getPics().size() + " photos</font>");
+		
+		div.addPar(exp.getNotes());
 		
 		HtmlComposite tablePics = div.addFillTable(nColumns);
 		tablePics.setCssClass("table-thumbs");

@@ -164,7 +164,7 @@ public class HomePageExporter extends BaseExporter {
 			HtmlComposite li = ul.addListItem();
 			String filename = "lieu" + exp.getLocation().getIdx() + ".html";
 			li.addLink(filename, exp.getLocation().getName(), exp.getLocation().getName());
-			li.addText(" <font color='gray'>" + dateFormat.format(exp.getDate()) + "</font>");
+			li.addText(" <font color='gray'>" + dateFormat.format(exp.getDateFrom()) + "</font>");
 		}
 		
 		createSearchForm(tdRight);

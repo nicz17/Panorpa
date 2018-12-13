@@ -4,7 +4,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import model.Expedition;
+import model.Location;
 
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -28,6 +31,7 @@ public class EditorExpedition extends AbstractEditor {
 	private Text txtTitle, txtNotes;
 	private LocationSelector selLocation;
 	private Label lblDateFrom, lblDateTo;
+	private Label lblNPics;
 	
 	private Expedition theObject;
 	
@@ -40,8 +44,18 @@ public class EditorExpedition extends AbstractEditor {
 		widgetsFactory.createLabel(cMain, "Notes", true);
 		txtNotes = widgetsFactory.createMultilineText(cMain, 
 				1024, 125, modifListener);
-
-		widgetsFactory.createLabel(cMain, "Lieu");
+		
+		widgetsFactory.createLink(cMain, "<a>Lieu</a>", 
+				"Editer le lieu", new SelectionAdapter() {
+					public void widgetSelected(SelectionEvent e) {
+						if (theObject != null) {
+							Location location = theObject.getLocation();
+							if (location != null) {
+								Panorpa.getInstance().navigate(Module.LOCATIONS, location.getIdx());
+							}
+						}
+					}
+				});
 		selLocation = new LocationSelector("LocationSelector", cMain, false, modifListener);
 
 		widgetsFactory.createLabel(cMain, "Début");
@@ -49,6 +63,9 @@ public class EditorExpedition extends AbstractEditor {
 
 		widgetsFactory.createLabel(cMain, "Fin");
 		lblDateTo = widgetsFactory.createLabel(cMain, 250);
+
+		widgetsFactory.createLabel(cMain, "Photos");
+		lblNPics = widgetsFactory.createLabel(cMain, 250);
 
 		Controller.getInstance().addDataListener(this);
 	    selLocation.load();
@@ -104,8 +121,9 @@ public class EditorExpedition extends AbstractEditor {
 			txtTitle.setText(obj.getTitle());
 			txtNotes.setText(obj.getNotes());
 			selLocation.setValue(obj.getLocation());
-			lblDateFrom.setText(obj.getDate() == null ? "-" : dateFormat.format(obj.getDate()));
+			lblDateFrom.setText(obj.getDateFrom() == null ? "-" : dateFormat.format(obj.getDateFrom()));
 			lblDateTo.setText(obj.getDateTo() == null ? "-" : dateFormat.format(obj.getDateTo()));
+			lblNPics.setText(String.valueOf(obj.getPics().size()));
 			enableWidgets(true);
 		} else {
 			theObject = null;
@@ -114,6 +132,7 @@ public class EditorExpedition extends AbstractEditor {
 			selLocation.clearDisplay();
 			lblDateFrom.setText("");
 			lblDateTo.setText("");
+			lblNPics.setText("");
 			enableWidgets(false);
 		}
 	}

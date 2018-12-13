@@ -31,11 +31,12 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 	 * @param sNotes
 	 * @param vecPics
 	 */
-	public Expedition(Location location, Date tAt, String sNotes, Set<HerbierPic> vecPics) {
+	public Expedition(Location location, Date tFrom, Date tTo, String sNotes, Set<HerbierPic> vecPics) {
 		this.idx = 0;
+		this.sTitle = "Nouvelle expédition";
 		this.location = location;
-		this.tFrom = tAt;
-		this.tTo   = tAt;
+		this.tFrom = tFrom;
+		this.tTo   = tTo;
 		this.sNotes = sNotes;
 		this.vecPics = vecPics;
 		
@@ -76,7 +77,7 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 		return location;
 	}
 
-	public Date getDate() {
+	public Date getDateFrom() {
 		return tFrom;
 	}
 
@@ -147,6 +148,6 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 
 	@Override
 	public int compareTo(Expedition exp) {
-		return exp.getDate().compareTo(getDate());
+		return exp.getDateFrom().compareTo(getDateFrom());
 	}
 }

@@ -31,7 +31,7 @@ public class ExpeditionManager {
 	private final Map<Location, Expedition> mapRecentExpeditions;
 	
 	// Minimum number of photos to create an Expedition object
-	public static final int nMinPics = 5;
+	public static final int nMinPics = 4;
 	
 	/**
 	 * Builds the list of expeditions for the specified location.
@@ -60,11 +60,21 @@ public class ExpeditionManager {
 		Vector<Expedition> vecResult = new Vector<>();
 		log.info("Found pics on " + mapPicsByDate.size() + " different dates");
 		for (Date tAt : mapPicsByDate.keySet()) {
-			int nPics = mapPicsByDate.get(tAt).size();
+			Set<HerbierPic> expPics = mapPicsByDate.get(tAt);
+			int nPics = expPics.size();
 			if (nPics < nMinPics) {
 				log.info("Skipping date " + tAt + " with only " + nPics + " photos for " + loc);
 			} else {
-				Expedition exp = new Expedition(loc, tAt, "", mapPicsByDate.get(tAt));
+				Date tFrom = null;
+				Date tTo = null;
+				for (HerbierPic pic : expPics) {
+					Date tShotAt = pic.getShotAt();
+					if (tFrom == null) tFrom = tShotAt;
+					if (tTo == null)   tTo   = tShotAt;
+					if (tShotAt.before(tFrom)) tFrom = tShotAt;
+					if (tShotAt.after(tTo))    tTo   = tShotAt;
+				}
+				Expedition exp = new Expedition(loc, tFrom, tTo, "", expPics);
 				vecResult.add(exp);
 			}
 		}
@@ -106,7 +116,7 @@ public class ExpeditionManager {
 		for (HerbierPic pic : expedition.getLocation().getPics()) {
 			Date tShotAt = pic.getShotAt();
 			//log.debug("... checking pic shot at " + tShotAt);
-			if (!tShotAt.before(expedition.getDate()) && !tShotAt.after(expedition.getDateTo())) {
+			if (!tShotAt.before(expedition.getDateFrom()) && !tShotAt.after(expedition.getDateTo())) {
 				expedition.getPics().add(pic);
 				//log.debug("... adding pic " + pic);
 			}

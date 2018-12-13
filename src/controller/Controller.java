@@ -443,7 +443,7 @@ public class Controller {
 
 		int idx = DataAccess.getInstance().saveExpedition(expedition);
 
-		notifyDataListeners(UpdateType.LOCATION, idx);
+		notifyDataListeners(UpdateType.EXPEDITION, idx);
 		return idx;
 	}
 

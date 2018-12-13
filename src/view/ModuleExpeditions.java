@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import model.Expedition;
 import model.HerbierPic;
+import model.Location;
 import view.base.AbstractModule;
 import view.base.MultiPhotoBox;
 
@@ -16,6 +17,7 @@ import common.view.IncrementalSearchBox;
 import controller.Controller;
 import controller.DatabaseTools;
 import controller.ExpeditionManager;
+import controller.LocationCache;
 
 /**
  * Module displaying expedition objects.
@@ -32,8 +34,8 @@ public class ModuleExpeditions extends AbstractModule<Expedition> {
 	private MultiPhotoBox multiPhotoBox;
 	
 	protected final DatabaseTools.eOrdering eOrder[] = {DatabaseTools.eOrdering.BY_NAME, 
-			DatabaseTools.eOrdering.BY_TOWN, DatabaseTools.eOrdering.BY_REGION, 
-			DatabaseTools.eOrdering.BY_KIND, DatabaseTools.eOrdering.BY_ALTITUDE};
+			DatabaseTools.eOrdering.BY_LOCATION, DatabaseTools.eOrdering.BY_DATE, 
+			DatabaseTools.eOrdering.BY_DATE};
 
 	public ModuleExpeditions() {
 		super(2);
@@ -44,16 +46,16 @@ public class ModuleExpeditions extends AbstractModule<Expedition> {
 	
 	@Override
 	protected void createObject() {
-//		Expedition newObj = Expedition.newExpedition("");
-//		vecObjects.add(newObj);
-//		
-//		// show object in table
-//		TableItem item = new TableItem(tblData, SWT.NONE);
-//		item.setText(newObj.getDataRow());
-//		tblData.setSelection(item);
-//		
-//		// show object in editor
-//		showObject(newObj);
+		Location loc = LocationCache.getInstance().getLocation(Controller.getInstance().getDefaultLocation().getIdx());
+		Vector<Expedition> newObects = ExpeditionManager.getInstance().buildExpeditions(loc);
+		for (Expedition newObj : newObects) {
+			vecObjects.add(newObj);
+
+			// show object in table
+			TableItem item = new TableItem(tblData, SWT.NONE);
+			item.setText(newObj.getDataRow());
+			tblData.setSelection(item);
+		}
 	}
 	
 	@Override
@@ -88,9 +90,6 @@ public class ModuleExpeditions extends AbstractModule<Expedition> {
 			multiPhotoBox.setPics(null, null);
 		}
 	}
-
-//	private void enableButtons(boolean enabled) {
-//	}
 
 	@Override
 	protected void loadWidgets() {

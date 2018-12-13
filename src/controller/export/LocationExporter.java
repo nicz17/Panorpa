@@ -111,11 +111,11 @@ public class LocationExporter extends BaseExporter {
 			HtmlComposite divExpeditions = addBoxDiv(main, "Expéditions");
 			if (nExpeditions > 8) {
 				divExpeditions.addPar("Observations fréquentes depuis le " 
-						+ dateFormat.format(vecExpeditions.lastElement().getDate()) + ".");
+						+ dateFormat.format(vecExpeditions.lastElement().getDateFrom()) + ".");
 			} else {
 				HtmlComposite ul = divExpeditions.addList();
 				for (Expedition exp : vecExpeditions) {
-					ul.addListItem().addText(dateFormat.format(exp.getDate()) + 
+					ul.addListItem().addText(dateFormat.format(exp.getDateFrom()) + 
 							" <font color='gray'>(" + exp.getPics().size() + " photos)</font>");
 				}
 			}

@@ -27,7 +27,7 @@ public class ExpeditionValidator extends Validator<Expedition> {
 			onError("Titre d'expédition invalide : " + obj);
 		}
 
-		if (!obj.getDateTo().after(obj.getDate())) {
+		if (!obj.getDateTo().after(obj.getDateFrom())) {
 			onError("Intervalle de temps invalide : " + obj);
 		}
 	}
