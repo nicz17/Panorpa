@@ -1,6 +1,5 @@
 package controller;
 
-import java.io.File;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -103,18 +102,16 @@ public class ExpeditionManager {
 	 */
 	public void setExpeditionPics(Expedition expedition) {
 		log.info("Setting pics to " + expedition);
-		log.info("Location has " + expedition.getLocation().getPics().size() + " pics");
+		//log.info("Location has " + expedition.getLocation().getPics().size() + " pics");
 		for (HerbierPic pic : expedition.getLocation().getPics()) {
-			//Date tShotAt = pic.getShotAt();
-			// TODO update picShotAt with times !
-			Date tShotAt = FileManager.getInstance().getShotAt(new File(Controller.picturesPath + pic.getFileName()));
+			Date tShotAt = pic.getShotAt();
 			//log.debug("... checking pic shot at " + tShotAt);
 			if (!tShotAt.before(expedition.getDate()) && !tShotAt.after(expedition.getDateTo())) {
 				expedition.getPics().add(pic);
 				//log.debug("... adding pic " + pic);
 			}
 		}
-		log.info("Expedition now has " + expedition.getPics().size() + " pics");
+		//log.info("Expedition now has " + expedition.getPics().size() + " pics");
 	}
 	
 	public void clearRecentExpeditions() {

@@ -31,6 +31,7 @@ import controller.checks.LocationChecker;
 import controller.export.ExportManager;
 import controller.listeners.DataListener;
 import controller.upload.UploadManager;
+import controller.validation.ExpeditionValidator;
 import controller.validation.LocationValidator;
 import controller.validation.PicValidator;
 import controller.validation.TaxonValidator;
@@ -52,9 +53,10 @@ public class Controller {
 	
 	private Vector<DataListener> vecDataListeners;
 	
-	private final TaxonValidator     taxonValidator;
-	private final PicValidator       picValidator;
-	private final LocationValidator  locationValidator;
+	private final TaxonValidator      taxonValidator;
+	private final PicValidator        picValidator;
+	private final LocationValidator   locationValidator;
+	private final ExpeditionValidator expeditionValidator;
 	
 	private final Importer importer;
 	
@@ -437,10 +439,9 @@ public class Controller {
 	public int saveExpedition(Expedition expedition) throws ValidationException {
 		log.info("Saving " + expedition);
 
-		// TODO expeditionValidator.validateSave(expedition);
+		expeditionValidator.validateSave(expedition);
 
 		int idx = DataAccess.getInstance().saveExpedition(expedition);
-		//ExpeditionCache.getInstance().refresh(idx);
 
 		notifyDataListeners(UpdateType.LOCATION, idx);
 		return idx;
@@ -616,18 +617,41 @@ public class Controller {
 			}
 		}
 		
-		taxonValidator    = new TaxonValidator();
-		picValidator      = new PicValidator();
-		locationValidator = new LocationValidator();
-		importer          = new Importer();
+		taxonValidator      = new TaxonValidator();
+		picValidator        = new PicValidator();
+		locationValidator   = new LocationValidator();
+		expeditionValidator = new ExpeditionValidator();
+		importer            = new Importer();
 	}
 
-	/**
-	 * @param args  unused
-	 */
+//	private void updatePicShotAt(HerbierPic pic) {
+//		Date tShotAt = FileManager.getInstance().getShotAt(new File(Controller.picturesPath + pic.getFileName()));
+//		if (tShotAt == null) {
+//			log.info("Failed to get picShotAt, skipping - " + pic);
+//		} else {
+//			if (tShotAt.after(pic.getShotAt())) {
+//				log.info("Updating picShotAt from " + pic.getShotAt() + " to " + tShotAt + " for " + pic);
+//				pic.setShotAt(tShotAt);
+//				try {
+//					savePicture(pic);
+//				} catch (ValidationException e) {
+//					log.error("Failed to update picShotAt: " + e.getMessage());
+//				}
+//			} else {
+//				log.info("Pic has correct picShotAt - " + pic);
+//			}
+//		}
+//	}
+
+//	/**
+//	 * @param args  unused
+//	 */
 //	public static void main(String[] args) {
 //		//Controller.getInstance().createWebPage();
 //		//Controller.getInstance().getFamilyByGenus();
+//		for (HerbierPic pic : Controller.getInstance().getHerbierPics(null, null)) {
+//			Controller.getInstance().updatePicShotAt(pic);
+//		}
 //	}
 
 }
