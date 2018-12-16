@@ -176,6 +176,9 @@ public class HtmlPage extends HtmlComposite {
 		menu.addLink(basePath + "lieux.html", "Lieux", "Lieux");
 		menu.addBr();
 		
+		menu.addLink(basePath + "journal.html", "Journal de terrain", "Journal");
+		menu.addBr();
+		
 		menu.addLink(basePath + "search.html", "Chercher dans les photos de nature", "Chercher");
 		menu.addBr();
 		
