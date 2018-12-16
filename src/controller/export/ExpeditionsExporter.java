@@ -60,7 +60,7 @@ public class ExpeditionsExporter extends BaseExporter {
 	private void exportExpedition(Expedition exp, HtmlComposite parent, HtmlComposite menu) {
 		
 		// add month and year to menu if needed
-		String sMonthYear = dateFormatMenu.format(exp.getDateFrom());
+		String sMonthYear = upperCaseFirst(dateFormatMenu.format(exp.getDateFrom()));
 		if (!sMonthYear.equals(sLastMonthYear)) {
 			sLastMonthYear = sMonthYear;
 			String sAnchor = dateFormatAnchor.format(exp.getDateFrom());

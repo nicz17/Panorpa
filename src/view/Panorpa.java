@@ -41,7 +41,7 @@ public class Panorpa extends AbstractMain {
 	 * The application version. 
 	 * Only increment before exporting a new jar.
 	 */
-	private static final String appVersion = "1.6.5 DEV";
+	private static final String appVersion = "1.6.5";
 
 	public static final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG, Locale.FRANCE);
 

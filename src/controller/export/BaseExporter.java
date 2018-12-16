@@ -182,6 +182,15 @@ public class BaseExporter {
 	}
 	
 	/**
+	 * Returns the specified string with the first character in upper-case.
+	 * @param str the input string
+	 * @return the upper-cased string
+	 */
+	protected String upperCaseFirst(String str) {
+		return str.substring(0, 1).toUpperCase() + str.substring(1);
+	}
+	
+	/**
 	 * Creates an html box div with the specified title text and default 'myBox' CSS class.
 	 * 
 	 * @param parent    the parent html element where to add the box
