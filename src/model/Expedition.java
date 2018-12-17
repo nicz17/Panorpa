@@ -130,9 +130,9 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 	@Override
 	public String[] getDataRow() {
 		return new String[] {
+				Panorpa.dateFormat.format(tFrom), 
 				sTitle, 
 				location == null ? "Lieu inconnu" : location.getName(), 
-				Panorpa.dateFormat.format(tFrom), 
 				Panorpa.dateFormat.format(tTo)
 		};
 	}

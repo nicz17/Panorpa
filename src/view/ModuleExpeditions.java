@@ -33,9 +33,9 @@ public class ModuleExpeditions extends AbstractModule<Expedition> {
 	private EditorExpedition editor;
 	private MultiPhotoBox multiPhotoBox;
 	
-	protected final DatabaseTools.eOrdering eOrder[] = {DatabaseTools.eOrdering.BY_NAME, 
-			DatabaseTools.eOrdering.BY_LOCATION, DatabaseTools.eOrdering.BY_DATE, 
-			DatabaseTools.eOrdering.BY_DATE};
+	protected final DatabaseTools.eOrdering eOrder[] = {
+			DatabaseTools.eOrdering.BY_DATE, DatabaseTools.eOrdering.BY_NAME, 
+			DatabaseTools.eOrdering.BY_LOCATION, DatabaseTools.eOrdering.BY_DATE};
 
 	public ModuleExpeditions() {
 		super(2);
@@ -93,8 +93,8 @@ public class ModuleExpeditions extends AbstractModule<Expedition> {
 
 	@Override
 	protected void loadWidgets() {
-		initTable(new String[] {"Titre", "Lieu", "Début", "Fin"}, 
-				  new double[] {0.30, 0.20, 0.20, 0.20} );
+		initTable(new String[] {"Début", "Titre", "Lieu", "Fin"}, 
+				  new double[] {0.20, 0.30, 0.20, 0.20} );
 		
 	    editor = new EditorExpedition(cRight);
 		multiPhotoBox = new MultiPhotoBox(cRight);

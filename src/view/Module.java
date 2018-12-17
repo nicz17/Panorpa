@@ -18,8 +18,8 @@ public enum Module implements IsModule {
     PROBLEMS (ModuleProblems.class.getName(),     "Status",         "evolution-tasks"),
     STATS    (ModuleStats.class.getName(),        "Graphiques",     "stats"),
 //  ARCHIVE  (ModuleArchive.class.getName(),      "Archives raw",   "folder"),
-    PRESELECT(ModulePreselection.class.getName(), "Préselection",   "list"),
-    EXPEDITIONS(ModuleExpeditions.class.getName(), "Expéditions",   "edit")
+    PRESELECT(ModulePreselection.class.getName(), "Préselection",   "camera"),
+    EXPEDITIONS(ModuleExpeditions.class.getName(), "Expéditions",   "trekking")
     ;
 
 	private String moduleClass;

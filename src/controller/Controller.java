@@ -36,6 +36,15 @@ import controller.validation.LocationValidator;
 import controller.validation.PicValidator;
 import controller.validation.TaxonValidator;
 
+/**
+ * Main Controller Singleton class. 
+ * Acts as a link between database and GUI.
+ *
+ * <p><b>Modifications:</b>
+ * <ul>
+ * <li>30.09.2015: nicz - Creation</li>
+ * </ul>
+ */
 public class Controller {
 	
 	public static final String appPath      = "/home/nicz/Documents/HerbierApp/";
@@ -49,8 +58,10 @@ public class Controller {
 
 	private static final Logger log = new Logger("Controller", true);
 	
+	/** The singleton instance */
 	private static Controller instance;
 	
+	/** A list of listeners that are notified of updates in database */
 	private Vector<DataListener> vecDataListeners;
 	
 	private final TaxonValidator      taxonValidator;
@@ -118,6 +129,26 @@ public class Controller {
 	public Vector<Expedition> getExpeditions(eOrdering order, String filter) {
 		Vector<Expedition> vecExpeditions = DataAccess.getInstance().getExpeditions(null, order, filter);
 		return vecExpeditions;
+	}
+	
+	/**
+	 * Fetches the list of Expeditions for the specified location, sorted by date.
+	 * Loads the pictures of the expedition.
+	 * @param loc the location (may be null)
+	 * @return  alist of Expeditions, or null if Location is null.
+	 */
+	public Vector<Expedition> getExpeditions(Location loc) {
+		if (loc != null) {
+			String where = " WHERE expLocation = " + loc.getIdx();
+			Vector<Expedition> vecResult = DataAccess.getInstance().getExpeditions(where, eOrdering.BY_DATE, null);
+			
+			for (Expedition exp : vecResult) {
+				ExpeditionManager.getInstance().setExpeditionPics(exp);
+			}
+			
+			return vecResult;
+		}
+		return null;
 	}
 	
 	public Vector<Location> getLatestLocations(int nLatest) {

@@ -169,7 +169,7 @@ public class EditorPics extends AbstractEditor {
 			lblNameFr.setText(obj.getFrenchName());
 			txtRemark.setText(obj.getRemarks());
 			selLocation.setValue(obj.getLocation());
-			lblDate.setText(Panorpa.dateFormat.format(obj.getShotAt()));
+			lblDate.setText(Panorpa.dateTimeFormat.format(obj.getShotAt()));
 			lblFile.setText(obj.getFileName());
 			lblFamily.setText(obj.getClassification());
 			spiRating.setSelection(obj.getRating());

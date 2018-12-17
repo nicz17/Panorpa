@@ -16,6 +16,7 @@ import model.Location;
 import common.base.Logger;
 import common.io.HtmlComposite;
 
+import controller.Controller;
 import controller.ExpeditionManager;
 import controller.LocationCache;
 
@@ -104,8 +105,9 @@ public class LocationExporter extends BaseExporter {
 				", altitude " + (location.getAltitude() >= 700 ? "moyenne " : "") + location.getAltitude() + "m");
 		divDescription.addPar(location.getRegion() + ", " + location.getState());
 		
-		// TEST Expedition list
-		Vector<Expedition> vecExpeditions = ExpeditionManager.getInstance().buildExpeditions(location);
+		// Expedition list
+		//Vector<Expedition> vecExpeditions = ExpeditionManager.getInstance().buildExpeditions(location);
+		Vector<Expedition> vecExpeditions = Controller.getInstance().getExpeditions(location);
 		int nExpeditions = vecExpeditions.size();
 		if (nExpeditions > 0) {
 			HtmlComposite divExpeditions = addBoxDiv(main, "Expéditions");

@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -86,7 +87,12 @@ public class ExpeditionsExporter extends BaseExporter {
 		
 		List<HerbierPic> listPics = new ArrayList<>();
 		listPics.addAll(exp.getPics());
-		Collections.sort(listPics);
+		Collections.sort(listPics, new Comparator<HerbierPic>() {
+			@Override
+			public int compare(HerbierPic pic1, HerbierPic pic2) {
+				return (pic1.getShotAt().before(pic2.getShotAt()) ? -1 : 1);
+			}
+		});
 		
 		for (HerbierPic hpic : listPics) {
 			String name = hpic.getName();

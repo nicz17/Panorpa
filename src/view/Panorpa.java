@@ -1,6 +1,7 @@
 package view;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import org.eclipse.swt.SWT;
@@ -41,9 +42,11 @@ public class Panorpa extends AbstractMain {
 	 * The application version. 
 	 * Only increment before exporting a new jar.
 	 */
-	private static final String appVersion = "1.6.5";
+	private static final String appVersion = "1.6.6 DEV";
 
 	public static final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG, Locale.FRANCE);
+
+	public static final DateFormat dateTimeFormat = new SimpleDateFormat("dd MMMMM yyyy HH:mm:ss", Locale.FRENCH);
 
 	/** the singleton instance */
 	private static Panorpa instance;
