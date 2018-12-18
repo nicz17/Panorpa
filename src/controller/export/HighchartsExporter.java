@@ -32,21 +32,88 @@ public class HighchartsExporter extends BaseExporter {
 		head.addScript("https://code.jquery.com/jquery-3.1.1.min.js");
 		head.addScript("https://code.highcharts.com/highcharts.js");
 		head.addScript("https://code.highcharts.com/modules/exporting.js");
+		head.addScript("https://code.highcharts.com/modules/networkgraph.js");
 		
 		main.addTitle(1, "Graphiques");
 
-		HtmlComposite divChart = main.addDiv("chart-test");
-		divChart.setCssClass("highchart");
+		HtmlComposite table = main.addFillTable(2, "600px");
 		
-		JSONObject json = generateChart();
-		String script = "  Highcharts.chart('chart-test', " + json.toJSONString() + ");";
+		// Pie chart
+		HtmlComposite divPieChart = table.addTableData().addDiv("chart-pie");
+		divPieChart.setCssClass("highchart");
+		JSONObject json = generatePieChart();
+		String script = "  Highcharts.chart('chart-pie', " + json.toJSONString() + ");";
+		main.addDocumentReady(script);
+		
+		// Network chart
+		HtmlComposite divNetworkChart = table.addTableData().addDiv("chart-network");
+		divNetworkChart.setCssClass("highchart");
+		json = generateNetworkChart();
+		script = "  Highcharts.chart('chart-network', " + json.toJSONString() + ");";
 		main.addDocumentReady(script);
 		
 		page.saveAs(htmlPath + "charts.html");
 	}
+
+	@SuppressWarnings("unchecked")
+	private JSONObject generateNetworkChart() {
+		JSONObject json = new JSONObject();
+		
+		JSONObject jsonChart = new JSONObject();
+		jsonChart.put("type", "networkgraph");
+		json.put("chart", jsonChart);
+		
+		JSONObject jsonExporting = new JSONObject();
+		jsonExporting.put("enabled", false);
+		json.put("exporting", jsonExporting);
+		
+		JSONObject jsonTitle = new JSONObject();
+		json.put("title", jsonTitle);
+		
+		JSONObject jsonOptions = new JSONObject();
+		JSONObject jsonOptionsNetwork = new JSONObject();
+		JSONArray jsonKeys = new JSONArray();
+		jsonKeys.add("from");
+		jsonKeys.add("to");
+		jsonOptionsNetwork.put("keys", jsonKeys);
+		jsonOptions.put("networkgraph", jsonOptionsNetwork);
+		json.put("plotOptions", jsonOptions);
+		
+		JSONArray  jsonSeries = new JSONArray();
+		JSONObject jsonSerie = new JSONObject();
+		json.put("series", jsonSeries);
+		jsonSeries.add(jsonSerie);
+		JSONArray  jsonData = new JSONArray();
+		jsonSerie.put("name", "Taxons");
+		jsonSerie.put("data", jsonData);
+		
+		JSONObject jsonLabels = new JSONObject();
+		jsonLabels.put("enabled", true);
+		jsonSerie.put("dataLabels", jsonLabels);
+		
+		Taxon taxTop = TaxonCache.getInstance().getTaxon("Odonata");
+		if (taxTop != null) {
+			jsonTitle.put("text", "Groupe des " + taxTop.getNameFr());
+			addTaxon(taxTop, jsonData);
+		}
+		
+		return json;
+	}
 	
 	@SuppressWarnings("unchecked")
-	private JSONObject generateChart() {
+	private void addTaxon(Taxon taxon, JSONArray json) {
+		for (Taxon taxChild : taxon.getChildren()) {
+			JSONArray value = new JSONArray();
+			value.add(taxon.getName());
+			value.add(taxChild.getName());
+			json.add(value);
+			
+			addTaxon(taxChild, json);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private JSONObject generatePieChart() {
 		JSONObject json = new JSONObject();
 		
 		JSONObject jsonChart = new JSONObject();

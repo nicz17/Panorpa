@@ -20,7 +20,6 @@ import common.io.HtmlComposite;
 
 import controller.Controller;
 import controller.DataAccess;
-import controller.ExpeditionManager;
 import controller.PictureCache;
 import controller.TaxonCache;
 
@@ -158,12 +157,13 @@ public class HomePageExporter extends BaseExporter {
 		
 		// Latest expeditions
 		HtmlComposite divExpeditions = addBoxDiv(tdRight, "Expéditions récentes");
-		List<Expedition> vecExpeditions = ExpeditionManager.getInstance().getRecentExpeditions(nLatestLocations);
+		//List<Expedition> vecExpeditions = ExpeditionManager.getInstance().getRecentExpeditions(nLatestLocations);
+		List<Expedition> vecExpeditions = Controller.getInstance().getRecentExpeditions(nLatestLocations);
 		ul = divExpeditions.addList();
 		for (Expedition exp : vecExpeditions) {
 			HtmlComposite li = ul.addListItem();
-			String filename = "lieu" + exp.getLocation().getIdx() + ".html";
-			li.addLink(filename, exp.getLocation().getName(), exp.getLocation().getName());
+			String url = "journal.html#expedition" + exp.getIdx();
+			li.addLink(url, exp.getTitle(), exp.getTitle());
 			li.addText(" <font color='gray'>" + dateFormat.format(exp.getDateFrom()) + "</font>");
 		}
 		

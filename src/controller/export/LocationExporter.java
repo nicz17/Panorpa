@@ -117,8 +117,11 @@ public class LocationExporter extends BaseExporter {
 			} else {
 				HtmlComposite ul = divExpeditions.addList();
 				for (Expedition exp : vecExpeditions) {
-					ul.addListItem().addText(dateFormat.format(exp.getDateFrom()) + 
-							" <font color='gray'>(" + exp.getPics().size() + " photos)</font>");
+					String sAnchor = "#expedition" + exp.getIdx();
+					HtmlComposite li = ul.addListItem();
+					li.addLink("journal.html" + sAnchor, "Voir les notes de terrain", exp.getTitle());
+					li.addText(" &mdash; <font color='gray'>" + dateFormat.format(exp.getDateFrom()) + 
+							" (" + exp.getPics().size() + " photos)</font>");
 				}
 			}
 		}

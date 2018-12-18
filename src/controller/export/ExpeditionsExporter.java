@@ -72,7 +72,9 @@ public class ExpeditionsExporter extends BaseExporter {
 		
 		// write the expedition to a myBox div
 		Location loc = exp.getLocation();
-		HtmlComposite div = addBoxDiv(parent, exp.getTitle(), "myBox myBox-wide");
+		String sAnchor = "expedition" + exp.getIdx();
+		HtmlComposite anchor = parent.addAnchor(sAnchor);
+		HtmlComposite div = addBoxDiv(anchor, exp.getTitle(), "myBox myBox-wide");
 		HtmlComposite par = div.addPar();
 		String filename = "lieu" + loc.getIdx() + ".html";
 		par.addLink(filename, loc.getName(), loc.getName());

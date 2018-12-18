@@ -131,6 +131,18 @@ public class Controller {
 		return vecExpeditions;
 	}
 	
+	public Vector<Expedition> getRecentExpeditions(int nMax) {
+		Vector<Expedition> vecResult = new Vector<>();
+		Vector<Expedition> vecAll = DataAccess.getInstance().getExpeditions(null, eOrdering.BY_DATE, null);
+		vecResult.addAll(vecAll.subList(0, Math.min(nMax, vecAll.size())));
+		
+		for (Expedition exp : vecResult) {
+			ExpeditionManager.getInstance().setExpeditionPics(exp);
+		}
+		
+		return vecResult;
+	}
+	
 	/**
 	 * Fetches the list of Expeditions for the specified location, sorted by date.
 	 * Loads the pictures of the expedition.
