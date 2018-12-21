@@ -128,6 +128,11 @@ public class Controller {
 	
 	public Vector<Expedition> getExpeditions(eOrdering order, String filter) {
 		Vector<Expedition> vecExpeditions = DataAccess.getInstance().getExpeditions(null, order, filter);
+		
+		for (Expedition exp : vecExpeditions) {
+			ExpeditionManager.getInstance().setExpeditionPics(exp);
+		}
+		
 		return vecExpeditions;
 	}
 	

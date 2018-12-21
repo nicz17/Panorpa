@@ -2,6 +2,7 @@ package view;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import model.Expedition;
 import model.Location;
@@ -12,7 +13,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
+import common.base.Logger;
 import common.exceptions.ValidationException;
+import common.view.DateTimeSelector;
+import common.view.DateTimeSelector.DateTimeSelectionListener;
 import common.view.MessageBox;
 
 import view.base.AbstractEditor;
@@ -27,10 +31,12 @@ import controller.Controller;
 public class EditorExpedition extends AbstractEditor {
 	
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	private static final Logger log = new Logger("EditorExpedition");
 	
 	private Text txtTitle, txtNotes;
 	private LocationSelector selLocation;
-	private Label lblDateFrom, lblDateTo;
+	private DateTimeSelector dtsDateFrom;
+	private DateTimeSelector dtsDateTo;
 	private Label lblNPics;
 	
 	private Expedition theObject;
@@ -59,10 +65,22 @@ public class EditorExpedition extends AbstractEditor {
 		selLocation = new LocationSelector("LocationSelector", cMain, false, modifListener);
 
 		widgetsFactory.createLabel(cMain, "Début");
-		lblDateFrom = widgetsFactory.createLabel(cMain, 250);
+		dtsDateFrom = new DateTimeSelector(cMain, dateFormat);
+		dtsDateFrom.addSelectionListener(new DateTimeSelectionListener() {
+			@Override
+			public void onSelectionChange(Date tNewDate) {
+				enableWidgets(true);
+			}
+		});
 
 		widgetsFactory.createLabel(cMain, "Fin");
-		lblDateTo = widgetsFactory.createLabel(cMain, 250);
+		dtsDateTo = new DateTimeSelector(cMain, dateFormat);
+		dtsDateTo.addSelectionListener(new DateTimeSelectionListener() {
+			@Override
+			public void onSelectionChange(Date tNewDate) {
+				enableWidgets(true);
+			}
+		});
 
 		widgetsFactory.createLabel(cMain, "Photos");
 		lblNPics = widgetsFactory.createLabel(cMain, 250);
@@ -81,6 +99,8 @@ public class EditorExpedition extends AbstractEditor {
 		theObject.setTitle(txtTitle.getText());
 		theObject.setNotes(txtNotes.getText());
 		theObject.setLocation(selLocation.getValue());
+		theObject.setFrom(dtsDateFrom.getSelection());
+		theObject.setTo(dtsDateTo.getSelection());
 		
 		try {
 			Controller.getInstance().saveExpedition(theObject);
@@ -108,6 +128,13 @@ public class EditorExpedition extends AbstractEditor {
 		if (!txtTitle.getText().equals(theObject.getTitle())) return true;
 		if (!txtNotes.getText().equals(theObject.getNotes())) return true;
 		if (selLocation.hasUnsavedData(theObject.getLocation())) return true;
+		if (theObject.getDateFrom().getTime() != dtsDateFrom.getTimeMs()) {
+			log.info("Unsaved tFrom: object has " + dateFormat.format(theObject.getDateFrom()) + 
+					" dateSelector has " + 
+					(dtsDateFrom.getSelection() == null ? "null" : dateFormat.format(dtsDateFrom.getSelection())));
+			return true;
+		}
+		if (theObject.getDateTo().getTime() != dtsDateTo.getTimeMs()) return true;
 		return false;
 	}
 
@@ -121,8 +148,8 @@ public class EditorExpedition extends AbstractEditor {
 			txtTitle.setText(obj.getTitle());
 			txtNotes.setText(obj.getNotes());
 			selLocation.setValue(obj.getLocation());
-			lblDateFrom.setText(obj.getDateFrom() == null ? "-" : dateFormat.format(obj.getDateFrom()));
-			lblDateTo.setText(obj.getDateTo() == null ? "-" : dateFormat.format(obj.getDateTo()));
+			dtsDateFrom.setSelection(obj.getDateFrom());
+			dtsDateTo.setSelection(obj.getDateTo());
 			lblNPics.setText(String.valueOf(obj.getPics().size()));
 			enableWidgets(true);
 		} else {
@@ -130,9 +157,9 @@ public class EditorExpedition extends AbstractEditor {
 			txtTitle.setText("");
 			txtNotes.setText("");
 			selLocation.clearDisplay();
-			lblDateFrom.setText("");
-			lblDateTo.setText("");
 			lblNPics.setText("");
+			dtsDateFrom.setSelection(null);
+			dtsDateTo.setSelection(null);
 			enableWidgets(false);
 		}
 	}

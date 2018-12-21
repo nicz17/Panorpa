@@ -104,6 +104,8 @@ public class ModuleExpeditions extends AbstractModule<Expedition> {
 	    		showObjects();
 	    	}
 	    };
+	    
+	    btnNew.setToolTipText("Ajouter les expédition du lieu par défaut");
 		
 		Controller.getInstance().addDataListener(this);
 

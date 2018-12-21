@@ -1,5 +1,7 @@
 package controller.validation;
 
+import java.util.Date;
+
 import common.exceptions.ValidationException;
 
 import model.Expedition;
@@ -19,16 +21,31 @@ public class ExpeditionValidator extends Validator<Expedition> {
 	@Override
 	public void validateSave(Expedition obj) throws ValidationException {
 		if (obj == null) {
-			onError("Impossible d'enregistrer un lieu indéfini !");
+			onError("Impossible d'enregistrer un objet indéfini !");
 		}
 		
 		String sTitle = obj.getTitle();
 		if (sTitle == null || sTitle.isEmpty()) {
-			onError("Titre d'expédition invalide : " + obj);
+			onError("Titre d'expédition invalide !");
+		}
+		
+		if (obj.getDateFrom() == null) {
+			onError("Date de début invalide !");
+		}
+		if (obj.getDateTo() == null) {
+			onError("Date de fin invalide !");
 		}
 
 		if (!obj.getDateTo().after(obj.getDateFrom())) {
-			onError("Intervalle de temps invalide : " + obj);
+			onError("Intervalle de temps invalide ! \nLa date de début est après la date de fin.");
+		}
+		
+		Date tNow = new Date();
+		if (obj.getDateFrom().after(tNow)) {
+			onError("La date de début est dans le futur !");
+		}
+		if (obj.getDateTo().after(tNow)) {
+			onError("La date de fin est dans le futur !");
 		}
 	}
 
