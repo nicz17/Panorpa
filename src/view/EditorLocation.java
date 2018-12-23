@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Text;
 import view.base.AbstractEditor;
 
 import common.exceptions.ValidationException;
+import common.view.LonLatZoomSelector;
+import common.view.LonLatZoomSelector.LonLatZoomSelectionListener;
 import common.view.MessageBox;
 
 import controller.Controller;
@@ -24,9 +26,9 @@ import controller.Controller;
  */
 public class EditorLocation extends AbstractEditor {
 	private Text txtName, txtDesc, txtKind, txtRegion, txtTown, txtState;
-	//private Label lblName;
 	private Spinner spiAltitude;
 	private Button btnDefaultLocation;
+	private LonLatZoomSelector selMapCoords;
 	
 	private Location theObject;
 	
@@ -55,6 +57,15 @@ public class EditorLocation extends AbstractEditor {
 		widgetsFactory.createLabel(cMain, "Altitude (m)");
 		spiAltitude = widgetsFactory.createSpinner(cMain, 0, 9000, 100, modifListener);
 		
+		widgetsFactory.createLabel(cMain, "Carte");
+		selMapCoords = new LonLatZoomSelector(cMain);
+		selMapCoords.addSelectionListener(new LonLatZoomSelectionListener() {
+			@Override
+			public void onSelectionChange() {
+				enableWidgets(true);
+			}
+		});
+		
 		btnDefaultLocation = widgetsFactory.createPushButton(
 	    		cButtons, "Lieu par défaut", "star", 
 	    		"Définir comme lieu par défault pour les nouvelles photos",
@@ -63,7 +74,6 @@ public class EditorLocation extends AbstractEditor {
 				Controller.getInstance().setDefaultLocation(theObject);
 			}
 		});
-		
 
 		Controller.getInstance().addDataListener(this);
 	}
@@ -82,6 +92,9 @@ public class EditorLocation extends AbstractEditor {
 		theObject.setRegion(txtRegion.getText());
 		theObject.setState(txtState.getText());
 		theObject.setAltitude(spiAltitude.getSelection());
+		theObject.setLongitude(selMapCoords.getLongitude());
+		theObject.setLatitude(selMapCoords.getLatitude());
+		theObject.setMapZoom(selMapCoords.getZoom());
 		
 		try {
 			Controller.getInstance().saveLocation(theObject);
@@ -113,6 +126,16 @@ public class EditorLocation extends AbstractEditor {
 		if (!txtRegion.getText().equals(theObject.getRegion())) return true;
 		if (!txtState.getText().equals(theObject.getState())) return true;
 		if (spiAltitude.getSelection() != theObject.getAltitude()) return true;
+		if (selMapCoords.getZoom() != theObject.getMapZoom()) return true;
+		if (selMapCoords.getLongitude() != null && selMapCoords.getLatitude() != null) {
+			if (theObject.getLongitude() == null || theObject.getLatitude() == null) {
+				return true;
+			} else if (selMapCoords.getLongitude().doubleValue() != theObject.getLongitude().doubleValue()) {
+				return true;
+			} else if (selMapCoords.getLatitude().doubleValue() != theObject.getLatitude().doubleValue()) {
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -130,6 +153,7 @@ public class EditorLocation extends AbstractEditor {
 			txtState.setText(obj.getState());
 			txtKind.setText(obj.getKind());
 			spiAltitude.setSelection(obj.getAltitude());
+			selMapCoords.setSelection(obj.getLongitude(), obj.getLatitude(), obj.getMapZoom());
 			btnDefaultLocation.setEnabled(true);
 			enableWidgets(true);
 		} else {
@@ -141,6 +165,7 @@ public class EditorLocation extends AbstractEditor {
 			txtRegion.setText("");
 			txtState.setText("");
 			spiAltitude.setSelection(0);
+			selMapCoords.clear();
 			btnDefaultLocation.setEnabled(false);
 			enableWidgets(false);
 		}

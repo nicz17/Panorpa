@@ -55,7 +55,7 @@ public class Location extends DataObject implements Comparable<Location> {
 		newObj.setAltitude(500);
 		newObj.setState("Suisse");
 		newObj.setRegion("Vaud");
-		newObj.setLongitude(new Double(7.1));
+		newObj.setLongitude(new Double(6.7));
 		newObj.setLatitude(new Double(46.5));
 		return newObj;
 	}
