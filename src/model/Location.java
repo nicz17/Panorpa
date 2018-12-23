@@ -7,13 +7,15 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import common.data.HasMapCoordinates;
+
 /**
  * A geographical location
  * 
  * @author nicz
  *
  */
-public class Location extends DataObject implements Comparable<Location> {
+public class Location extends DataObject implements HasMapCoordinates, Comparable<Location> {
 	
 	private int idx;
 	private String name;
@@ -117,6 +119,7 @@ public class Location extends DataObject implements Comparable<Location> {
 		this.level = AltitudeLevel.getFromAltitude(altitude);
 	}
 	
+	@Override
 	public int getMapZoom() {
 		return iMapZoom;
 	}
@@ -125,6 +128,7 @@ public class Location extends DataObject implements Comparable<Location> {
 		this.iMapZoom = iMapZoom;
 	}
 
+	@Override
 	public Double getLongitude() {
 		return dLongitude;
 	}
@@ -133,6 +137,7 @@ public class Location extends DataObject implements Comparable<Location> {
 		this.dLongitude = dLongitude;
 	}
 
+	@Override
 	public Double getLatitude() {
 		return dLatitude;
 	}
@@ -209,5 +214,17 @@ public class Location extends DataObject implements Comparable<Location> {
 	@Override
 	public int compareTo(Location loc) {
 		return name.compareTo(loc.getName());
+	}
+
+	@Override
+	public Double getDistance(HasMapCoordinates objTo) {
+		if (getLongitude() != null && getLatitude() != null && 
+			objTo != null && objTo.getLongitude() != null && objTo.getLatitude() != null) {
+			double dx = (getLongitude().doubleValue() - objTo.getLongitude().doubleValue());
+			double dy = (getLatitude().doubleValue()  - objTo.getLatitude().doubleValue());
+			double ds = Math.sqrt(dx*dx + dy*dy);
+			return ds;
+		}
+		return null;
 	}
 }

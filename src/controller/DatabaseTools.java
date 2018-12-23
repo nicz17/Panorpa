@@ -180,7 +180,8 @@ public class DatabaseTools {
 	 */
 	public static String toSQLDouble(Double dVal) {
 		if (dVal != null) {
-			return String.valueOf(dVal.doubleValue());
+			//return String.valueOf(dVal.doubleValue());
+			return String.format("%.6f", dVal.doubleValue());
 		}
 		return "null";
 	}

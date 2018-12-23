@@ -153,7 +153,7 @@ public class EditorLocation extends AbstractEditor {
 			txtState.setText(obj.getState());
 			txtKind.setText(obj.getKind());
 			spiAltitude.setSelection(obj.getAltitude());
-			selMapCoords.setSelection(obj.getLongitude(), obj.getLatitude(), obj.getMapZoom());
+			selMapCoords.setSelection(obj);
 			btnDefaultLocation.setEnabled(true);
 			enableWidgets(true);
 		} else {
