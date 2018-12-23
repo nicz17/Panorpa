@@ -173,6 +173,19 @@ public class DatabaseTools {
 	}
 	
 	/**
+	 * Writes the specified Double value, which may be null,
+	 * as an SQL compatible string.
+	 * @param dVal  the value to express as SQL
+	 * @return the converted string or "null"
+	 */
+	public static String toSQLDouble(Double dVal) {
+		if (dVal != null) {
+			return String.valueOf(dVal.doubleValue());
+		}
+		return "null";
+	}
+	
+	/**
 	 * Formats the specified date for SQL, with '' around it.
 	 * Does not format the time.
 	 * @param date  the date to format (may be null)

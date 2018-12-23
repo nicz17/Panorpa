@@ -93,6 +93,9 @@ public class DataObjectFactory {
 		obj.setRegion(rs.getString("locRegion"));
 		obj.setState(rs.getString("locState"));
 		obj.setAltitude(rs.getInt("locAltitude"));
+		obj.setMapZoom(rs.getInt("locMapZoom"));
+		obj.setLongitude(rs.getDouble("locLongitude"));
+		obj.setLatitude(rs.getDouble("locLatitude"));
 		return obj;
 	}
 	

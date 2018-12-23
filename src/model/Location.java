@@ -23,6 +23,10 @@ public class Location extends DataObject implements Comparable<Location> {
 	private String region;
 	private String state;
 	private int altitude;
+	private int iMapZoom;
+	private Double dLongitude;
+	private Double dLatitude;
+	
 	private AltitudeLevel level;
 	private Date dateFirstPic;
 	
@@ -32,6 +36,9 @@ public class Location extends DataObject implements Comparable<Location> {
 		this.idx = idx;
 		this.name = name;
 		this.altitude = 0;
+		this.iMapZoom = 14;
+		this.dLongitude = null;
+		this.dLatitude  = null;
 		
 		this.pics = new TreeSet<>();
 		this.dateFirstPic = null;
@@ -48,6 +55,8 @@ public class Location extends DataObject implements Comparable<Location> {
 		newObj.setAltitude(500);
 		newObj.setState("Suisse");
 		newObj.setRegion("Vaud");
+		newObj.setLongitude(new Double(7.1));
+		newObj.setLatitude(new Double(46.5));
 		return newObj;
 	}
 	
@@ -108,6 +117,30 @@ public class Location extends DataObject implements Comparable<Location> {
 		this.level = AltitudeLevel.getFromAltitude(altitude);
 	}
 	
+	public int getMapZoom() {
+		return iMapZoom;
+	}
+
+	public void setMapZoom(int iMapZoom) {
+		this.iMapZoom = iMapZoom;
+	}
+
+	public Double getLongitude() {
+		return dLongitude;
+	}
+
+	public void setLongitude(Double dLongitude) {
+		this.dLongitude = dLongitude;
+	}
+
+	public Double getLatitude() {
+		return dLatitude;
+	}
+
+	public void setLatitude(Double dLatitude) {
+		this.dLatitude = dLatitude;
+	}
+
 	public AltitudeLevel getAltitudeLevel() {
 		return level;
 	}

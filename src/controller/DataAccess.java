@@ -369,15 +369,19 @@ public class DataAccess {
 				// update existing
 				String query = String.format("UPDATE Location SET locName = %s, " +
 						"locDesc = %s, locKind = %s, locTown = %s, locRegion = %s, locState = %s, " +
-						"locAltitude = %d " +
+						"locAltitude = %d, locLongitude = %s, locLatitude = %s, locMapZoom = %d " +
 						"WHERE idxLocation = %d", 
 						DatabaseTools.toSQLstring(obj.getName()), 
 						DatabaseTools.toSQLstring(obj.getDescription()),
 						DatabaseTools.toSQLstring(obj.getKind()), 
 						DatabaseTools.toSQLstring(obj.getTown()), 
 						DatabaseTools.toSQLstring(obj.getRegion()), 
-						DatabaseTools.toSQLstring(obj.getState()), 
-						obj.getAltitude(), obj.getIdx() );
+						DatabaseTools.toSQLstring(obj.getState()),
+						obj.getAltitude(), 
+						DatabaseTools.toSQLDouble(obj.getLongitude()),
+						DatabaseTools.toSQLDouble(obj.getLatitude()),
+						obj.getMapZoom(),
+						obj.getIdx() );
 				log.debug("SQL: " + query);
 				stmt.execute(query);
 				idx = obj.getIdx();
@@ -385,15 +389,19 @@ public class DataAccess {
 				// create new
 				String query = String.format("INSERT INTO Location " +
 						"(idxLocation, locName, locDesc, locKind, locTown, " +
-						"locRegion, locState, locAltitude) " +
-						"VALUES (null, %s, %s, %s, %s, %s, %s, %d )", 
+						"locRegion, locState, locAltitude, " +
+						"locLongitude, locLatitude, locMapZoom) " +
+						"VALUES (null, %s, %s, %s, %s, %s, %s, %d, %s, %s, %d)", 
 						DatabaseTools.toSQLstring(obj.getName()), 
 						DatabaseTools.toSQLstring(obj.getDescription()),
 						DatabaseTools.toSQLstring(obj.getKind()), 
 						DatabaseTools.toSQLstring(obj.getTown()), 
 						DatabaseTools.toSQLstring(obj.getRegion()), 
 						DatabaseTools.toSQLstring(obj.getState()), 
-						obj.getAltitude());
+						obj.getAltitude(), 
+						DatabaseTools.toSQLDouble(obj.getLongitude()),
+						DatabaseTools.toSQLDouble(obj.getLatitude()),
+						obj.getMapZoom());
 				log.debug("SQL: " + query);
 				stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
 				
