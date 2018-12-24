@@ -38,6 +38,9 @@ public class LocationExporter extends BaseExporter {
 		createLocationsPage();
 	}
 	
+	/**
+	 * Creates an HTML page with links to all locations.
+	 */
 	private void createLocationsPage() {
 		HtmlPage page = new HtmlPage("Nature - Lieux");
 		HtmlComposite main = page.getMainDiv();
@@ -92,9 +95,15 @@ public class LocationExporter extends BaseExporter {
 		page.saveAs(htmlPath + "lieux.html");
 	}
 	
-	
+	/**
+	 * Creates an HTML page for the specified location.
+	 * <p>The page displays the location description and details,
+	 * and its observations.
+	 * 
+	 * @param location  the location to export as HTML
+	 */
 	private void createLocationPage(Location location) {
-		HtmlPage page = new HtmlPage("Nature - " + location.getName());
+		HtmlPage page = new HtmlPage("Nature &mdash; " + location.getName());
 		HtmlComposite main = page.getMainDiv();
 		
 		main.addTitle(1, location.getName());
@@ -104,6 +113,8 @@ public class LocationExporter extends BaseExporter {
 		divDescription.addPar(location.getAltitudeLevel().getLabel() + 
 				", altitude " + (location.getAltitude() >= 700 ? "moyenne " : "") + location.getAltitude() + "m");
 		divDescription.addPar(location.getRegion() + ", " + location.getState());
+		
+		addOpenStreetMap(location, page);
 		
 		// Expedition list
 		//Vector<Expedition> vecExpeditions = ExpeditionManager.getInstance().buildExpeditions(location);
@@ -141,6 +152,38 @@ public class LocationExporter extends BaseExporter {
 		
 		String filename = "lieu" + location.getIdx() + ".html";
 		page.saveAs(htmlPath + filename);
+	}
+	
+	/**
+	 * Adds a geographical map for the specified location if possible.
+	 * To enable the map, the location must have valid coordinates.
+	 * 
+	 * @param loc   the location to display on the map
+	 * @param page  the HTML page to which to add a map
+	 */
+	private void addOpenStreetMap(Location loc, HtmlPage page) {
+		// Check the location has valid map coords
+		Location locNullIsland = new Location(0, "Null Island");
+		locNullIsland.setLongitude(0.0);
+		locNullIsland.setLatitude(0.0);
+		locNullIsland.setMapZoom(5);
+		Double dDistance = loc.getDistance(locNullIsland);
+		boolean bValidCoords = (dDistance != null && dDistance.doubleValue() > 0.1);
+		
+		if (bValidCoords) {
+			// Add headers and a map div
+			page.getHead().addScript("https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js");
+			page.getHead().addScript("js/panorpa-maps.js");
+			page.getHead().addCss("https://openlayers.org/en/v5.3.0/css/ol.css");
+			page.getMainDiv().addDiv("ol-map").setCssClass("ol-map");
+			
+			// Call map rendering Javascript code
+			String sRenderMap = String.format("renderMap(%.6f, %.6f, %d)", 
+					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getMapZoom());
+			page.getMainDiv().addTag("script").addText(sRenderMap);
+		} else {
+			log.info("Can't add map for location " + loc + ": distance to Null Island is " + dDistance);
+		}
 	}
 
 }
