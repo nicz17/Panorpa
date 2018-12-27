@@ -219,21 +219,6 @@ public class WebsiteExporter extends BaseExporter {
 				
 				exportTaxon(taxon, prevTaxon, nextTaxon);
 			}
-			
-//			for (HerbierPic hpic : tsFamilyPics) {
-//				HerbierPic hpicPrev = tsFamilyPics.lower(hpic);
-//				if (hpicPrev == null) {
-//					hpicPrev = tsFamilyPics.last();
-//				}
-//				
-//				HerbierPic hpicNext = tsFamilyPics.higher(hpic);
-//				if (hpicNext == null) {
-//					hpicNext = tsFamilyPics.first();
-//				}
-//				
-//				exportPicture(hpic, table);
-//				//createPicturePage(hpic, hpicPrev, hpicNext);
-//			}
 		}
 		
 		// Go back to phylum
@@ -444,21 +429,32 @@ public class WebsiteExporter extends BaseExporter {
 		ul.addListItem().addLinkExternal("http://www.pronatura-vd.ch/nos_reserves", "Réserves Pro Natura Vaud");
 		ul.addListItem().addLinkExternal("http://www.arocha.ch/fr/projects/aide-entretien-pps/", "A Rocha - entretien de prairies sèches");
 		ul.addListItem().addLinkExternal("http://www.ornitho.ch/index.php?m_id=1", "Plate-forme ornithologique suisse");
+		ul.addListItem().addLinkExternal("https://www.thunderforest.com/", "Cartes par Thunderforest et OpenLayers");
 		
 		// Bibliographie
 		main.addTitle(1, "Bibliographie");
 		HtmlComposite biblio = main.addList();
-		biblio.addListItem().addText("P. Leraut, P. Blanchot : Le guide entomologique, Delachaux et Niestlé, 2012");
-		biblio.addListItem().addText("R. Dajoz : Dictionnaire d'entomologie, Lavoisier, 2010");
-		biblio.addListItem().addText("D. Martiré : Guide des plus beaux coléoptères, Belin, 2017");
-		biblio.addListItem().addText("K. Dijkstra : Guide des libellules, Delachaux et Niestlé, 2015");
-		biblio.addListItem().addText("A. Canard, C. Rollard : A la découverte des araignées, Dunod, 2015");
-		biblio.addListItem().addText("K. Lauber, G. Wagner, A. Gygax : Flora Helvetica, 4e édition, Haupt, 2012");
-		biblio.addListItem().addText("E. Gerber, G. Kozlowski, A.-S. Mariéthoz : La flore des Préalpes, Rossolis, 2010");
-		biblio.addListItem().addText("F. Dupont, J.-L. Guignard : Botanique, les familles de plantes, 15e édition, Elsevier Masson, 2012");
-		biblio.addListItem().addText("Collectif : Les guides Salamandre, Editions de la Salamandre, Neuchâtel");
+		addBiblioRef(biblio, "P. Leraut, P. Blanchot", "Le guide entomologique", "Delachaux et Niestlé", "2012");
+		addBiblioRef(biblio, "R. Dajoz", "Dictionnaire d'entomologie", "Lavoisier", "2010");
+		addBiblioRef(biblio, "D. Martiré", "Guide des plus beaux coléoptères", "Belin", "2017");
+		addBiblioRef(biblio, "K. Dijkstra", "Guide des libellules", "Delachaux et Niestlé", "2015");
+		addBiblioRef(biblio, "T. Haahtela <i>et al</i>", "Guide photo des papillons d'Europe", "Delachaux et Niestlé", "2017");
+		addBiblioRef(biblio, "R. Garrouste", "Hémiptères de France", "Delachaux et Niestlé", "2015");
+		addBiblioRef(biblio, "A. Canard, C. Rollard", "A la découverte des araignées", "Dunod", "2015");
+		addBiblioRef(biblio, "K. Lauber, G. Wagner, A. Gygax", "Flora Helvetica", "4e édition, Haupt", "2012");
+		addBiblioRef(biblio, "E. Gerber, G. Kozlowski, A.-S. Mariéthoz", "La flore des Préalpes", "Rossolis", "2010");
+		addBiblioRef(biblio, "F. Dupont, J.-L. Guignard", "Botanique, les familles de plantes", "15e édition, Elsevier Masson", "2012");
+		addBiblioRef(biblio, "Collectif", "Les guides Salamandre", "Editions de la Salamandre, Neuchâtel", null);
 		
 		linksPage.saveAs(htmlPath + "liens.html");
+	}
+	
+	private void addBiblioRef(HtmlComposite biblio, String sAuthors, String sTitle, String sEditor, String sYear) {
+		String sRef = sAuthors + " : <b>" + sTitle + "</b>, " + sEditor;
+		if (sYear != null && !sYear.isEmpty()) {
+			sRef += ", <font color='grey'>" + sYear + "</font>";
+		}
+		biblio.addListItem().addText(sRef);
 	}
 	
 	
@@ -499,53 +495,6 @@ public class WebsiteExporter extends BaseExporter {
 				taxon.getName());
 		menuDiv.addBr();
 	}
-
-	/*
-	private String getWikipage(HerbierPic hpic) {
-		String specie   = hpic.getSpecie();
-		String wikiPage = specie;
-		if (specie == null || specie.isEmpty() || specie.endsWith(" sp")) {
-			String genus = hpic.getGenus();
-			if (genus == null || genus.isEmpty()) {
-				wikiPage = hpic.getFamily();
-			} else {
-				wikiPage = genus;
-			}
-		}
-		return wikiPage;
-	}
-	*/
-
-//	/**
-//	 * Checks if the specified taxon is a sparse phylum,
-//	 * i.e. it has more than one class, and each class has only 1 order.
-//	 * Such phyla may benefit from a more compact html layout.
-//	 * 
-//	 * @deprecated
-//	 * @param phylum  the phylum to check
-//	 * @return  true if taxon is a sparse phylum
-//	 */
-//	private boolean isSparsePhylum(Taxon phylum) {
-//		if (phylum == null) {
-//			return false;
-//		}
-//		
-//		if (TaxonRank.PHYLUM != phylum.getRank()) {
-//			return false;
-//		}
-//		
-//		if (phylum.getChildren().size() < 2) {
-//			return false;
-//		}
-//		
-//		for (Taxon taxClass : phylum.getChildren()) {
-//			if (taxClass.getChildren().size() > 1) {
-//				return false;
-//			}
-//		}
-//		
-//		return true;
-//	}
 	
 	private void exportJsonTree() {
 		//Collection<Taxon> taxa = TaxonCache.getInstance().getAll();
