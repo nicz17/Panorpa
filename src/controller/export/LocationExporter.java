@@ -14,6 +14,7 @@ import model.HerbierPic;
 import model.Location;
 
 import common.base.Logger;
+import common.data.HasMapCoordinates;
 import common.io.HtmlComposite;
 
 import controller.Controller;
@@ -30,6 +31,9 @@ public class LocationExporter extends BaseExporter {
 
 	private static final Logger log = new Logger("LocationExporter", true);
 	
+	/** The max distance for neighbouring locations */
+	private static final double dDistanceMax = 1.0;
+	
 	public LocationExporter() {
 	}
 	
@@ -44,13 +48,13 @@ public class LocationExporter extends BaseExporter {
 	 */
 	private void createLocationsPage() {
 		HtmlPage page = new HtmlPage("Nature - Lieux");
-		page.getHead().addScript("https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js");
-		page.getHead().addScript("js/panorpa-maps.js");
-		page.getHead().addCss("https://openlayers.org/en/v5.3.0/css/ol.css");
+		addOpenLayersHeaders(page);
 		
 		HtmlComposite main = page.getMainDiv();	
 		main.addTitle(1, "Lieux");
-		main.addDiv("ol-map").setCssClass("ol-map");
+		HtmlComposite divMap = main.addDiv("ol-map");
+		divMap.setCssClass("ol-map");
+		divMap.addDiv("ol-popup");
 		
 		// Call map rendering Javascript code
 		String sRenderMap = "var oVectorSource, oIconStyle;\n" +
@@ -100,8 +104,10 @@ public class LocationExporter extends BaseExporter {
 				String filename = "lieu" + location.getIdx() + ".html";
 				li.addLink(filename, location.getName(), location.getName());
 				
-				sRenderMap += String.format("addMapMarker(%.6f, %.6f, \"%s\");\n", 
-						location.getLongitude().doubleValue(), location.getLatitude().doubleValue(), location.getName());
+				if (location.getLongitude() != null && location.getLatitude() != null) {
+					sRenderMap += String.format("addMapMarker(%.6f, %.6f, \"%s\", '%s');\n", 
+						location.getLongitude().doubleValue(), location.getLatitude().doubleValue(), location.getName(), filename);
+				}
 				
 				createLocationPage(location);
 			}
@@ -128,9 +134,6 @@ public class LocationExporter extends BaseExporter {
 		tableTop.setCssClass("align-top");
 		HtmlComposite tdLeft = tableTop.addTableData();
 		HtmlComposite tdRight = tableTop.addTableData();
-		
-		// OpenStreetMap
-		addOpenStreetMap(location, page, tdLeft);
 
 		// Description
 		HtmlComposite divDescription = addBoxDiv(tdRight, "Description", "myBox");
@@ -168,8 +171,19 @@ public class LocationExporter extends BaseExporter {
 				HtmlComposite li = ul.addListItem();
 				String filename = "lieu" + locNeighbor.getIdx() + ".html";
 				li.addLink(filename, locNeighbor.getName(), locNeighbor.getName());
+				double dDistance = getDistanceKm(location, locNeighbor);
+				String sDistance = String.format(" à %.3f km", dDistance);
+				if (dDistance < 1.0) {
+					sDistance = String.format(" à %d m", (int)(1000.0 * dDistance));
+				}
+				li.addText(sDistance);
 			}
+		} else {
+			divNeighbors.addPar("<font color='grey'>Pas encore de lieux dans le voisinage.</font>");
 		}
+		
+		// OpenStreetMap
+		addOpenStreetMap(location, page, tdLeft, listNeighbors);
 		
 		final Set<HerbierPic> tsPics = location.getPics();
 		int nPics = tsPics.size();
@@ -194,7 +208,7 @@ public class LocationExporter extends BaseExporter {
 	 * @param loc   the location to display on the map
 	 * @param page  the HTML page to which to add a map
 	 */
-	private void addOpenStreetMap(Location loc, HtmlPage page, HtmlComposite parent) {
+	private void addOpenStreetMap(Location loc, HtmlPage page, HtmlComposite parent, List<Location> listNeighbors) {
 		// Check the location has valid map coords
 		Location locNullIsland = new Location(0, "Null Island");
 		locNullIsland.setLongitude(0.0);
@@ -205,18 +219,26 @@ public class LocationExporter extends BaseExporter {
 		
 		if (bValidCoords) {
 			// Add headers and a map div
-			page.getHead().addScript("https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js");
-			page.getHead().addScript("js/panorpa-maps.js");
-			page.getHead().addCss("https://openlayers.org/en/v5.3.0/css/ol.css");
-			parent.addDiv("ol-map").setCssClass("ol-map");
+			addOpenLayersHeaders(page);
+			HtmlComposite divMap = parent.addDiv("ol-map");
+			divMap.setCssClass("ol-map");
+			divMap.addDiv("ol-popup");
 			
 			// Call map rendering Javascript code
-
 			String sRenderMap = "var oVectorSource, oIconStyle;\n" +
 				String.format("renderMap(%.6f, %.6f, %d);\n", 
 					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getMapZoom()) +
 				String.format("addMapMarker(%.6f, %.6f, \"%s\");", 
 					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getName());
+
+			// Add markers for neighbor locations, with links
+			for (Location locNeighbor : listNeighbors) {
+				String sUrl = "lieu" + locNeighbor.getIdx() + ".html";
+				sRenderMap += String.format("addMapMarker(%.6f, %.6f, \"%s\", '%s');\n", 
+					locNeighbor.getLongitude().doubleValue(), locNeighbor.getLatitude().doubleValue(), 
+					locNeighbor.getName(), sUrl);
+			}
+			
 			page.getMainDiv().addJavascript(sRenderMap);
 		} else {
 			log.info("Can't add map for location " + loc + ": distance to Null Island is " + dDistance);
@@ -231,9 +253,21 @@ public class LocationExporter extends BaseExporter {
 	 * @return  a list of locations sorted by growing distance
 	 */
 	private List<Location> getClosestLocations(final Location locFrom, int iMax) {
+		// Get all locations from cache, remove locFrom
 		List<Location> locations = new ArrayList<>(LocationCache.getInstance().getAll());
 		locations.remove(locFrom);
-		Collections.sort(locations, new Comparator<Location>() {
+		
+		// Keep only close neighbors
+		List<Location> listNeighbors = new ArrayList<>();
+		for (Location loc : locations) {
+			Double dDistance = locFrom.getDistance(loc);
+			if (dDistance != null && dDistance.doubleValue() < dDistanceMax) {
+				listNeighbors.add(loc);
+			}
+		}
+		
+		// Sort by distance, closest first
+		Collections.sort(listNeighbors, new Comparator<Location>() {
 			@Override
 			public int compare(Location loc1, Location loc2) {
 				Double dDist1 = locFrom.getDistance(loc1);
@@ -248,7 +282,33 @@ public class LocationExporter extends BaseExporter {
 			}
 			
 		});
-		return locations.subList(0, Math.min(locations.size(), iMax));
+		return listNeighbors.subList(0, Math.min(listNeighbors.size(), iMax));
+	}
+	
+	private void addOpenLayersHeaders(final HtmlPage page) {
+		// TODO download the files
+		page.getHead().addScript("https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js");
+		page.getHead().addScript("js/panorpa-maps.js");
+		page.getHead().addCss("https://openlayers.org/en/v5.3.0/css/ol.css");
+	}
+	
+	private double getDistanceKm(HasMapCoordinates hmc1, HasMapCoordinates hmc2) {
+		final double r = 6371; // Radius of the earth in km
+		double lat1 = hmc1.getLatitude().doubleValue();
+		double lat2 = hmc2.getLatitude().doubleValue();
+		double dLat = deg2rad(lat2 - lat1);
+		double dLon = deg2rad(hmc2.getLongitude().doubleValue() - hmc1.getLongitude().doubleValue()); 
+		double a = 
+				Math.sin(dLat/2) * Math.sin(dLat/2) +
+				Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+				Math.sin(dLon/2) * Math.sin(dLon/2); 
+		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+		double d = r * c; // Distance in km
+		return d;
+	}
+
+	private double deg2rad(double deg) {
+		return deg * (Math.PI/180.0);
 	}
 
 }
