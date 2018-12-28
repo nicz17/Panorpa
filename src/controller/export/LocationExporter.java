@@ -286,10 +286,12 @@ public class LocationExporter extends BaseExporter {
 	}
 	
 	private void addOpenLayersHeaders(final HtmlPage page) {
-		// TODO download the files
-		page.getHead().addScript("https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js");
+		//page.getHead().addScript("https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js");
+		//page.getHead().addCss("https://openlayers.org/en/v5.3.0/css/ol.css");
+		page.getHead().addText("    <meta charset=\"utf-8\">\n");
+		page.getHead().addScript("js/OpenLayers-v5.3.0.js");
 		page.getHead().addScript("js/panorpa-maps.js");
-		page.getHead().addCss("https://openlayers.org/en/v5.3.0/css/ol.css");
+		page.getHead().addCss("css/OpenLayers-v5.3.0.css");
 	}
 	
 	private double getDistanceKm(HasMapCoordinates hmc1, HasMapCoordinates hmc2) {
