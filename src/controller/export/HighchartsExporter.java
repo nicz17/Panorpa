@@ -1,10 +1,12 @@
 package controller.export;
 
+import model.Category;
 import model.Taxon;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import common.base.Logger;
 import common.io.HtmlComposite;
 import controller.TaxonCache;
 
@@ -15,6 +17,8 @@ import controller.TaxonCache;
  *
  */
 public class HighchartsExporter extends BaseExporter {
+	
+	private static final Logger log = new Logger("HighchartsExporter", true);
 
 	public HighchartsExporter() {
 	}
@@ -125,12 +129,12 @@ public class HighchartsExporter extends BaseExporter {
 		json.put("exporting", jsonExporting);
 		
 		JSONObject jsonTitle = new JSONObject();
-		jsonTitle.put("text", "Nombre de photos par categorie");
+		jsonTitle.put("text", "Nombre de photos par catégorie");
 		json.put("title", jsonTitle);
 		
 		JSONObject jsonOptions = new JSONObject();
 		JSONObject jsonOptionsPie = new JSONObject();
-		jsonOptionsPie.put("showInLegend", true);
+		jsonOptionsPie.put("showInLegend", false);
 		jsonOptions.put("pie", jsonOptionsPie);
 		json.put("plotOptions", jsonOptions);
 		
@@ -142,36 +146,42 @@ public class HighchartsExporter extends BaseExporter {
 		jsonSerie.put("name", "Photos");
 		jsonSerie.put("data", jsonData);
 		
-		for (Taxon taxon : TaxonCache.getInstance().getTopLevel()) {
-			JSONObject jsonValue = new JSONObject();
-			jsonValue.put("name", taxon.getNameFr());
-			String color = getTaxonColor(taxon);
-			if (color != null) {
-				jsonValue.put("color", color);
+		//for (Taxon taxon : TaxonCache.getInstance().getTopLevel()) {
+		for (Category category : Category.values()) {
+			Taxon taxon = TaxonCache.getInstance().getTaxon(category.getName());
+			if (taxon != null) {
+				JSONObject jsonValue = new JSONObject();
+				jsonValue.put("name", taxon.getNameFr());
+				String color = category.getColor();
+				if (color != null) {
+					jsonValue.put("color", color);
+				}
+				jsonValue.put("y", taxon.getPicsCascade().size());
+				jsonData.add(jsonValue);
+			} else {
+				log.error("Failed to find taxon named '" + category.getName() + "' in cache.");
 			}
-			jsonValue.put("y", taxon.getPicsCascade().size());
-			jsonData.add(jsonValue);
 		}
 		
 		return json;
 	}
 	
-	private String getTaxonColor(Taxon taxon) {
-		String color = null;
-		
-		switch(taxon.getName()) {
-		case "Plantae":
-			color = "#00ee00";
-			break;
-		case "Animalia":
-			color = "#ee0000";
-			break;
-		case "Fungi":
-			color = "#cdba96";
-			break;
-		}
-		
-		return color;
-	}
+//	private String getTaxonColor(Taxon taxon) {
+//		String color = null;
+//		
+//		switch(taxon.getName()) {
+//		case "Plantae":
+//			color = "#00ee00";
+//			break;
+//		case "Animalia":
+//			color = "#ee0000";
+//			break;
+//		case "Fungi":
+//			color = "#cdba96";
+//			break;
+//		}
+//		
+//		return color;
+//	}
 
 }
