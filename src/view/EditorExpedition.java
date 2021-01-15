@@ -65,7 +65,7 @@ public class EditorExpedition extends AbstractEditor {
 		selLocation = new LocationSelector("LocationSelector", cMain, false, modifListener);
 
 		widgetsFactory.createLabel(cMain, "Début");
-		dtsDateFrom = new DateTimeSelector(cMain, dateFormat);
+		dtsDateFrom = new DateTimeSelector(cMain, dateFormat, 19);
 		dtsDateFrom.addSelectionListener(new DateTimeSelectionListener() {
 			@Override
 			public void onSelectionChange(Date tNewDate) {
@@ -74,7 +74,7 @@ public class EditorExpedition extends AbstractEditor {
 		});
 
 		widgetsFactory.createLabel(cMain, "Fin");
-		dtsDateTo = new DateTimeSelector(cMain, dateFormat);
+		dtsDateTo = new DateTimeSelector(cMain, dateFormat, 19);
 		dtsDateTo.addSelectionListener(new DateTimeSelectionListener() {
 			@Override
 			public void onSelectionChange(Date tNewDate) {

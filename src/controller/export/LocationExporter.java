@@ -58,7 +58,7 @@ public class LocationExporter extends BaseExporter {
 		
 		// Call map rendering Javascript code
 		String sRenderMap = "var oVectorSource, oIconStyle;\n" +
-			"renderMap(6.7607, 46.6334, 9);\n";
+			"renderMap(6.3902, 46.5377, 9);\n";
 		
 		HtmlComposite table = main.addFillTable(2, "800px");
 		table.setCssClass("align-top");
@@ -105,8 +105,12 @@ public class LocationExporter extends BaseExporter {
 				li.addLink(filename, location.getName(), location.getName());
 				
 				if (location.getLongitude() != null && location.getLatitude() != null) {
-					sRenderMap += String.format("addMapMarker(%.6f, %.6f, \"%s\", '%s');\n", 
-						location.getLongitude().doubleValue(), location.getLatitude().doubleValue(), location.getName(), filename);
+					int nPics = location.getPics().size();
+					String sLabel = "<a href='" + filename + "'>" + location.getName() + "</a><br>" + nPics + " photos";
+					sRenderMap += String.format("addMapMarker(%.6f, %.6f, \"%s\");\n", 
+						location.getLongitude().doubleValue(), location.getLatitude().doubleValue(), sLabel);
+//					sRenderMap += String.format("addMapMarker(%.6f, %.6f, \"%s\", '%s');\n", 
+//							location.getLongitude().doubleValue(), location.getLatitude().doubleValue(), location.getName(), filename);
 				}
 				
 				createLocationPage(location);

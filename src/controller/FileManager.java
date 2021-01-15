@@ -5,6 +5,7 @@ import java.io.FilenameFilter;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.Vector;
 import java.util.regex.Matcher;
 
@@ -248,7 +249,8 @@ public class FileManager {
 				ExifSubIFDDirectory directory = metadata.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
 
 				// query the tag's value
-				dShotAt = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+				//dShotAt = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL); + 1h shift
+				dShotAt = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL, TimeZone.getDefault());
 			} catch (Exception e) {
 				log.error("Failed to read image date", e);
 			}

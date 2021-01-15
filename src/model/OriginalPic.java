@@ -46,7 +46,9 @@ public class OriginalPic extends DataObject implements HasPhoto, Comparable<Orig
 		return new File(sThumbName);
 	}
 
-
+	public Date getShotAt() {
+		return tShotAt;
+	}
 
 	@Override
 	public String getFileName() {

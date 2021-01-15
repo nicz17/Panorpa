@@ -12,10 +12,10 @@ package model;
  */
 public enum Category {
 	
-	FERNS("Filicopsida", "#00ee00"),
-	MONOCOTS("Liliopsida", "#40ee00"),
+	FERNS("Filicopsida", "#00b000"),
+	MONOCOTS("Liliopsida", "#40d000"),
 	DICOTS("Magnoliopsida", "#80ee00"),
-	BIRDS("Aves", "#3030ee"),
+	BIRDS("Aves", "#4040ff"),
 	MAMMALS("Mammalia", "#ee8000"),
 	REPTILES("Reptilia", "#808080"),
 	INSECTS("Insecta", "#ee0000"),

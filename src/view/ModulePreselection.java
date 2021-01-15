@@ -22,6 +22,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
@@ -40,6 +41,8 @@ import common.view.SearchBox;
 import controller.Controller;
 import controller.DatabaseTools;
 import controller.FileManager;
+import controller.GeoTrack;
+import controller.GeoTracker;
 import controller.PicNameGenerator;
 import controller.PicNameGeneratorLast;
 import controller.TaxonCache;
@@ -70,6 +73,7 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 	private Button btnRename;
 	private Button btnCompare;
 	private Button btnGimp;
+	private Button btnGeoTracking;
 	private Label lblDir;
 	private ToolBar toolbarTaxonTree;
 	
@@ -214,6 +218,13 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 				openWithGimp();
 			}
 		});
+		
+		btnGeoTracking = widgetsFactory.createPushButton(cButtonsRight, "GeoTracking", "location", new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				addGeoTracking();
+			}
+		});
 	}
 
 	@Override
@@ -303,6 +314,7 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 		btnRename.setEnabled(selectedPic != null && !txtName.getText().isEmpty());
 		btnCompare.setEnabled(selectedTaxon != null && selectedPic != null);
 		btnGimp.setEnabled(lastSelectedFile != null && lastSelectedFile.exists());
+		btnGeoTracking.setEnabled(true);
 	}
 
 	@Override
@@ -454,6 +466,39 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 			} catch (IOException e) {
 				ViewTools.displayException(e);
 			}
+		}
+	}
+	
+	private void addGeoTracking() {
+		// Open a .gpx file (XML GeoTracker data)
+		try {
+			FileDialog dlg = new FileDialog(getShell(), SWT.OPEN);
+			dlg.setText("Choisir les données GeoTracker");
+			if (dirOrig != null) {
+				dlg.setFilterPath(dirOrig.getCanonicalPath().replaceFirst("orig", "geotracker"));
+			}
+			dlg.setFilterExtensions(new String[] {"*.gpx"});
+			dlg.setFilterNames(new String[] { "GeoTracker (*.gpx)" });
+			String result = dlg.open();
+			if (result != null) {
+				File file = new File(result);
+				// read GeoTracker data and apply to pics
+				GeoTrack track = GeoTracker.getInstance().readGeoData(file);
+				
+				int nMatches = GeoTracker.getInstance().addGeoDataToPics(vecObjects, track, true);
+				String msg = track.getDescription();
+				msg += "\n\nPhotos sur le parcours:\n" + nMatches + "/" + vecObjects.size();
+				msg += "\n\nAppliquer les données GPS ?\n";
+				boolean bApply = MessageBox.askYesNo(msg, "Données GeoTracker", "location");
+				
+				if (bApply) {
+					nMatches = GeoTracker.getInstance().addGeoDataToPics(vecObjects, track, false);
+					msg = "Données GPS ajoutées à " + nMatches + " photos.";
+					MessageBox.info(msg);
+				}
+			}
+		} catch (Exception e) {
+			ViewTools.displayException(e);
 		}
 	}
 
