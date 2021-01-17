@@ -8,6 +8,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import common.data.HasMapCoordinates;
+import controller.GeoTrack;
 
 /**
  * A geographical location
@@ -60,6 +61,29 @@ public class Location extends DataObject implements HasMapCoordinates, Comparabl
 		newObj.setLongitude(new Double(6.7));
 		newObj.setLatitude(new Double(46.5));
 		return newObj;
+	}
+
+	/**
+	 * Creates a new default location from the GeoTrack object.
+	 * 
+	 * @param track  a GeoTrack object
+	 * @return  the created location
+	 */
+	public static Location newLocation(GeoTrack track) {
+		TrackPoint tp = track.getMeanPosition();
+		Location newObj = new Location(0, track.getName());
+		newObj.setDescription(track.getDesc());
+		newObj.setState("Suisse");
+		newObj.setRegion("Vaud");
+		newObj.setKind("GeoTrack");
+		if (tp != null) {
+			newObj.setAltitude((int)tp.getAltitude());
+			newObj.setLongitude(tp.getLon());
+			newObj.setLatitude(tp.getLat());
+			newObj.setMapZoom(17);
+		}
+		return newObj;
+		
 	}
 	
 	public String getName() {

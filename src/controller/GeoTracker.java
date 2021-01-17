@@ -55,9 +55,9 @@ public class GeoTracker {
 			// Get track name and description
 			String sName = "Unknown track name";
 			String sDesc = null;
-			NodeList nlTrack = document.getElementsByTagName("trk");
-			for (int iNode = 0; iNode < nlTrack.item(0).getChildNodes().getLength(); ++iNode) {
-				Node node = nlTrack.item(0).getChildNodes().item(iNode);
+			NodeList nlMetadata = document.getElementsByTagName("metadata");
+			for (int iNode = 0; iNode < nlMetadata.item(0).getChildNodes().getLength(); ++iNode) {
+				Node node = nlMetadata.item(0).getChildNodes().item(iNode);
 				if ("name".equals(node.getNodeName())) {
 					sName = node.getTextContent();
 				} else if ("desc".equals(node.getNodeName())) {
