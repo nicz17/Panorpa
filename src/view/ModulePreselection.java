@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 
 import model.HasPhoto;
 import model.HerbierPic;
+import model.Location;
 import model.OriginalPic;
 import model.Taxon;
 
@@ -43,6 +44,7 @@ import controller.DatabaseTools;
 import controller.FileManager;
 import controller.GeoTrack;
 import controller.GeoTracker;
+import controller.LocationCache;
 import controller.PicNameGenerator;
 import controller.PicNameGeneratorLast;
 import controller.TaxonCache;
@@ -484,10 +486,13 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 				File file = new File(result);
 				// read GeoTracker data and apply to pics
 				GeoTrack track = GeoTracker.getInstance().readGeoData(file);
-				
 				int nMatches = GeoTracker.getInstance().addGeoDataToPics(vecObjects, track, true);
+				Location locClosest = LocationCache.getInstance().getClosestLocation(track.getMeanPosition());
 				String msg = track.getDescription();
-				msg += "\n\nPhotos sur le parcours:\n" + nMatches + "/" + vecObjects.size();
+				msg += "\n\nPhotos sur le parcours: " + nMatches + "/" + vecObjects.size();
+				if (locClosest != null) {
+					msg += "\n\nLieu le plus proche : " + locClosest.getName();
+				}
 				msg += "\n\nAppliquer les données GPS ?\n";
 				boolean bApply = MessageBox.askYesNo(msg, "Données GeoTracker", "location");
 				

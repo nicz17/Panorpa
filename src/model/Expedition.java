@@ -4,6 +4,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import controller.GeoTrack;
+import controller.LocationCache;
+
 import view.Panorpa;
 
 /**
@@ -64,6 +67,20 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 		this.sTitle = sTitle;
 		this.sNotes = sNotes;
 		this.vecPics = new HashSet<>();
+	}
+
+	/**
+	 * Creates a new expedition from a GeoTrack object.
+	 * 
+	 * @param track  a GeoTrack object
+	 * @return  the created expedition
+	 */
+	public static Expedition newExpedition(GeoTrack track) {
+		Location loc = LocationCache.getInstance().getClosestLocation(track.getMeanPosition());
+		String sDesc = track.getDesc() == null ? "" : track.getDesc();
+		Expedition newObj = new Expedition(0, loc, track.getStart(), track.getEnd(), 
+				track.getName(), sDesc);
+		return newObj;
 	}
 
 

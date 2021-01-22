@@ -2,6 +2,8 @@ package model;
 
 import java.util.Date;
 
+import common.data.HasMapCoordinates;
+
 /**
  * Container for 4D point: lat, lon, altitude, timestamp.
  *
@@ -10,7 +12,7 @@ import java.util.Date;
  * <li>11.01.2021: nicz - Creation</li>
  * </ul>
  */
-public class TrackPoint {
+public class TrackPoint implements HasMapCoordinates {
 	private double dLat;
 	private double dLon;
 	private double dAlt;
@@ -23,11 +25,11 @@ public class TrackPoint {
 		this.tAt = tAt;
 	}
 
-	public double getLat() {
+	public Double getLatitude() {
 		return dLat;
 	}
 
-	public double getLon() {
+	public Double getLongitude() {
 		return dLon;
 	}
 
@@ -37,6 +39,16 @@ public class TrackPoint {
 
 	public Date getTime() {
 		return tAt;
+	}
+
+	@Override
+	public int getMapZoom() {
+		return 0;
+	}
+
+	@Override
+	public Double getDistance(HasMapCoordinates objTo) {
+		return null;
 	}
 	
 	

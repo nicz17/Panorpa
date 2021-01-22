@@ -50,6 +50,14 @@ public class GeoTrack {
 		this.sDesc = sDesc;
 	}
 
+	public Date getStart() {
+		return tStart;
+	}
+
+	public Date getEnd() {
+		return tEnd;
+	}
+
 	public void addTrackPoint(TrackPoint tp) {
 		if (tp.getTime() != null) {
 			mapTrack.put(tp.getTime(), tp);
@@ -97,8 +105,8 @@ public class GeoTrack {
 			double dAltMean = 0;
 			for (Date tAt : mapTrack.keySet()) {
 				TrackPoint tp = mapTrack.get(tAt);
-				dLatMean += tp.getLat();
-				dLonMean += tp.getLon();
+				dLatMean += tp.getLatitude();
+				dLonMean += tp.getLongitude();
 				dAltMean += tp.getAltitude();
 			}
 			double dSize = (double)mapTrack.size();

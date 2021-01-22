@@ -8,6 +8,7 @@ import java.util.Vector;
 import model.Location;
 
 import common.base.Logger;
+import common.data.HasMapCoordinates;
 
 import controller.DatabaseTools.eOrdering;
 
@@ -33,6 +34,27 @@ public class LocationCache {
 		} else {
 			return null;
 		}
+	}
+	
+	/**
+	 * Find the closest location to an object with coordinates
+	 * @param hmcTo  an object with latitude and longitude
+	 * @return the closest location, or null if no locations in cache
+	 */
+	public Location getClosestLocation(HasMapCoordinates hmcTo) {
+		Location result = null;
+		double dMinDist = 0.0;
+		
+		for (Location loc : mapById.values()) {
+			double dDist = loc.getDistance(hmcTo);
+			if (result == null || dDist < dMinDist) {
+				result = loc;
+				dMinDist = dDist;
+			}
+		}
+		
+		//log.info("Closest location is " + result);
+		return result;
 	}
 	
 	/** 

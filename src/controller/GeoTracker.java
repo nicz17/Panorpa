@@ -147,12 +147,12 @@ public class GeoTracker {
 		// to update all pics at once, but how to handle time offset ?
 		if (tp != null && pic != null) {
 			// exiftool -exif:gpslatitude="lat" -exif:gpslatituderef=S your.jpg
-			String sCmd = "exiftool -exif:gpslatitude=\"" + tp.getLat() + "\" -exif:gpslatituderef=N -overwrite_original " + pic.getOrigFile().getAbsolutePath();
+			String sCmd = "exiftool -exif:gpslatitude=\"" + tp.getLatitude() + "\" -exif:gpslatituderef=N -overwrite_original " + pic.getOrigFile().getAbsolutePath();
 			log.info(sCmd);
 			Process p = Runtime.getRuntime().exec(sCmd);
 			p.waitFor();
 			
-			sCmd = "exiftool -exif:gpslongitude=\"" + tp.getLon() + "\" -exif:gpslongituderef=E -overwrite_original " + pic.getOrigFile().getAbsolutePath();
+			sCmd = "exiftool -exif:gpslongitude=\"" + tp.getLongitude() + "\" -exif:gpslongituderef=E -overwrite_original " + pic.getOrigFile().getAbsolutePath();
 			log.info(sCmd);
 			p = Runtime.getRuntime().exec(sCmd);
 			p.waitFor();

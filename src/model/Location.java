@@ -64,7 +64,7 @@ public class Location extends DataObject implements HasMapCoordinates, Comparabl
 	}
 
 	/**
-	 * Creates a new default location from the GeoTrack object.
+	 * Creates a new location from the GeoTrack object.
 	 * 
 	 * @param track  a GeoTrack object
 	 * @return  the created location
@@ -78,12 +78,11 @@ public class Location extends DataObject implements HasMapCoordinates, Comparabl
 		newObj.setKind("GeoTrack");
 		if (tp != null) {
 			newObj.setAltitude((int)tp.getAltitude());
-			newObj.setLongitude(tp.getLon());
-			newObj.setLatitude(tp.getLat());
+			newObj.setLongitude(tp.getLongitude());
+			newObj.setLatitude(tp.getLatitude());
 			newObj.setMapZoom(17);
 		}
 		return newObj;
-		
 	}
 	
 	public String getName() {
