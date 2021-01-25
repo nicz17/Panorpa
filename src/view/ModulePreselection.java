@@ -14,6 +14,7 @@ import model.OriginalPic;
 import model.Taxon;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -37,6 +38,8 @@ import view.base.ViewTools;
 import common.base.Logger;
 import common.exceptions.AppException;
 import common.view.MessageBox;
+import common.view.ProgressBox;
+import common.view.ProgressTimeBox;
 import common.view.SearchBox;
 
 import controller.Controller;
@@ -84,6 +87,7 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 	private SearchBox searchBoxPic;
 	private SearchBox searchBoxTaxon;
 	private PhotoBox  photoBox;
+	private ProgressBox progressBox;
 	
 	protected final DatabaseTools.eOrdering eOrder[] = {
 			DatabaseTools.eOrdering.BY_IDX, 
@@ -194,11 +198,11 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 		txtName = widgetsFactory.createText(cThird, -1, new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
-				enableWidgets();
+				enableWidgets(true);
 			}
 		});
 		
-		Composite cButtonsRight = widgetsFactory.createComposite(cThird, 3, true, 6);
+		Composite cButtonsRight = widgetsFactory.createComposite(cThird, 4, true, 6);
 		
 		btnRename = widgetsFactory.createPushButton(cButtonsRight, "Préselection", "ok", new SelectionAdapter() {
 			@Override
@@ -221,19 +225,21 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 			}
 		});
 		
-		btnGeoTracking = widgetsFactory.createPushButton(cButtonsRight, "GeoTracking", "location", new SelectionAdapter() {
+		btnGeoTracking = widgetsFactory.createPushButton(cButtonsRight, "GeoTracking", "location24", new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				addGeoTracking();
 			}
 		});
+		
+		progressBox = new ProgressTimeBox(cThird, 100);
 	}
 
 	@Override
 	protected void loadData() {
 		showObjects();
 		loadTaxonTree();
-		enableWidgets();
+		enableWidgets(true);
 	}
 	
 	private void loadTaxonTree() {
@@ -270,7 +276,7 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 			lastSelectedFile = new File(dirPhotos.getAbsolutePath() + "/" + txtName.getText());
 			btnGimp.setToolTipText("Ouvrir " + lastSelectedFile.getAbsolutePath() + " dans Gimp");
 			txtName.setText("");
-			enableWidgets();
+			enableWidgets(true);
 			loadExistingPics();
 			showExistingPics();
 		} catch (AppException e) {
@@ -311,12 +317,11 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 		}
 	}
 	
-	private void enableWidgets() {
-		//btnRename.setEnabled(selectedTaxon != null && selectedPic != null && !txtName.getText().isEmpty());
-		btnRename.setEnabled(selectedPic != null && !txtName.getText().isEmpty());
-		btnCompare.setEnabled(selectedTaxon != null && selectedPic != null);
-		btnGimp.setEnabled(lastSelectedFile != null && lastSelectedFile.exists());
-		btnGeoTracking.setEnabled(true);
+	private void enableWidgets(boolean bEnabled) {
+		btnRename.setEnabled(bEnabled && selectedPic != null && !txtName.getText().isEmpty());
+		btnCompare.setEnabled(bEnabled && selectedTaxon != null && selectedPic != null);
+		btnGimp.setEnabled(bEnabled && lastSelectedFile != null && lastSelectedFile.exists());
+		btnGeoTracking.setEnabled(bEnabled);
 	}
 
 	@Override
@@ -333,7 +338,7 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 			photoBox.showObject(pic);
 		}
 
-		enableWidgets();
+		enableWidgets(true);
 	}
 	
 	private void onTaxonSelection(Taxon taxon) {
@@ -350,7 +355,7 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 		}
 		
 		showExistingPics();
-		enableWidgets();
+		enableWidgets(true);
 	}
 	
 	private void createNameGenerator() {
@@ -485,7 +490,7 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 			if (result != null) {
 				File file = new File(result);
 				// read GeoTracker data and apply to pics
-				GeoTrack track = GeoTracker.getInstance().readGeoData(file);
+				final GeoTrack track = GeoTracker.getInstance().readGeoData(file);
 				int nMatches = GeoTracker.getInstance().addGeoDataToPics(vecObjects, track, true);
 				Location locClosest = LocationCache.getInstance().getClosestLocation(track.getMeanPosition());
 				String msg = track.getDescription();
@@ -497,9 +502,17 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 				boolean bApply = MessageBox.askYesNo(msg, "Données GeoTracker", "location");
 				
 				if (bApply) {
-					nMatches = GeoTracker.getInstance().addGeoDataToPics(vecObjects, track, false);
-					msg = "Données GPS ajoutées à " + nMatches + " photos.";
-					MessageBox.info(msg);
+					enableWidgets(false);
+					progressBox.taskStarted(nMatches);
+					progressBox.info("Ajout de données GPS à " + nMatches + " photos");
+					Runnable runGeoTagging = new Runnable() {
+						public void run() {
+							GeoTracker.getInstance().addGeoDataToPics(vecObjects, track, false, progressBox);
+						}
+					};
+					BusyIndicator.showWhile(getDisplay(), runGeoTagging);
+					progressBox.taskFinished();
+					enableWidgets(true);
 				}
 			}
 		} catch (Exception e) {

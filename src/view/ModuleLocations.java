@@ -23,7 +23,6 @@ import controller.GeoTracker;
 
 public class ModuleLocations extends AbstractModule<Location> {
 	private EditorLocation editor;
-	//private Button btnCreateFromTrack;
 	private File dirGeoTrack;
 	
 	protected final DatabaseTools.eOrdering eOrder[] = {DatabaseTools.eOrdering.BY_NAME, 
@@ -83,21 +82,20 @@ public class ModuleLocations extends AbstractModule<Location> {
 				  new double[] {0.30, 0.20, 0.20, 0.20, 0.10} );
 		
 	    editor = new EditorLocation(cRight);
-	    
-	    searchBox = new IncrementalSearchBox(cButtons) {
-	    	public void onSearch() {
-	    		showObjects();
-	    	}
-	    };
 		
-		//btnCreateFromTrack = 
-		widgetsFactory.createPushButton(cRight, "Créer par GeoTrack", "location", 
+		widgetsFactory.createPushButton(cButtons, null, "location24", 
 				"Créer un lieu à partir de données GeoTracker", false, new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				createFromGeoTrack();
 			}
 		});
+	    
+	    searchBox = new IncrementalSearchBox(cButtons) {
+	    	public void onSearch() {
+	    		showObjects();
+	    	}
+	    };
 		
 		Controller.getInstance().addDataListener(this);
 

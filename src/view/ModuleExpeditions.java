@@ -107,6 +107,14 @@ public class ModuleExpeditions extends AbstractModule<Expedition> {
 		
 	    editor = new EditorExpedition(cRight);
 		multiPhotoBox = new MultiPhotoBox(cRight);
+		
+		widgetsFactory.createPushButton(cButtons, null, "location24", 
+				"Créer une expédition à partir de données GeoTracker", false, new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				createFromGeoTrack();
+			}
+		});
 	    
 	    searchBox = new IncrementalSearchBox(cButtons) {
 	    	public void onSearch() {
@@ -115,14 +123,6 @@ public class ModuleExpeditions extends AbstractModule<Expedition> {
 	    };
 	    
 	    btnNew.setToolTipText("Ajouter les expédition du lieu par défaut");
-		
-		widgetsFactory.createPushButton(cRight, "Créer par GeoTrack", "location", 
-				"Créer une expédition à partir de données GeoTracker", false, new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				createFromGeoTrack();
-			}
-		});
 		
 		Controller.getInstance().addDataListener(this);
 

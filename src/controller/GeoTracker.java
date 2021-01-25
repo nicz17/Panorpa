@@ -19,6 +19,7 @@ import org.w3c.dom.NodeList;
 
 import common.base.Logger;
 import common.exceptions.AppException;
+import common.listeners.ProgressListener;
 
 /**
  * Helper class to add GPS data to JPG files, using the mobile GeoTracker app.
@@ -105,8 +106,24 @@ public class GeoTracker {
 	 * 
 	 * @param vecPics a list of pictures
 	 * @param track   a GeoTrack object
+	 * @param bDryRun  if true, don't update the pics, just count them
+	 * @return  the number of pics matching the track
 	 */
 	public int addGeoDataToPics(Vector<OriginalPic> vecPics, GeoTrack track, boolean bDryRun) {
+		return addGeoDataToPics(vecPics, track, bDryRun, null);
+	}
+	
+	/**
+	 * Tries to add geographical data to pics in the specified dir,
+	 * using the specified GeoTrack.
+	 * 
+	 * @param vecPics a list of pictures
+	 * @param track   a GeoTrack object
+	 * @param bDryRun  if true, don't update the pics, just count them
+	 * @param progress  a progress box
+	 * @return  the number of updated pics
+	 */
+	public int addGeoDataToPics(Vector<OriginalPic> vecPics, GeoTrack track, boolean bDryRun, ProgressListener progress) {
 		if (vecPics == null || track == null) {
 			return 0;
 		}
@@ -122,6 +139,9 @@ public class GeoTracker {
 				if (!bDryRun) {
 					try {
 						writeExifGeoData(tp, pic);
+						if (progress != null) {
+							progress.taskProgress();
+						}
 					} catch (Exception e) {
 						log.error("Failed to set GPS coordinates", e);
 					}
