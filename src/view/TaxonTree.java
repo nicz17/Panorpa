@@ -162,8 +162,9 @@ public abstract class TaxonTree {
 	 * Expands all tree items corresponding to search query.
 	 * @param strSearch  the search string
 	 */
-	public void searchInTree(final String strSearch) {
+	public void searchInTree(String strSearch) {
 		if (strSearch != null && !strSearch.isEmpty()) {
+			strSearch = strSearch.replaceAll(" ", "%");
 			Vector<Taxon> vecSearchResult = Controller.getInstance().getTaxons(null, strSearch);
 			for (Taxon res : vecSearchResult) {
 				expandTree(res);

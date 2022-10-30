@@ -81,7 +81,7 @@ public class ExpeditionManager {
 		
 		// Sort (most recent first) and return results
 		Collections.sort(vecResult);
-		log.info("Got " + vecResult.size() + " Expeditions for " + loc);
+		log.info("Got " + vecResult.size() + " excursions for " + loc);
 		if (!vecResult.isEmpty()) {
 			mapRecentExpeditions.put(loc, vecResult.firstElement());
 		}
@@ -121,7 +121,7 @@ public class ExpeditionManager {
 				//log.debug("... adding pic " + pic);
 			}
 		}
-		//log.info("Expedition now has " + expedition.getPics().size() + " pics");
+		//log.info("Excursion now has " + expedition.getPics().size() + " pics");
 	}
 	
 	public void clearRecentExpeditions() {

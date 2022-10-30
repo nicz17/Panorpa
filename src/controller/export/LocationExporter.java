@@ -31,7 +31,7 @@ public class LocationExporter extends BaseExporter {
 
 	private static final Logger log = new Logger("LocationExporter", true);
 	
-	/** The max distance for neighbouring locations */
+	/** The max distance for neighbour locations */
 	private static final double dDistanceMax = 1.0;
 	
 	public LocationExporter() {
@@ -150,14 +150,14 @@ public class LocationExporter extends BaseExporter {
 		Vector<Expedition> vecExpeditions = Controller.getInstance().getExpeditions(location);
 		int nExpeditions = vecExpeditions.size();
 		if (nExpeditions > 0) {
-			HtmlComposite divExpeditions = addBoxDiv(tdRight, "Expéditions");
+			HtmlComposite divExpeditions = addBoxDiv(tdRight, "Excursions");
 			if (nExpeditions > 8) {
 				divExpeditions.addPar("Observations fréquentes depuis le " 
 						+ dateFormat.format(vecExpeditions.lastElement().getDateFrom()) + ".");
 			} else {
 				HtmlComposite ul = divExpeditions.addList();
 				for (Expedition exp : vecExpeditions) {
-					String sAnchor = "#expedition" + exp.getIdx();
+					String sAnchor = "#excursion" + exp.getIdx();
 					HtmlComposite li = ul.addListItem();
 					li.addLink("journal.html" + sAnchor, "Voir les notes de terrain", exp.getTitle());
 					li.addText(" &mdash; <font color='gray'>" + dateFormat.format(exp.getDateFrom()) + 

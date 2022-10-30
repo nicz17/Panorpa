@@ -491,6 +491,11 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 				File file = new File(result);
 				// read GeoTracker data and apply to pics
 				final GeoTrack track = GeoTracker.getInstance().readGeoData(file);
+				
+				// TODO handle DST offset (optionally, but better to set it on camera)
+				//int iOffset = -3600*1000;
+				//track.setOffset(iOffset);
+				
 				int nMatches = GeoTracker.getInstance().addGeoDataToPics(vecObjects, track, true);
 				Location locClosest = LocationCache.getInstance().getClosestLocation(track.getMeanPosition());
 				String msg = track.getDescription();

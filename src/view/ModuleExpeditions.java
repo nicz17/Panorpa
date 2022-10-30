@@ -28,9 +28,9 @@ import controller.GeoTracker;
 import controller.LocationCache;
 
 /**
- * Module displaying expedition objects.
+ * Module displaying excursion objects.
  * 
- * <p>It has a table of expeditions, an editor and a photo box.
+ * <p>It has a table of excursions, an editor and a photo box.
  *
  * <p><b>Modifications:</b>
  * <ul>
@@ -72,7 +72,7 @@ public class ModuleExpeditions extends AbstractModule<Expedition> {
 		showObject(null);
 		vecObjects = Controller.getInstance().getExpeditions(eOrder[selCol], searchBox.getSearchText());
 		reloadTable();
-		lblStatus.setText(String.format("%d expéditions", vecObjects.size()));
+		lblStatus.setText(String.format("%d excursions", vecObjects.size()));
 	}
 
 	
@@ -109,7 +109,7 @@ public class ModuleExpeditions extends AbstractModule<Expedition> {
 		multiPhotoBox = new MultiPhotoBox(cRight);
 		
 		widgetsFactory.createPushButton(cButtons, null, "location24", 
-				"Créer une expédition à partir de données GeoTracker", false, new SelectionAdapter() {
+				"Créer une excursion à partir de données GeoTracker", false, new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				createFromGeoTrack();
@@ -122,7 +122,7 @@ public class ModuleExpeditions extends AbstractModule<Expedition> {
 	    	}
 	    };
 	    
-	    btnNew.setToolTipText("Ajouter les expédition du lieu par défaut");
+	    btnNew.setToolTipText("Ajouter les excursions du lieu par défaut");
 		
 		Controller.getInstance().addDataListener(this);
 

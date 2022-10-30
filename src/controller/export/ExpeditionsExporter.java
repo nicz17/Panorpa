@@ -41,12 +41,12 @@ public class ExpeditionsExporter extends BaseExporter {
 	}
 	
 	private void createExpeditionsPage() {
-		HtmlPage page = new HtmlPage("Nature - Expéditions récentes");
+		HtmlPage page = new HtmlPage("Nature - Excursions récentes");
 		HtmlComposite main = page.getMainDiv();
 		HtmlComposite menu = page.getMenuDiv();
 		
-		main.addTitle(1, "Expéditions récentes");
-		menu.addTitle(1, "Journal");
+		main.addTitle(1, "Excursions récentes");
+		menu.addTitle(1, "Excursions");
 		
 		// List<Expedition> vecExpeditions = ExpeditionManager.getInstance().getRecentExpeditions(8);
 		List<Expedition> vecExpeditions = Controller.getInstance().getExpeditions(eOrdering.BY_DATE, null);
@@ -72,7 +72,7 @@ public class ExpeditionsExporter extends BaseExporter {
 		
 		// write the expedition to a myBox div
 		Location loc = exp.getLocation();
-		String sAnchor = "expedition" + exp.getIdx();
+		String sAnchor = "excursion" + exp.getIdx();
 		HtmlComposite anchor = parent.addAnchor(sAnchor);
 		HtmlComposite div = addBoxDiv(anchor, exp.getTitle(), "myBox myBox-wide");
 		HtmlComposite par = div.addPar();

@@ -10,7 +10,7 @@ import controller.LocationCache;
 import view.Panorpa;
 
 /**
- * Class representing a field expedition on a single date and location.
+ * Class representing a field trip on a single date and location.
  *
  * <p><b>Modifications:</b>
  * <ul>
@@ -36,7 +36,7 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 	 */
 	public Expedition(Location location, Date tFrom, Date tTo, String sNotes, Set<HerbierPic> vecPics) {
 		this.idx = 0;
-		this.sTitle = "Nouvelle expédition";
+		this.sTitle = "Nouvelle excursion";
 		this.location = location;
 		this.tFrom = tFrom;
 		this.tTo   = tTo;
@@ -156,7 +156,7 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 	
 	@Override
 	public String toString() {
-		String str = "Expedition at " + 
+		String str = "Excursion at " + 
 				(location == null ? "UNDEFINED location" : location.getName()) + 
 				" on " + tFrom + ", " + 
 				(vecPics == null ? "-" : vecPics.size()) + " photos";

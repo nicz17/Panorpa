@@ -189,11 +189,19 @@ public class Taxon extends DataObject implements Comparable<Taxon> {
 			result = getBestPic();
 		}
 		
-		// else return the first available pic
+		// else return the best pic of all
 		if (result == null) {
 			TreeSet<HerbierPic> allPics = getPicsCascade();
 			if (!allPics.isEmpty()) {
-				result = allPics.first();
+				Vector<HerbierPic> vPics = new Vector<>();
+				vPics.addAll(allPics);
+				Collections.sort(vPics, new Comparator<HerbierPic>() {
+					@Override
+					public int compare(HerbierPic pic1, HerbierPic pic2) {
+						return pic2.getRating() - pic1.getRating();
+					}
+				});
+				result = vPics.firstElement();
 			}
 		}
 		

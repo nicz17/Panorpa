@@ -2,6 +2,7 @@ package controller;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -33,6 +34,7 @@ public class GeoTracker {
 	
 	private static final Logger log = new Logger("GeoTracker", true);
 	private static final DateFormat dateFormatTrack = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	private static final DateFormat dateFormatTrak2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 	private static final DateFormat dateFormatLog   = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	
 	/** The singleton instance */
@@ -87,7 +89,17 @@ public class GeoTracker {
 						sEle = node.getTextContent();
 					}
 				}
-				Date tAt = dateFormatTrack.parse(sTime);
+				Date tAt = null;
+				try {
+					tAt = dateFormatTrak2.parse(sTime);
+				} catch (ParseException exc1) {
+					log.error("Failed to parse date, trying again: ", exc1);
+					try {
+						tAt = dateFormatTrack.parse(sTime);
+					} catch (ParseException exc2) {
+						log.error("Failed to parse date: ", exc2);
+					}
+				}
 				//log.info("Lat is " + sLat + " lon is " + sLon + " at " + tAt);
 				geoTrack.addTrackPoint(new TrackPoint(Double.valueOf(sLat), Double.valueOf(sLon), Double.valueOf(sEle), tAt));
 			}
@@ -202,16 +214,22 @@ public class GeoTracker {
 	 * @param args  unused
 	 */
 	public static void main(String[] args) {
-		File dir  = new File("/home/nicz/Pictures/Nature-2021-01/test/");
-		File file = new File("/home/nicz/Pictures/Nature-2021-01/geotracker/10_janv._2021_13_12_41.gpx");
+		//File dir  = new File("/home/nicz/Pictures/Nature-2021-04/test/");
+		//File file = new File("/home/nicz/Pictures/Nature-2021-04/geotracker/Dorigny210404.gpx");
+		File dir  = new File("/home/nicz/Pictures/Nature-2021-10/orig/");
+		//File file = new File("/home/nicz/Pictures/Nature-2021-10/geotracker/Grangettes211016.gpx");
+		File file = new File("/home/nicz/Pictures/Nature-2021-10/geotracker/Sorge211024.gpx");
 		boolean bDryRun = true;
 		
 		try {
 			GeoTrack track = GeoTracker.getInstance().readGeoData(file);
+			if (track == null) {
+				log.error("Failed to read geoTrack data");
+			}
 			log.info("Altitude moyenne: " + track.getMeanPosition().getAltitude() + "m");
 			
-			int iOffset = 4*60*1000;
-			track.setOffset(iOffset);
+			//int iOffset = -3600*1000;
+			//track.setOffset(iOffset);
 			
 			Vector<OriginalPic> vecPics = FileManager.getInstance().getOrigFiles(dir, null);
 			int nMatches = GeoTracker.getInstance().addGeoDataToPics(vecPics, track, bDryRun);

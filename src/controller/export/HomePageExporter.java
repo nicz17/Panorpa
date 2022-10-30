@@ -150,19 +150,19 @@ public class HomePageExporter extends BaseExporter {
 				//String picFile = pic.getFileName().replace(".jpg", ".html");
 				String picFile = getTaxonHtmlFileName(species);
 				HtmlComposite li = ul.addListItem();
-				li.addLink("pages/" + picFile, getTooltiptext(species), species.getName());
+				li.addLink("pages/" + picFile, getTooltiptext(species), species.getNameFr());
 				li.addText(" <font color='gray'>" + dateFormat.format(pic.getShotAt()) + "</font>");
 			}
 		}
 		
-		// Latest expeditions
-		HtmlComposite divExpeditions = addBoxDiv(tdRight, "Expéditions récentes");
+		// Latest excursions
+		HtmlComposite divExpeditions = addBoxDiv(tdRight, "Excursions récentes");
 		//List<Expedition> vecExpeditions = ExpeditionManager.getInstance().getRecentExpeditions(nLatestLocations);
 		List<Expedition> vecExpeditions = Controller.getInstance().getRecentExpeditions(nLatestLocations);
 		ul = divExpeditions.addList();
 		for (Expedition exp : vecExpeditions) {
 			HtmlComposite li = ul.addListItem();
-			String url = "journal.html#expedition" + exp.getIdx();
+			String url = "journal.html#excursion" + exp.getIdx();
 			li.addLink(url, exp.getTitle(), exp.getTitle());
 			li.addText(" <font color='gray'>" + dateFormat.format(exp.getDateFrom()) + "</font>");
 		}

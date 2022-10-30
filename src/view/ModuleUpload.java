@@ -5,9 +5,6 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Vector;
 
-import model.AppParam;
-import model.AppParamName;
-
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -16,18 +13,18 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 
-import view.base.ViewTools;
-
 import common.exceptions.AppException;
 import common.text.ElapsedTimeDateFormat;
 import common.view.ProgressBox;
 import common.view.ProgressTimeBox;
 import common.view.SashModule;
-
 import controller.BackupManager;
 import controller.Controller;
 import controller.listeners.DataListener;
 import controller.upload.UploadManager;
+import model.AppParam;
+import model.AppParamName;
+import view.base.ViewTools;
 
 public class ModuleUpload extends SashModule implements DataListener {
 	
@@ -130,7 +127,6 @@ public class ModuleUpload extends SashModule implements DataListener {
 						cleanup();
 					}
 				});
-
 	}
 
 	@Override
@@ -221,7 +217,7 @@ public class ModuleUpload extends SashModule implements DataListener {
 	private void openInBrowser() {
 		String url = "file://" + Controller.exportPath + "html/index.html";
 		try {
-			Runtime.getRuntime().exec(new String[] {"google-chrome-stable", url});
+			Runtime.getRuntime().exec(new String[] {"firefox", url});
 		} catch (IOException e) {
 			ViewTools.displayException(e);
 		}

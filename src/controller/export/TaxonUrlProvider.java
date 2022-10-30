@@ -69,6 +69,9 @@ public class TaxonUrlProvider {
 				// link to AntWiki ?
 				addLink(par, taxon, getAntWikiUrl(taxon), "AntWiki", "www.antwiki.org");
 				
+				// link to LibellenSchutz ?
+				addLink(par, taxon, getLibellenSchutzUrl(taxon), "LibellenSchutz", "libellenschutz.ch");
+				
 			} else if ("Arachnida".equals(taxClass.getName())) {
 				// link to Arages ?
 				addLink(par, taxon, getAragesUrl(taxon), "Arages", "wiki.arages.de");
@@ -176,6 +179,25 @@ public class TaxonUrlProvider {
 		if ("Formicidae".equals(taxFamily.getName())) {
 			String sUrlName = taxon.getName().replace(' ', '_');
 			url = "http://www.antwiki.org/wiki/" + sUrlName;
+		}
+		return url;
+	}
+
+	/**
+	 * Get the URL for the specified taxon on http://libellenschutz.ch,
+	 * an Odonata reference site.
+	 * Works nly for species.
+	 * 
+	 * @param taxon  the taxon
+	 * @return the taxon's URL
+	 */
+	protected String getLibellenSchutzUrl(Taxon taxon) {
+		String url = null;
+		Taxon taxOrder = taxon.getAncestor(TaxonRank.ORDER);
+		//https://libellenschutz.ch/arten/item/enallagma-cyathigerum
+		if ("Odonata".equals(taxOrder.getName())) {
+			String sUrlName = taxon.getName().replace(' ', '-');
+			url = "https://libellenschutz.ch/arten/item/" + sUrlName;
 		}
 		return url;
 	}
