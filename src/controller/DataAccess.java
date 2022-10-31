@@ -718,7 +718,8 @@ public class DataAccess {
 		
 		try {
 			Connection conn = dbTools.getConnection();
-			Statement stmt = conn.createStatement();
+			Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 
+                    ResultSet.CONCUR_UPDATABLE);
 			ResultSet rs = stmt.executeQuery(query);
 			rs.beforeFirst();
 			
@@ -741,7 +742,8 @@ public class DataAccess {
 	private int countAny(String query) {
 		try {
 			Connection conn = dbTools.getConnection();
-			Statement stmt = conn.createStatement();
+			Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, 
+                    ResultSet.CONCUR_UPDATABLE);
 			ResultSet rs = stmt.executeQuery(query);
 			rs.beforeFirst();
 			rs.first();

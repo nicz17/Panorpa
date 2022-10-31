@@ -113,7 +113,7 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 		GridData data = (GridData) tblData.getLayoutData();
 		data.widthHint = 400;
 		initTable(new String[] {"No", "Nom de fichier", "Date de prise de vue"}, 
-				  new double[] {0.10, 0.30, 0.30} );
+				  new double[] {0.10, 0.20, 0.25} );
 		
 		//btnDir = 
 		widgetsFactory.createPushButton(cButtons, null, "folder", "Choisir un répertoire orig/", false, new SelectionAdapter() {
