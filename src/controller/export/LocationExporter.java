@@ -157,9 +157,8 @@ public class LocationExporter extends BaseExporter {
 			} else {
 				HtmlComposite ul = divExpeditions.addList();
 				for (Expedition exp : vecExpeditions) {
-					String sAnchor = "#excursion" + exp.getIdx();
 					HtmlComposite li = ul.addListItem();
-					li.addLink("journal.html" + sAnchor, "Voir les notes de terrain", exp.getTitle());
+					li.addLink("excursion" + exp.getIdx() + ".html", "Voir les notes de terrain", exp.getTitle());
 					li.addText(" &mdash; <font color='gray'>" + dateFormat.format(exp.getDateFrom()) + 
 							" (" + exp.getPics().size() + " photos)</font>");
 				}
@@ -197,56 +196,12 @@ public class LocationExporter extends BaseExporter {
 		HtmlComposite table = main.addFillTable(nColumns);
 		table.setCssClass("table-thumbs");
 		
-		for (HerbierPic pic : location.getPics()) {
+		for (HerbierPic pic : tsPics) {
 			exportPicture(pic, table);
 		}
 		
 		String filename = "lieu" + location.getIdx() + ".html";
 		page.saveAs(htmlPath + filename);
-	}
-	
-	/**
-	 * Adds a geographical map for the specified location if possible.
-	 * To enable the map, the location must have valid coordinates.
-	 * 
-	 * @param loc   the location to display on the map
-	 * @param page  the HTML page to which to add a map
-	 */
-	private void addOpenStreetMap(Location loc, HtmlPage page, HtmlComposite parent, List<Location> listNeighbors) {
-		// Check the location has valid map coords
-		Location locNullIsland = new Location(0, "Null Island");
-		locNullIsland.setLongitude(0.0);
-		locNullIsland.setLatitude(0.0);
-		locNullIsland.setMapZoom(5);
-		Double dDistance = loc.getDistance(locNullIsland);
-		boolean bValidCoords = (dDistance != null && dDistance.doubleValue() > 0.1);
-		
-		if (bValidCoords) {
-			// Add headers and a map div
-			addOpenLayersHeaders(page);
-			HtmlComposite divMap = parent.addDiv("ol-map");
-			divMap.setCssClass("ol-map");
-			divMap.addDiv("ol-popup");
-			
-			// Call map rendering Javascript code
-			String sRenderMap = "var oVectorSource, oIconStyle;\n" +
-				String.format("renderMap(%.6f, %.6f, %d);\n", 
-					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getMapZoom()) +
-				String.format("addMapMarker(%.6f, %.6f, \"%s\");", 
-					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getName());
-
-			// Add markers for neighbor locations, with links
-			for (Location locNeighbor : listNeighbors) {
-				String sUrl = "lieu" + locNeighbor.getIdx() + ".html";
-				sRenderMap += String.format("addMapMarker(%.6f, %.6f, \"%s\", '%s');\n", 
-					locNeighbor.getLongitude().doubleValue(), locNeighbor.getLatitude().doubleValue(), 
-					locNeighbor.getName(), sUrl);
-			}
-			
-			page.getMainDiv().addJavascript(sRenderMap);
-		} else {
-			log.info("Can't add map for location " + loc + ": distance to Null Island is " + dDistance);
-		}
 	}
 	
 	/**
@@ -287,15 +242,6 @@ public class LocationExporter extends BaseExporter {
 			
 		});
 		return listNeighbors.subList(0, Math.min(listNeighbors.size(), iMax));
-	}
-	
-	private void addOpenLayersHeaders(final HtmlPage page) {
-		//page.getHead().addScript("https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js");
-		//page.getHead().addCss("https://openlayers.org/en/v5.3.0/css/ol.css");
-		//page.getHead().addText("    <meta charset=\"utf-8\">\n");
-		page.getHead().addScript("js/OpenLayers-v5.3.0.js");
-		page.getHead().addScript("js/panorpa-maps.js");
-		page.getHead().addCss("css/OpenLayers-v5.3.0.css");
 	}
 	
 	private double getDistanceKm(HasMapCoordinates hmc1, HasMapCoordinates hmc2) {

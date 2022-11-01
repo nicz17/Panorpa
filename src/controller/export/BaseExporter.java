@@ -1,14 +1,16 @@
 package controller.export;
 
 import java.text.DateFormat;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import model.HerbierPic;
+import model.Location;
 import model.Taxon;
 import model.TaxonRank;
-
+import common.base.Logger;
 import common.io.HtmlComposite;
 
 import controller.Controller;
@@ -22,6 +24,8 @@ import controller.upload.UploadManager;
  *
  */
 public class BaseExporter {
+
+	private static final Logger log = new Logger("BaseExporter", true);
 	
 	/** Path of created html pages */
 	protected static final String htmlPath = Controller.htmlPath;
@@ -214,6 +218,62 @@ public class BaseExporter {
 		box.setCssClass(cssClass);
 		box.addTitle(2, title);
 		return box;
+	}
+	
+	/**
+	 * Adds a geographical map for the specified location if possible.
+	 * To enable the map, the location must have valid coordinates.
+	 * 
+	 * @param loc   the location to display on the map
+	 * @param page  the HTML page to which to add a map
+	 */
+	protected void addOpenStreetMap(Location loc, HtmlPage page, HtmlComposite parent, List<Location> listNeighbors) {
+		// Check the location has valid map coords
+		Location locNullIsland = new Location(0, "Null Island");
+		locNullIsland.setLongitude(0.0);
+		locNullIsland.setLatitude(0.0);
+		locNullIsland.setMapZoom(5);
+		Double dDistance = loc.getDistance(locNullIsland);
+		boolean bValidCoords = (dDistance != null && dDistance.doubleValue() > 0.1);
+		
+		if (bValidCoords) {
+			// Add headers and a map div
+			addOpenLayersHeaders(page);
+			HtmlComposite divMap = parent.addDiv("ol-map");
+			divMap.setCssClass("ol-map");
+			divMap.addDiv("ol-popup");
+			
+			// Call map rendering Javascript code
+			String sRenderMap = "var oVectorSource, oIconStyle;\n" +
+				String.format("renderMap(%.6f, %.6f, %d);\n", 
+					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getMapZoom()) +
+				String.format("addMapMarker(%.6f, %.6f, \"%s\");", 
+					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getName());
+
+			// Add markers for neighbor locations, with links
+			if (listNeighbors != null) {
+				for (Location locNeighbor : listNeighbors) {
+					String sUrl = "lieu" + locNeighbor.getIdx() + ".html";
+					sRenderMap += String.format("addMapMarker(%.6f, %.6f, \"%s\", '%s');\n", 
+						locNeighbor.getLongitude().doubleValue(), locNeighbor.getLatitude().doubleValue(), 
+						locNeighbor.getName(), sUrl);
+				}
+			}
+			
+			page.getMainDiv().addJavascript(sRenderMap);
+		} else {
+			log.info("Can't add map for location " + loc + ": distance to Null Island is " + dDistance);
+		}
+	}
+	
+	/**
+	 * Adds OpenLayers scripts to the header of the specified page.
+	 * @param page  the HTML page
+	 */
+	protected void addOpenLayersHeaders(final HtmlPage page) {
+		page.getHead().addScript("js/OpenLayers-v5.3.0.js");
+		page.getHead().addScript("js/panorpa-maps.js");
+		page.getHead().addCss("css/OpenLayers-v5.3.0.css");
 	}
 	
 	

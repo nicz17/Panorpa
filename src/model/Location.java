@@ -58,8 +58,8 @@ public class Location extends DataObject implements HasMapCoordinates, Comparabl
 		newObj.setAltitude(500);
 		newObj.setState("Suisse");
 		newObj.setRegion("Vaud");
-		newObj.setLongitude(new Double(6.7));
-		newObj.setLatitude(new Double(46.5));
+		newObj.setLongitude(Double.valueOf(6.7));
+		newObj.setLatitude(Double.valueOf(46.5));
 		return newObj;
 	}
 
