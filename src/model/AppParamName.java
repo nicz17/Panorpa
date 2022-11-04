@@ -18,7 +18,10 @@ public enum AppParamName {
 	BACKUP_MYBOOK("backupBook"),
 	
 	/** The default location */
-	DEFAULT_LOCATION("defLocation");
+	DEFAULT_LOCATION("defLocation"),
+	
+	/** FTP password */
+	FTP_PWD("ftpPwd");
 	
 	
 	private String dbName;

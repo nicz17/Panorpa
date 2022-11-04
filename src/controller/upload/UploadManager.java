@@ -32,7 +32,7 @@ public class UploadManager {
 	private static final String userName = "nzwahlen";
 	private static final String ftpAddress = "ftp.tf79.ch";
 	private static final String htmlPath = Controller.htmlPath;
-	private static final String passwd = "nico17krea";
+	private final String passwd;
 
 	/** FTP client used to upload pictures */
 	private final FtpUploader ftpUploader;
@@ -277,6 +277,7 @@ public class UploadManager {
 	
 	/** Private singleton constructor */
 	private UploadManager() {
+		passwd = Controller.getInstance().getAppParam(AppParamName.FTP_PWD).getStrValue();
 		ftpUploader = new SimpleFtpUploader(ftpAddress, userName, passwd);
 		ftpUploaderCleanup = new ApacheFtpUploader(ftpAddress, userName, passwd);
 	}
