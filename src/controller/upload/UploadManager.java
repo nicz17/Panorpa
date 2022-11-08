@@ -18,6 +18,7 @@ import common.listeners.ProgressListener;
 
 import controller.Controller;
 import controller.TaxonCache;
+import controller.export.ExpeditionsExporter;
 
 /**
  * Manages upload of pictures and files to public website.
@@ -32,6 +33,7 @@ public class UploadManager {
 	private static final String userName = "nzwahlen";
 	private static final String ftpAddress = "ftp.tf79.ch";
 	private static final String htmlPath = Controller.htmlPath;
+	private static final String dirGeoTracks = ExpeditionsExporter.dirTrack;
 	private final String passwd;
 
 	/** FTP client used to upload pictures */
@@ -69,6 +71,7 @@ public class UploadManager {
 		uploadBaseFiles(progress);
 		uploadModifiedPages(progress);
 		uploadPictures(progress);
+		uploadGeoTracks(progress);
 
 		// Update last-upload param
 		AppParam apLastAt = Controller.getInstance().getAppParam(AppParamName.WEB_UPLOAD);
@@ -261,6 +264,31 @@ public class UploadManager {
 	    progress.taskStarted(vecFiles.size());
 	    progress.info("Upload de " + vecFiles.size() + " photos dans " + dir);
 	    ftpUploader.uploadFiles(dir, vecFiles, progress);
+	    progress.taskFinished();
+	}
+	
+	private void uploadGeoTracks(ProgressListener progress) {
+		log.info("Uploading GeoTracks from " + dirGeoTracks);
+		
+		File directory = new File(htmlPath + dirGeoTracks);
+
+		FilenameFilter filter = new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".gpx");
+			}
+		};
+	    File[] files = directory.listFiles(filter);
+	    log.info("Found " + files.length + " GeoTrack files");
+	    
+	    Vector<File> vecFiles = new Vector<>();
+	    for (File file : files) {
+	    	vecFiles.add(file);
+	    }
+	    
+	    progress.taskStarted(vecFiles.size());
+	    progress.info("Upload de " + vecFiles.size() + " GeoTracks");
+	    ftpUploader.uploadFiles(dirGeoTracks, vecFiles, progress);
 	    progress.taskFinished();
 	}
 

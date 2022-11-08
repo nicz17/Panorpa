@@ -8,15 +8,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
+import common.io.HtmlComposite;
+import common.text.DurationFormat;
+import controller.Controller;
+import controller.DatabaseTools.eOrdering;
+import controller.ExpeditionManager;
 import model.Expedition;
 import model.HerbierPic;
 import model.Location;
-
-import common.io.HtmlComposite;
-
-import controller.Controller;
-import controller.ExpeditionManager;
-import controller.DatabaseTools.eOrdering;
 
 /**
  * Creates HTML pages for Excursions.
@@ -28,6 +27,8 @@ public class ExpeditionsExporter extends BaseExporter {
 
 	public static final DateFormat dateFormatMenu   = new SimpleDateFormat("yyyy", Locale.FRENCH);
 	public static final DateFormat dateFormatAnchor = new SimpleDateFormat("yyyy");
+	public static final DurationFormat durationFormat = new DurationFormat();
+	public static final String dirTrack = "geotrack/";
 	
 	private String sLastMonthYear;
 	private HtmlComposite ul;
@@ -73,10 +74,14 @@ public class ExpeditionsExporter extends BaseExporter {
 		HtmlComposite tdRight = tableTop.addTableData();
 		
 		// OpenStreetMap
-		addOpenStreetMap(exp.getLocation(), page, tdLeft, null);
+		String sGpxFile = null;
+		if (exp.getTrack() != null && !exp.getTrack().isEmpty()) {
+			sGpxFile = dirTrack + exp.getTrack() + ".gpx";
+		}
+		addOpenStreetMap(exp.getLocation(), page, tdLeft, null, sGpxFile);
 
 		// Description
-		HtmlComposite div = addBoxDiv(tdRight, "Description", "myBox");
+		HtmlComposite div = addBoxDiv(tdRight, "Excursion", "myBox");
 		Location loc = exp.getLocation();
 		String filenameLoc = "lieu" + loc.getIdx() + ".html";
 		div.addPar().addLink(filenameLoc, loc.getName(), loc.getName());
@@ -85,6 +90,7 @@ public class ExpeditionsExporter extends BaseExporter {
 		par.addText(dateFormat.format(exp.getDateFrom()));
 		par.addText(" &mdash; " + exp.getPics().size() + " photos</font>");
 		div.addPar(exp.getNotes());
+		div.addPar("Durée " + durationFormat.format(exp.getDuration(), false));
 		
 		// Photos
 		List<HerbierPic> listPics = new ArrayList<>();
@@ -137,6 +143,7 @@ public class ExpeditionsExporter extends BaseExporter {
 		li.addText("</font>");
 	}
 	
+	/*
 	private void exportExpeditionOld(Expedition exp, HtmlComposite parent, HtmlComposite menu) {
 		
 		// add month and year to menu if needed
@@ -185,5 +192,5 @@ public class ExpeditionsExporter extends BaseExporter {
 			HtmlComposite link = td.addLink("pages/" + picFile + picAnchor, getTooltiptext(hpic.getTaxon()));
 			link.addImage("thumbs/" + hpic.getFileName(), name);
 		}
-	}
+	} */
 }

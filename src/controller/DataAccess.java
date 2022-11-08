@@ -496,13 +496,15 @@ public class DataAccess {
 			if (obj.getIdx() > 0) {
 				// update existing
 				String query = String.format("UPDATE Expedition SET expName = %s, " +
-						"expDesc = %s, expLocation = %d, expFrom = %s, expTo = %s " +
+						"expDesc = %s, expLocation = %d, expFrom = %s, expTo = %s, " +
+						"expTrack = %s " +
 						"WHERE idxExpedition = %d", 
 						DatabaseTools.toSQLstring(obj.getTitle()), 
 						DatabaseTools.toSQLstring(obj.getNotes()),
 						obj.getLocation().getIdx(), 
 						DatabaseTools.toSqlDateTime(obj.getDateFrom()), 
 						DatabaseTools.toSqlDateTime(obj.getDateTo()), 
+						DatabaseTools.toSQLstring(obj.getTrack()),
 						obj.getIdx() );
 				log.debug("SQL: " + query);
 				stmt.execute(query);
@@ -511,13 +513,14 @@ public class DataAccess {
 				// create new
 				String query = String.format("INSERT INTO Expedition " +
 						"(idxExpedition, expName, expDesc, expLocation, " +
-						"expFrom, expTo) " +
-						"VALUES (null, %s, %s, %d, %s, %s)", 
+						"expFrom, expTo, expTrack) " +
+						"VALUES (null, %s, %s, %d, %s, %s, %s)", 
 						DatabaseTools.toSQLstring(obj.getTitle()), 
 						DatabaseTools.toSQLstring(obj.getNotes()),
 						obj.getLocation().getIdx(), 
 						DatabaseTools.toSqlDateTime(obj.getDateFrom()), 
-						DatabaseTools.toSqlDateTime(obj.getDateTo()));
+						DatabaseTools.toSqlDateTime(obj.getDateTo()),
+						DatabaseTools.toSQLstring(obj.getTrack()));
 				log.debug("SQL: " + query);
 				stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
 				

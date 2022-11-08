@@ -1,4 +1,4 @@
-// OpenLayers map rendering functions
+// ol map rendering functions
 
 function renderMap(dLon, dLat, iZoom) {
     var oCenter = ol.proj.fromLonLat([dLon, dLat]);
@@ -17,7 +17,7 @@ function renderMap(dLon, dLat, iZoom) {
         source: oVectorSource
     });
 
-    var map = new ol.Map({
+    map = new ol.Map({
         layers: [
             new ol.layer.Tile({
 		source: new ol.source.OSM({
@@ -78,3 +78,18 @@ function addMapMarker(dLon, dLat, sLabel, sUrl) {
     oVectorSource.addFeature(oIconFeature);
 };
 
+function addMapTrack(sGpxFile) {
+    var lTrack = new ol.layer.Vector({
+        source: new ol.source.Vector({
+            url: sGpxFile,
+            format: new ol.format.GPX(),
+        }),
+        style: new ol.style.Style({
+            stroke: new ol.style.Stroke({
+                color: 'red',
+                width: 2
+            })
+        })
+    });
+    map.addLayer(lTrack);
+};

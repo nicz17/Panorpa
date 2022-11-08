@@ -154,6 +154,7 @@ public class ModuleExpeditions extends AbstractModule<Expedition> {
 				// read GeoTracker data and create a new location
 				GeoTrack track = GeoTracker.getInstance().readGeoData(file);
 				Expedition newObj = Expedition.newExpedition(track);
+				newObj.setTrack(file.getName().replace(".gpx", ""));
 				vecObjects.add(newObj);
 				
 				// show object in table

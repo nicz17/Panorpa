@@ -33,7 +33,7 @@ public class EditorExpedition extends AbstractEditor {
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	private static final Logger log = new Logger("EditorExpedition");
 	
-	private Text txtTitle, txtNotes;
+	private Text txtTitle, txtNotes, txtTrack;
 	private LocationSelector selLocation;
 	private DateTimeSelector dtsDateFrom;
 	private DateTimeSelector dtsDateTo;
@@ -81,6 +81,9 @@ public class EditorExpedition extends AbstractEditor {
 				enableWidgets(true);
 			}
 		});
+		
+		widgetsFactory.createLabel(cMain, "Track GPX");
+		txtTrack = widgetsFactory.createText(cMain, 64, modifListener);
 
 		widgetsFactory.createLabel(cMain, "Photos");
 		lblNPics = widgetsFactory.createLabel(cMain, 250);
@@ -101,6 +104,7 @@ public class EditorExpedition extends AbstractEditor {
 		theObject.setLocation(selLocation.getValue());
 		theObject.setFrom(dtsDateFrom.getSelection());
 		theObject.setTo(dtsDateTo.getSelection());
+		theObject.setTrack(txtTrack.getText());
 		
 		try {
 			Controller.getInstance().saveExpedition(theObject);
@@ -127,6 +131,7 @@ public class EditorExpedition extends AbstractEditor {
 		if (theObject == null) return false;
 		if (!txtTitle.getText().equals(theObject.getTitle())) return true;
 		if (!txtNotes.getText().equals(theObject.getNotes())) return true;
+		if (!txtTrack.getText().equals(theObject.getTrack())) return true;
 		if (selLocation.hasUnsavedData(theObject.getLocation())) return true;
 		if (theObject.getDateFrom().getTime() != dtsDateFrom.getTimeMs()) {
 			log.info("Unsaved tFrom: object has " + dateFormat.format(theObject.getDateFrom()) + 
@@ -146,6 +151,7 @@ public class EditorExpedition extends AbstractEditor {
 		if (obj != null) {
 			theObject = obj;
 			txtTitle.setText(obj.getTitle());
+			txtTrack.setText(obj.getTrack() == null ? "" : obj.getTrack());
 			txtNotes.setText(obj.getNotes());
 			selLocation.setValue(obj.getLocation());
 			dtsDateFrom.setSelection(obj.getDateFrom());
@@ -156,6 +162,7 @@ public class EditorExpedition extends AbstractEditor {
 			theObject = null;
 			txtTitle.setText("");
 			txtNotes.setText("");
+			txtTrack.setText("");
 			selLocation.clearDisplay();
 			lblNPics.setText("");
 			dtsDateFrom.setSelection(null);

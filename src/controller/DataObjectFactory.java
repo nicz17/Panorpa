@@ -115,6 +115,7 @@ public class DataObjectFactory {
 					rs.getTimestamp("expTo"), 
 					rs.getString("expName"),  
 					rs.getString("expDesc"));
+			obj.setTrack(rs.getString("expTrack"));
 		}
 		return obj;
 	}

@@ -186,7 +186,7 @@ public class LocationExporter extends BaseExporter {
 		}
 		
 		// OpenStreetMap
-		addOpenStreetMap(location, page, tdLeft, listNeighbors);
+		addOpenStreetMap(location, page, tdLeft, listNeighbors, null);
 		
 		final Set<HerbierPic> tsPics = location.getPics();
 		int nPics = tsPics.size();

@@ -227,7 +227,8 @@ public class BaseExporter {
 	 * @param loc   the location to display on the map
 	 * @param page  the HTML page to which to add a map
 	 */
-	protected void addOpenStreetMap(Location loc, HtmlPage page, HtmlComposite parent, List<Location> listNeighbors) {
+	protected void addOpenStreetMap(Location loc, HtmlPage page, HtmlComposite parent, 
+			List<Location> listNeighbors, String sGpxFile) {
 		// Check the location has valid map coords
 		Location locNullIsland = new Location(0, "Null Island");
 		locNullIsland.setLongitude(0.0);
@@ -247,7 +248,7 @@ public class BaseExporter {
 			String sRenderMap = "var oVectorSource, oIconStyle;\n" +
 				String.format("renderMap(%.6f, %.6f, %d);\n", 
 					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getMapZoom()) +
-				String.format("addMapMarker(%.6f, %.6f, \"%s\");", 
+				String.format("addMapMarker(%.6f, %.6f, \"%s\");\n", 
 					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getName());
 
 			// Add markers for neighbor locations, with links
@@ -258,6 +259,11 @@ public class BaseExporter {
 						locNeighbor.getLongitude().doubleValue(), locNeighbor.getLatitude().doubleValue(), 
 						locNeighbor.getName(), sUrl);
 				}
+			}
+			
+			// Add map track
+			if (sGpxFile != null) {
+				sRenderMap += "addMapTrack(\"" + sGpxFile + "\");\n";
 			}
 			
 			page.getMainDiv().addJavascript(sRenderMap);
@@ -275,6 +281,4 @@ public class BaseExporter {
 		page.getHead().addScript("js/panorpa-maps.js");
 		page.getHead().addCss("css/OpenLayers-v5.3.0.css");
 	}
-	
-	
 }

@@ -9,14 +9,14 @@ import java.util.TimeZone;
 import java.util.Vector;
 import java.util.regex.Matcher;
 
-import model.OriginalPic;
-
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 
 import common.base.Logger;
 import common.exceptions.AppException;
+import controller.export.ExpeditionsExporter;
+import model.OriginalPic;
 
 /**
  * Manages file operations:
@@ -285,6 +285,29 @@ public class FileManager {
 			proc.waitFor();
 		} catch (Exception e) {
 			log.error("Moving raw files failed: " + e.getMessage());
+		}
+	}
+	
+	/**
+	 * Copies the specified file to geotrack/ dir for upload
+	 * @param fileTrack  the file to store
+	 * @throws AppException  if file does not exist
+	 */
+	public void storeGeoTrack(File fileTrack) throws AppException {
+		log.info("Storing GeoTrack file " + fileTrack);
+		if (!fileTrack.exists()) {
+			throw new AppException("Le fichier n'existe pas : " + fileTrack);
+		}
+
+		String dirGeoTrack = Controller.htmlPath + ExpeditionsExporter.dirTrack;
+		String cmd = "cp " + fileTrack.getAbsolutePath() + " " + dirGeoTrack;
+		log.info("Will execute command: " + cmd);
+		
+		try {
+			Process proc = Runtime.getRuntime().exec(cmd);
+			proc.waitFor();
+		} catch (Exception e) {
+			log.error("Storing GeoTrack file failed: " + e.getMessage());
 		}
 	}
 	

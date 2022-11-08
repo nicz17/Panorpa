@@ -488,7 +488,7 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 			dlg.setFilterNames(new String[] { "GeoTracker (*.gpx)" });
 			String result = dlg.open();
 			if (result != null) {
-				File file = new File(result);
+				final File file = new File(result);
 				// read GeoTracker data and apply to pics
 				final GeoTrack track = GeoTracker.getInstance().readGeoData(file);
 				
@@ -517,6 +517,7 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 					};
 					BusyIndicator.showWhile(getDisplay(), runGeoTagging);
 					progressBox.taskFinished();
+					FileManager.getInstance().storeGeoTrack(file);
 					enableWidgets(true);
 				}
 			}

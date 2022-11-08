@@ -25,6 +25,7 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 	private Date tTo;
 	private String sTitle;
 	private String sNotes;
+	private String sTrack;
 	private Set<HerbierPic> vecPics;
 	
 	/**
@@ -41,6 +42,7 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 		this.tFrom = tFrom;
 		this.tTo   = tTo;
 		this.sNotes = sNotes;
+		this.sTrack = null;
 		this.vecPics = vecPics;
 		
 		if (location != null) {
@@ -66,6 +68,7 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 		this.tTo = tTo;
 		this.sTitle = sTitle;
 		this.sNotes = sNotes;
+		this.sTrack = null;
 		this.vecPics = new HashSet<>();
 	}
 
@@ -110,6 +113,10 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 		return sNotes;
 	}
 
+	public String getTrack() {
+		return sTrack;
+	}
+
 	public void setLocation(Location location) {
 		this.location = location;
 	}
@@ -135,6 +142,11 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 	}
 
 
+	public void setTrack(String sTrack) {
+		this.sTrack = sTrack;
+	}
+
+
 	public void setPics(Set<HerbierPic> vecPics) {
 		this.vecPics = vecPics;
 	}
@@ -142,6 +154,10 @@ public class Expedition extends DataObject implements Comparable<Expedition> {
 
 	public Set<HerbierPic> getPics() {
 		return vecPics;
+	}
+	
+	public long getDuration() {
+		return tTo.getTime() - tFrom.getTime();
 	}
 
 	@Override
