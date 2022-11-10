@@ -13,6 +13,7 @@ import common.text.DurationFormat;
 import controller.Controller;
 import controller.DatabaseTools.eOrdering;
 import controller.ExpeditionManager;
+import controller.FileManager;
 import model.Expedition;
 import model.HerbierPic;
 import model.Location;
@@ -73,12 +74,28 @@ public class ExpeditionsExporter extends BaseExporter {
 		HtmlComposite tdLeft = tableTop.addTableData();
 		HtmlComposite tdRight = tableTop.addTableData();
 		
+		// Photos
+		List<HerbierPic> listPics = new ArrayList<>();
+		listPics.addAll(exp.getPics());
+		int nPics = listPics.size();
+		
+		Collections.sort(listPics, new Comparator<HerbierPic>() {
+			@Override
+			public int compare(HerbierPic pic1, HerbierPic pic2) {
+				return (pic1.getShotAt().before(pic2.getShotAt()) ? -1 : 1);
+			}
+		});
+		
+		for (HerbierPic pic : listPics) {
+			FileManager.getInstance().addGPSCoords(pic);
+		}
+		
 		// OpenStreetMap
 		String sGpxFile = null;
 		if (exp.getTrack() != null && !exp.getTrack().isEmpty()) {
 			sGpxFile = dirTrack + exp.getTrack() + ".gpx";
 		}
-		addOpenStreetMap(exp.getLocation(), page, tdLeft, null, sGpxFile);
+		addOpenStreetMap(exp.getLocation(), page, tdLeft, null, listPics, sGpxFile);
 
 		// Description
 		HtmlComposite div = addBoxDiv(tdRight, "Excursion", "myBox");
@@ -92,22 +109,11 @@ public class ExpeditionsExporter extends BaseExporter {
 		div.addPar(exp.getNotes());
 		div.addPar("Durée " + durationFormat.format(exp.getDuration(), false));
 		
-		// Photos
-		List<HerbierPic> listPics = new ArrayList<>();
-		listPics.addAll(exp.getPics());
-		int nPics = listPics.size();
-		
+		// Photos table
 		main.addTitle(2, "Photos");
 		main.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
 		HtmlComposite tablePics = main.addFillTable(nColumns);
 		tablePics.setCssClass("table-thumbs");
-		
-		Collections.sort(listPics, new Comparator<HerbierPic>() {
-			@Override
-			public int compare(HerbierPic pic1, HerbierPic pic2) {
-				return (pic1.getShotAt().before(pic2.getShotAt()) ? -1 : 1);
-			}
-		});
 		
 		for (HerbierPic hpic : listPics) {
 			String name = hpic.getName();

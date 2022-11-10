@@ -80,6 +80,7 @@ public class ModuleUpload extends SashModule implements DataListener {
 						upload(false);
 					}
 				});
+		btnUpload.setEnabled(false);
 
 		btnUploadModified = widgetsFactory.createPushButton(gWebsite, "Publier les changements", "go-up", 
 				"Publier les changements du site web", false, new SelectionAdapter() {
@@ -264,7 +265,7 @@ public class ModuleUpload extends SashModule implements DataListener {
 	private void enableButtons(boolean enabled) {
 		btnExport.setEnabled(enabled);
 		btnExport.update();
-		btnUpload.setEnabled(enabled);
+		btnUpload.setEnabled(false);
 		btnUpload.update();
 		btnUploadModified.setEnabled(enabled);
 		btnUploadModified.update();

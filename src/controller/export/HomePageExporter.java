@@ -157,12 +157,11 @@ public class HomePageExporter extends BaseExporter {
 		
 		// Latest excursions
 		HtmlComposite divExpeditions = addBoxDiv(tdRight, "Excursions récentes");
-		//List<Expedition> vecExpeditions = ExpeditionManager.getInstance().getRecentExpeditions(nLatestLocations);
 		List<Expedition> vecExpeditions = Controller.getInstance().getRecentExpeditions(nLatestLocations);
 		ul = divExpeditions.addList();
 		for (Expedition exp : vecExpeditions) {
 			HtmlComposite li = ul.addListItem();
-			String url = "journal.html#excursion" + exp.getIdx();
+			String url = "excursion" + exp.getIdx() + ".html";
 			li.addLink(url, exp.getTitle(), exp.getTitle());
 			li.addText(" <font color='gray'>" + dateFormat.format(exp.getDateFrom()) + "</font>");
 		}
@@ -186,8 +185,9 @@ public class HomePageExporter extends BaseExporter {
 		ul.addListItem().addLinkExternal("https://www.inaturalist.org/observations/nicz", "iNaturalist");
 		ul.addListItem().addLinkExternal("http://www.insecte.org/forum/", "Le monde des insectes");
 		ul.addListItem().addLinkExternal("http://www.quelestcetanimal.com/", "Quel est cet animal ?");
-		ul.addListItem().addLinkExternal("http://www.visoflora.com/", "Visoflora");
+		//ul.addListItem().addLinkExternal("http://www.visoflora.com/", "Visoflora");
 		ul.addListItem().addLinkExternal("https://www.infoflora.ch/fr/", "Infoflora");
+		ul.addListItem().addLinkExternal("https://noc.social/@nicz", "Mastodon @nicz@noc.social", "Mastodon", "me");
 		
 		page.saveAs(htmlPath + "index.html");
 	}

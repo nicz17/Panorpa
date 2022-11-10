@@ -25,10 +25,12 @@ public class TrackPoint implements HasMapCoordinates {
 		this.tAt = tAt;
 	}
 
+	@Override
 	public Double getLatitude() {
 		return dLat;
 	}
 
+	@Override
 	public Double getLongitude() {
 		return dLon;
 	}

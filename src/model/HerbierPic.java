@@ -2,7 +2,10 @@ package model;
 
 import java.util.Date;
 
-public class HerbierPic extends DataObject implements HasPhoto, Comparable<HerbierPic> {
+import common.data.HasMapCoordinates;
+
+public class HerbierPic extends DataObject 
+	implements HasPhoto, HasMapCoordinates, Comparable<HerbierPic> {
 
 	private int idx;
 	private String fileName;
@@ -13,6 +16,9 @@ public class HerbierPic extends DataObject implements HasPhoto, Comparable<Herbi
 	private Taxon taxon;
 	private Date updatedAt;
 	private int rating;
+	
+	private Double dLat;
+	private Double dLon;
 	
 	public HerbierPic(int idx, String fileName) {
 		this.fileName = fileName;
@@ -126,6 +132,35 @@ public class HerbierPic extends DataObject implements HasPhoto, Comparable<Herbi
 	public void setTaxon(Taxon taxon) {
 		this.taxon = taxon;
 	}
+
+	@Override
+	public Double getLatitude() {
+		return dLat;
+	}
+
+	@Override
+	public Double getLongitude() {
+		return dLon;
+	}
+
+	public void setLatitude(Double dLat) {
+		this.dLat = dLat;
+	}
+
+	public void setLongitude(Double dLon) {
+		this.dLon = dLon;
+	}
+
+	@Override
+	public int getMapZoom() {
+		return 0;
+	}
+
+	@Override
+	public Double getDistance(HasMapCoordinates objTo) {
+		return null;
+	}
+
 
 	/**
 	 * Gets the latin taxon name.

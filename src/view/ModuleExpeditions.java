@@ -95,6 +95,7 @@ public class ModuleExpeditions extends AbstractModule<Expedition> {
 			Vector<HerbierPic> vecPics = new Vector<HerbierPic>(obj.getPics());
 			Collections.sort(vecPics);
 			multiPhotoBox.setPics(vecPics, obj.getTitle());
+			
 		} else {
 			multiPhotoBox.setPics(null, null);
 		}

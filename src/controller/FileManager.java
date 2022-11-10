@@ -10,12 +10,15 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 
 import com.drew.imaging.ImageMetadataReader;
+import com.drew.lang.GeoLocation;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
+import com.drew.metadata.exif.GpsDirectory;
 
 import common.base.Logger;
 import common.exceptions.AppException;
 import controller.export.ExpeditionsExporter;
+import model.HerbierPic;
 import model.OriginalPic;
 
 /**
@@ -256,7 +259,34 @@ public class FileManager {
 			}
 		}
 		return dShotAt;
-	} 
+	}
+	
+	/**
+	 * Sets GPS longitude and latitude to the specified photo.
+	 * Uses ImageMetadataReader GpsDirectory.
+	 * @param pic  the photo to update (not null)
+	 */
+	public void addGPSCoords(HerbierPic pic) {
+		String filename = Controller.picturesPath + pic.getFileName();
+		File file = new File(filename);
+		if (file.exists()) {
+			try {
+				Metadata metadata = ImageMetadataReader.readMetadata(file);
+				GpsDirectory directory = metadata.getFirstDirectoryOfType(GpsDirectory.class);
+				if (directory != null) {
+					GeoLocation location = directory.getGeoLocation();
+					if (location != null) {
+						pic.setLatitude(location.getLatitude());
+						pic.setLongitude(location.getLongitude());
+					}
+				}
+			} catch (Exception e) {
+				log.error("Failed to read image GPS location", e);
+			}
+		} else {
+			log.error("File does not exist: " + file);
+		}
+	}
 	
 	/**
 	 * Moves .NEF raw image files from orig/ to raw/ directories.

@@ -175,7 +175,7 @@ public class GeoTracker {
 	 * @throws Exception  if exiftool command failed
 	 */
 	private void writeExifGeoData(TrackPoint tp, OriginalPic pic) throws Exception {
-		// NB: could also use exiftool -geotag ../geotracker/10_janv._2021_13_12_41.gpx .
+		// NB: could also use exiftool -geotag ../geotracker/trackFile.gpx .
 		// to update all pics at once, but how to handle time offset ?
 		if (tp != null && pic != null) {
 			// exiftool -exif:gpslatitude="lat" -exif:gpslatituderef=S your.jpg

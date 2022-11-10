@@ -228,7 +228,7 @@ public class BaseExporter {
 	 * @param page  the HTML page to which to add a map
 	 */
 	protected void addOpenStreetMap(Location loc, HtmlPage page, HtmlComposite parent, 
-			List<Location> listNeighbors, String sGpxFile) {
+			List<Location> listNeighbors, List<HerbierPic> listPics, String sGpxFile) {
 		// Check the location has valid map coords
 		Location locNullIsland = new Location(0, "Null Island");
 		locNullIsland.setLongitude(0.0);
@@ -258,6 +258,22 @@ public class BaseExporter {
 					sRenderMap += String.format("addMapMarker(%.6f, %.6f, \"%s\", '%s');\n", 
 						locNeighbor.getLongitude().doubleValue(), locNeighbor.getLatitude().doubleValue(), 
 						locNeighbor.getName(), sUrl);
+				}
+			}
+			
+			// Add photo markers
+			if (listPics != null) {
+				for (HerbierPic pic : listPics) {
+					if (pic.getLatitude() != null && pic.getLongitude() != null) {
+						String picFile = getTaxonHtmlFileName(pic.getTaxon());
+						String picAnchor = "#" + pic.getFileName().replace(".jpg", "");
+						String sUrl = "pages/" + picFile + picAnchor;
+						//String sText = pic.getName();
+						String sText = "<img src='thumbs/" + pic.getFileName() + "'>";
+						sRenderMap += String.format("addMapMarker(%.6f, %.6f, \"%s\", '%s');\n", 
+								pic.getLongitude().doubleValue(), pic.getLatitude().doubleValue(), 
+								sText, sUrl);
+					}
 				}
 			}
 			
