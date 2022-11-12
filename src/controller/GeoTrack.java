@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 
+import common.base.Logger;
 import model.TrackPoint;
 
 /**
@@ -20,8 +21,9 @@ import model.TrackPoint;
  */
 public class GeoTrack {
 
-	//private static final Logger log = new Logger("GeoTrack", true);
+	private static final Logger log = new Logger("GeoTrack", true);
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	private static final int iTolerance = 180*1000;
 	private LinkedHashMap<Date, TrackPoint> mapTrack;
 	private String sName;
 	private String sDesc;
@@ -85,13 +87,21 @@ public class GeoTrack {
 			return null;
 		}
 		
+		long iMinDiff = iTolerance;
 		for (Date tAt : mapTrack.keySet()) {
-			// We assume timestamps are in increasing order !
-			if (tOffset.after(tAt)) {
+			long iDiff = Math.abs(tOffset.getTime() - tAt.getTime());
+			if (iDiff < iMinDiff) {
+				iMinDiff = iDiff;
 				result = mapTrack.get(tAt);
-			} else {
-				break;
 			}
+			/*
+			// We assume timestamps are in increasing order ! WRONG
+			if (Math.abs(tOffset.getTime() - tAt.getTime()) < iTolerance) {
+				result = mapTrack.get(tAt);
+				break;
+			//} else {
+			//	break;
+			} */
 		}
 		
 		return result;
@@ -118,6 +128,10 @@ public class GeoTrack {
 		return result;
 	}
 	
+	/**
+	 * Adds an offset in milliseconds to the photo timestamps
+	 * @param iOffset  offset in milliseconds
+	 */
 	public void setOffset(int iOffset) {
 		this.iOffset = iOffset;
 	}
@@ -131,6 +145,12 @@ public class GeoTrack {
 		str += "de \n" + dateFormat.format(tStart);
 		str += " à \n" + dateFormat.format(tEnd);
 		return str;
+	}
+	
+	public void dump() {
+		for (Date tAt : mapTrack.keySet()) {
+			log.info("... " + dateFormat.format(tAt));
+		}
 	}
 	
 	@Override

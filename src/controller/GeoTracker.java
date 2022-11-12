@@ -47,6 +47,7 @@ public class GeoTracker {
 	public GeoTrack readGeoData(File fileGeoTrack) {
 		log.info("Reading GeoTracker data from file " + fileGeoTrack.getAbsolutePath());
 		GeoTrack geoTrack = new GeoTrack();
+		geoTrack.setOffset(3600*1000);
 		
 		try {
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
@@ -91,11 +92,11 @@ public class GeoTracker {
 				}
 				Date tAt = null;
 				try {
-					tAt = dateFormatTrak2.parse(sTime);
+					tAt = dateFormatTrack.parse(sTime);
 				} catch (ParseException exc1) {
-					log.error("Failed to parse date, trying again: ", exc1);
+					//log.warn("Failed to parse date, trying again: ", exc1);
 					try {
-						tAt = dateFormatTrack.parse(sTime);
+						tAt = dateFormatTrak2.parse(sTime);
 					} catch (ParseException exc2) {
 						log.error("Failed to parse date: ", exc2);
 					}
@@ -105,6 +106,7 @@ public class GeoTracker {
 			}
 			
 			log.info("Result: " + geoTrack);
+			//geoTrack.dump();
 			
 		} catch (Exception e) {
 			log.error("Failed to parse GeoTracker XML", e);
