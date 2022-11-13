@@ -47,7 +47,7 @@ public class GeoTracker {
 	public GeoTrack readGeoData(File fileGeoTrack) {
 		log.info("Reading GeoTracker data from file " + fileGeoTrack.getAbsolutePath());
 		GeoTrack geoTrack = new GeoTrack();
-		geoTrack.setOffset(3600*1000);
+		//geoTrack.setOffset(3600*1000);
 		
 		try {
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
@@ -92,16 +92,15 @@ public class GeoTracker {
 				}
 				Date tAt = null;
 				try {
-					tAt = dateFormatTrack.parse(sTime);
-				} catch (ParseException exc1) {
-					//log.warn("Failed to parse date, trying again: ", exc1);
-					try {
+					if (sTime.length() == 24) {
+						tAt = dateFormatTrack.parse(sTime);
+					} else {
 						tAt = dateFormatTrak2.parse(sTime);
-					} catch (ParseException exc2) {
-						log.error("Failed to parse date: ", exc2);
 					}
+				} catch (ParseException exc1) {
+					log.error("Failed to parse date, trying again: ", exc1);
 				}
-				//log.info("Lat is " + sLat + " lon is " + sLon + " at " + tAt);
+				log.info("Lat is " + sLat + " lon is " + sLon + " at " + dateFormatLog.format(tAt));
 				geoTrack.addTrackPoint(new TrackPoint(Double.valueOf(sLat), Double.valueOf(sLon), Double.valueOf(sEle), tAt));
 			}
 			
@@ -209,6 +208,7 @@ public class GeoTracker {
 	private GeoTracker() {
 		// GeoTracker XML has timestamps in UTC, so we have to set the time zone
 		dateFormatTrack.setTimeZone(TimeZone.getTimeZone("UTC"));
+		dateFormatTrak2.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 
 	/**
