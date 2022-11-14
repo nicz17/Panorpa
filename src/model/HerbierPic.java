@@ -1,11 +1,22 @@
 package model;
 
+import java.util.Comparator;
 import java.util.Date;
 
 import common.data.HasMapCoordinates;
 
 public class HerbierPic extends DataObject 
 	implements HasPhoto, HasMapCoordinates, Comparable<HerbierPic> {
+	
+	/**
+	 * Compares two photos by their shot-at timestamp, oldest first.
+	 */
+	public static Comparator<HerbierPic> comparatorByShotAt = new Comparator<HerbierPic>() {
+		@Override
+		public int compare(HerbierPic pic1, HerbierPic pic2) {
+			return (pic1.getShotAt().before(pic2.getShotAt()) ? -1 : 1);
+		}
+	};
 
 	private int idx;
 	private String fileName;

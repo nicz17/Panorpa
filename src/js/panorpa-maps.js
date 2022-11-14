@@ -12,6 +12,15 @@ function renderMap(dLon, dLat, iZoom) {
         }))
     });
 
+    oPicStyle = new ol.style.Style({
+        image: new ol.style.Icon(({
+            anchor: [0.5, 32],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'pixels',
+            src: 'location-pic.png'
+        }))
+    });
+
     oVectorSource = new ol.source.Vector({});
     var oVectorLayer = new ol.layer.Vector({
         source: oVectorSource
@@ -75,6 +84,17 @@ function addMapMarker(dLon, dLat, sLabel, sUrl) {
 	url: sUrl
     });
     oIconFeature.setStyle(oIconStyle);
+    oVectorSource.addFeature(oIconFeature);
+};
+
+function addPicMarker(dLon, dLat, sLabel, sUrl) {
+    var oPosition = ol.proj.fromLonLat([dLon, dLat]);
+    var oIconFeature = new ol.Feature({
+        geometry: new ol.geom.Point(oPosition),
+        label: sLabel,
+	url: sUrl
+    });
+    oIconFeature.setStyle(oPicStyle);
     oVectorSource.addFeature(oIconFeature);
 };
 

@@ -261,6 +261,11 @@ public class BaseExporter {
 				}
 			}
 			
+			// Add map track
+			if (sGpxFile != null) {
+				sRenderMap += "addMapTrack(\"" + sGpxFile + "\");\n";
+			}
+			
 			// Add photo markers
 			if (listPics != null) {
 				for (HerbierPic pic : listPics) {
@@ -268,18 +273,12 @@ public class BaseExporter {
 						String picFile = getTaxonHtmlFileName(pic.getTaxon());
 						String picAnchor = "#" + pic.getFileName().replace(".jpg", "");
 						String sUrl = "pages/" + picFile + picAnchor;
-						//String sText = pic.getName();
 						String sText = "<img src='thumbs/" + pic.getFileName() + "'>";
-						sRenderMap += String.format("addMapMarker(%.6f, %.6f, \"%s\", '%s');\n", 
+						sRenderMap += String.format("addPicMarker(%.6f, %.6f, \"%s\", '%s');\n", 
 								pic.getLongitude().doubleValue(), pic.getLatitude().doubleValue(), 
 								sText, sUrl);
 					}
 				}
-			}
-			
-			// Add map track
-			if (sGpxFile != null) {
-				sRenderMap += "addMapTrack(\"" + sGpxFile + "\");\n";
 			}
 			
 			page.getMainDiv().addJavascript(sRenderMap);

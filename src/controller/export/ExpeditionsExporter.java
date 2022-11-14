@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -78,13 +77,7 @@ public class ExpeditionsExporter extends BaseExporter {
 		List<HerbierPic> listPics = new ArrayList<>();
 		listPics.addAll(exp.getPics());
 		int nPics = listPics.size();
-		
-		Collections.sort(listPics, new Comparator<HerbierPic>() {
-			@Override
-			public int compare(HerbierPic pic1, HerbierPic pic2) {
-				return (pic1.getShotAt().before(pic2.getShotAt()) ? -1 : 1);
-			}
-		});
+		Collections.sort(listPics, HerbierPic.comparatorByShotAt);
 		
 		for (HerbierPic pic : listPics) {
 			FileManager.getInstance().addGPSCoords(pic);
@@ -148,55 +141,4 @@ public class ExpeditionsExporter extends BaseExporter {
 		//li.addText(" &mdash; " + exp.getPics().size() + " photos");
 		li.addText("</font>");
 	}
-	
-	/*
-	private void exportExpeditionOld(Expedition exp, HtmlComposite parent, HtmlComposite menu) {
-		
-		// add month and year to menu if needed
-		String sMonthYear = upperCaseFirst(dateFormatMenu.format(exp.getDateFrom()));
-		if (!sMonthYear.equals(sLastMonthYear)) {
-			sLastMonthYear = sMonthYear;
-			String sAnchor = dateFormatAnchor.format(exp.getDateFrom());
-			menu.addLink("#" + sAnchor, "Voir les observations de " + sMonthYear.toLowerCase(), sMonthYear);
-			menu.addBr();
-			parent.addAnchor(sAnchor);
-		}
-		
-		// write the expedition to a myBox div
-		Location loc = exp.getLocation();
-		String sAnchor = "excursion" + exp.getIdx();
-		HtmlComposite anchor = parent.addAnchor(sAnchor);
-		HtmlComposite div = addBoxDiv(anchor, exp.getTitle(), "myBox myBox-wide");
-		HtmlComposite par = div.addPar();
-		String filename = "lieu" + loc.getIdx() + ".html";
-		par.addLink(filename, loc.getName(), loc.getName());
-		par.addText(" <font color='gray'>&mdash; ");
-		par.addText(dateFormat.format(exp.getDateFrom()));
-		par.addText(" &mdash; " + exp.getPics().size() + " photos</font>");
-		filename = "excursion" + exp.getIdx() + ".html";
-		par.addLink(filename, " link", exp.getTitle());
-		
-		div.addPar(exp.getNotes());
-		
-		HtmlComposite tablePics = div.addFillTable(nColumns);
-		tablePics.setCssClass("table-thumbs");
-		
-		List<HerbierPic> listPics = new ArrayList<>();
-		listPics.addAll(exp.getPics());
-		Collections.sort(listPics, new Comparator<HerbierPic>() {
-			@Override
-			public int compare(HerbierPic pic1, HerbierPic pic2) {
-				return (pic1.getShotAt().before(pic2.getShotAt()) ? -1 : 1);
-			}
-		});
-		
-		for (HerbierPic hpic : listPics) {
-			String name = hpic.getName();
-			HtmlComposite td = tablePics.addTableData();
-			String picFile = getTaxonHtmlFileName(hpic.getTaxon());
-			String picAnchor = "#" + hpic.getFileName().replace(".jpg", "");
-			HtmlComposite link = td.addLink("pages/" + picFile + picAnchor, getTooltiptext(hpic.getTaxon()));
-			link.addImage("thumbs/" + hpic.getFileName(), name);
-		}
-	} */
 }

@@ -1,9 +1,11 @@
 package controller.validation;
 
+import java.io.File;
 import java.util.Date;
 
 import common.exceptions.ValidationException;
-
+import controller.Controller;
+import controller.export.ExpeditionsExporter;
 import model.Expedition;
 
 /**
@@ -46,6 +48,14 @@ public class ExpeditionValidator extends Validator<Expedition> {
 		}
 		if (obj.getDateTo().after(tNow)) {
 			onError("La date de fin est dans le futur !");
+		}
+		
+		if (obj.getTrack() != null && !obj.getTrack().isEmpty()) {
+			String sFileName = Controller.htmlPath + ExpeditionsExporter.dirTrack + obj.getTrack() + ".gpx";
+			File fileTrack = new File(sFileName);
+			if (!fileTrack.exists()) {
+				onError("Le fichier GPX n'existe pas : " + sFileName);
+			}
 		}
 	}
 
