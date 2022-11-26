@@ -123,10 +123,10 @@ public class DatabaseTools {
 		Pattern pat = Pattern.compile("(\\d\\d\\d\\d)\\-(\\d\\d)\\-(\\d\\d)");
 		Matcher mat = pat.matcher(sqlDate);
 		if (mat.find()) {
-			int iDay = new Integer(mat.group(3)).intValue();
+			int iDay = Integer.valueOf(mat.group(3)).intValue();
 			String strDay = (iDay==1 ? "1er" : String.format("%d", iDay));
 			prettyDate = String.format("%s %s %s", strDay,
-					monthNames[new Integer(mat.group(2)).intValue()-1], 
+					monthNames[Integer.valueOf(mat.group(2)).intValue()-1], 
 					mat.group(1) );
 		} else {
 			System.out.println("Could not convert to pretty date: <" + sqlDate + ">");
@@ -153,7 +153,7 @@ public class DatabaseTools {
 		Pattern pat = Pattern.compile("(\\d\\d\\d\\d)\\-(\\d\\d)\\-(\\d\\d)");
 		Matcher mat = pat.matcher(sqlDate);
 		if (mat.find()) {
-			return new Integer(mat.group(1)).intValue();
+			return Integer.valueOf(mat.group(1)).intValue();
 		} else {
 			System.out.println("Could not find year in date: <" + sqlDate + ">");
 		}

@@ -134,7 +134,7 @@ public abstract class TaxonTree {
 	 * @param idxTaxon  the database index of taxon to select
 	 */
 	public void setSelection(int idxTaxon) {
-		Taxon taxon = mapData.get(new Integer(idxTaxon));
+		Taxon taxon = mapData.get(Integer.valueOf(idxTaxon));
 		if (taxon != null) {
 			tree.deselectAll();
 			expandAll(false);
@@ -298,7 +298,7 @@ public abstract class TaxonTree {
 	private void setItemData(TreeItem item, final Taxon taxon) {
 		item.setText(getItemLabel(taxon));
 		item.setImage(ViewTools.getRankIcon(taxon.getRank()));
-		item.setData(new Integer(taxon.getIdx()));
+		item.setData(Integer.valueOf(taxon.getIdx()));
 	}
 	
 	private String getItemLabel(final Taxon taxon) {

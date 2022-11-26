@@ -53,7 +53,7 @@ public class AppParam extends DataObject {
 	
 	public Integer getIntValue() {
 		if (AppParamKind.INT == kind) {
-			return new Integer((int) numValue);
+			return Integer.valueOf((int) numValue);
 		}
 		return null;
 	}

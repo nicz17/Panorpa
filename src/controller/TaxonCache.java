@@ -52,7 +52,7 @@ public class TaxonCache {
 	 */
 	public Taxon getTaxon(int idx) {
 		if (idx > 0) {
-			return mapById.get(new Integer(idx));
+			return mapById.get(Integer.valueOf(idx));
 		} else {
 			return null;
 		}
@@ -135,7 +135,7 @@ public class TaxonCache {
 	 */
 	private void addTaxon(Taxon taxon) {
 		if (taxon != null) {
-			mapById.put(new Integer(taxon.getIdx()), taxon);
+			mapById.put(Integer.valueOf(taxon.getIdx()), taxon);
 			mapByName.put(taxon.getName(), taxon);
 		}
 	}

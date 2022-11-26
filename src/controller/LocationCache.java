@@ -30,7 +30,7 @@ public class LocationCache {
 	 */
 	public Location getLocation(int idx) {
 		if (idx > 0) {
-			return mapById.get(new Integer(idx));
+			return mapById.get(Integer.valueOf(idx));
 		} else {
 			return null;
 		}
@@ -112,7 +112,7 @@ public class LocationCache {
 	 */
 	private void addLocation(Location location) {
 		if (location != null) {
-			mapById.put(new Integer(location.getIdx()), location);
+			mapById.put(Integer.valueOf(location.getIdx()), location);
 		}
 	}
 

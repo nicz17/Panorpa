@@ -10,12 +10,12 @@ public class StatItem extends DataObject {
 	
 	public StatItem(String desc, int value) {
 		this.desc = desc;
-		this.value = new Integer(value).toString();
+		this.value = Integer.valueOf(value).toString();
 	}
 	
 	public StatItem(String desc, float value) {
 		this.desc = desc;
-		this.value = new Float(value).toString();
+		this.value = Float.valueOf(value).toString();
 	}
 	
 	public String[] getDataRow() {

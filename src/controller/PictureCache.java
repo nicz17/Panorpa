@@ -28,7 +28,7 @@ public class PictureCache {
 	 */
 	public HerbierPic getPicture(int idx) {
 		if (idx > 0) {
-			return mapById.get(new Integer(idx));
+			return mapById.get(Integer.valueOf(idx));
 		} else {
 			return null;
 		}
@@ -82,7 +82,7 @@ public class PictureCache {
 	 */
 	private void addPic(HerbierPic pic) {
 		if (pic != null) {
-			mapById.put(new Integer(pic.getIdx()), pic);
+			mapById.put(Integer.valueOf(pic.getIdx()), pic);
 		}
 	}
 
