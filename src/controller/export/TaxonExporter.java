@@ -3,7 +3,6 @@ package controller.export;
 import java.util.Set;
 import java.util.Vector;
 
-import common.base.Logger;
 import common.html.HtmlTag;
 import common.html.HtmlTagFactory;
 import common.html.TableHtmlTag;
@@ -23,13 +22,23 @@ import model.TaxonRank;
  */
 public class TaxonExporter extends BaseExporter {
 
-	private static final Logger log = new Logger("TaxonExporter", true);
+	//private static final Logger log = new Logger("TaxonExporter", true);
 	protected TaxonUrlProvider taxonUrlProvider;
 
+	/**
+	 * Constructor.
+	 */
 	public TaxonExporter() {
 		taxonUrlProvider = new TaxonUrlProvider();
 	}
 	
+	/**
+	 * Export the specified taxon as a HTML page, 
+	 * with its photos and a classification table.
+	 * @param taxon  the taxon to export
+	 * @param prevTaxon  the previous taxon, for navigation
+	 * @param nextTaxon  the next taxon, for navigation
+	 */
 	public void exportTaxon(Taxon taxon, Taxon prevTaxon, Taxon nextTaxon) {
 		Set<HerbierPic> pics = taxon.getPics();
 		if (pics.isEmpty()) {
@@ -42,28 +51,27 @@ public class TaxonExporter extends BaseExporter {
 		//log.info("Creating html page for " + name + " with " + pics.size() + " pics as " + filename);
 		
 		PanorpaHtmlPage page = new PanorpaHtmlPage("Nature - " + name, filename, "../");
-		page.addMenuItem(3, "#", name);
 
 		// Title and subtitle
 		String title = name;
 		if (!name.equals(taxon.getNameFr())) {
 			title += taxonNameSeparator + taxon.getNameFr();
 		}
-		page.add(HtmlTagFactory.title(1, title));
+		page.addTitle(1, title);
 		if (rank != TaxonRank.SPECIES && rank != TaxonRank.GENUS) {
 			page.add(HtmlTagFactory.title(2, "<font color='gray'>Genre indéterminé</font>"));
 		}
 		
 		// Photos table
-		TableHtmlTag tablePhotos = new TableHtmlTag(2);
+		TableHtmlTag tablePhotos = page.addTable(2);
 		tablePhotos.addAttribute("width", "1040px");
 		tablePhotos.setClass("table-medium");
 		
 		for (HerbierPic hpic : pics) {
 			// image link
 			HtmlTag linkImage = new HtmlTag("a");
-			linkImage.addAttribute("href", hpic.getFileName());
-			linkImage.addTag(HtmlTagFactory.image("../medium/" + hpic.getFileName(), name));
+			linkImage.addAttribute("href", "../photos/" + hpic.getFileName());
+			linkImage.addTag(HtmlTagFactory.image("../medium/" + hpic.getFileName(), name, name));
 
 			// image details
 			Location location = hpic.getLocation();
@@ -98,18 +106,16 @@ public class TaxonExporter extends BaseExporter {
 			// Add empty cell for table alignment
 			tablePhotos.addCell("");
 		}
-		page.add(tablePhotos);
 		
 		// External links
-		ParHtmlTag par = new ParHtmlTag("Pages ");
+		ParHtmlTag par = page.addParagraph("Pages ");
 		taxonUrlProvider.addLinks(par, taxon);
-		page.add(par);
 		
-		HtmlTag boxClassif = HtmlTagFactory.blueBox("Classification");
+		// Classification box
+		HtmlTag boxClassif = page.addBox("Classification");
 		TableHtmlTag tableClassif = new TableHtmlTag(3);
 		tableClassif.addAttribute("width", "500px");
 		boxClassif.addTag(tableClassif);
-		page.add(boxClassif);
 
 		Vector<Taxon> vecTaxa = new Vector<>();
 		vecTaxa.add(taxon);
@@ -124,13 +130,45 @@ public class TaxonExporter extends BaseExporter {
 			addClassificationTableData(tableClassif, tax);
 			tableClassif.addCell(tax.getNameFr());
 		}
+		
+		// Navigation links
+		Taxon family = taxon.getAncestor(TaxonRank.FAMILY);
+		Taxon order  = family.getParent();
+		Taxon taxClass = order.getParent();
+		Taxon phylum = taxClass.getParent();
+		Taxon kingdom = phylum.getParent();
+		
+		TableHtmlTag tableNav = page.addTable(3);
+		tableNav.addAttribute("width", "500px");
+		tableNav.setClass("table-nav");
+		tableNav.addCell(HtmlTagFactory.imageLink(getTaxonHtmlFileName(prevTaxon), prevTaxon.getName(), 
+				"prev.gif", "Précédante"));
+		tableNav.addCell(HtmlTagFactory.imageLink("../" + order.getName() + ".html#" + family.getName(), 
+				"Retour à la page des " + order.getName(), "home.gif", "Retour"));
+		tableNav.addCell(HtmlTagFactory.imageLink(getTaxonHtmlFileName(nextTaxon), nextTaxon.getName(), 
+				"next.gif", "Suivante"));
+		
+		// Menu items
+		page.addMenuItem(1, "#", "Classification");
+		page.addMenuItem(3, "../classification.html#" + kingdom.getName(), kingdom.getName());
+		page.addMenuItem(3, "../" + phylum.getName() + ".html#" + taxClass.getName(), taxClass.getName());
+		page.addMenuItem(3, "../" + order.getName() + ".html", order.getName());
+		page.addMenuItem(3, "../" + order.getName() + ".html#" + family.getName(), family.getName());
+		if (TaxonRank.FAMILY != taxon.getRank()) {
+			page.addMenuItem(3, "#", name);
+		}
 
 		page.save();
 	}
-	
+
+	/**
+	 * Add a cell to the specified table with a taxon rank icon and name.
+	 * @param table  the classification table
+	 * @param taxon  the taxon to add to table
+	 */
 	private void addClassificationTableRank(TableHtmlTag table, Taxon taxon) {
 		TaxonRank rank = taxon.getRank();
-		HtmlTag tIcon = HtmlTagFactory.image("rank" + rank.getOrder() + ".svg", rank.getGuiName());
+		HtmlTag tIcon = HtmlTagFactory.image("rank" + rank.getOrder() + ".svg", rank.getGuiName(), rank.getGuiName());
 		String sIcon = tIcon.toHtml(0, true);
 		table.addCell(sIcon + " " + rank.getGuiName());
 	}

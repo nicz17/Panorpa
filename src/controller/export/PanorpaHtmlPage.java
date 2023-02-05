@@ -3,7 +3,6 @@ package controller.export;
 import java.util.Date;
 import java.util.Vector;
 
-import common.html.DivHtmlTag;
 import common.html.HtmlPage;
 import common.html.HtmlTag;
 import common.html.HtmlTagFactory;
@@ -30,19 +29,20 @@ public class PanorpaHtmlPage extends HtmlPage {
 	 * @param sPath      the relative path for links
 	 */
 	public PanorpaHtmlPage(String sTitle, String sFilename, String sPath) {
-		super(sTitle, sFilename, sPath, "style.css", Panorpa.getInstance().getAppName());
+		super(sTitle, sFilename, sPath, "style.css", 
+				Panorpa.getInstance().getAppName() + " v" + Panorpa.getInstance().getAppVersion());
 	}
 	
 	@Override
 	protected void buildHeader() {
-		HtmlTag header = new DivHtmlTag("header");
-		header.addTag(new HtmlTag("small", "Photos de nature"));
+		HtmlTag header = HtmlTagFactory.div("header");
+		header.addTag(new HtmlTag("small", "Photos de nature par Nicolas Zwahlen"));
 		body.addTag(header);
 	}
 	
 	@Override
 	protected void buildMenu() {
-		this.menu = new DivHtmlTag("menu");
+		this.menu = HtmlTagFactory.div("menu");
 		body.addTag(menu);
 		addMenuItem(1, sPath + "index.html", "Accueil");
 		addMenuItem(3, sPath + "tree.html", "Classification");
@@ -53,14 +53,13 @@ public class PanorpaHtmlPage extends HtmlPage {
 		addMenuItem(3, sPath + "journal.html", "Excursions");
 		addMenuItem(3, sPath + "liens.html", "Liens");
 		addMenuItem(3, "http://www.tf79.ch", "TF79.ch");
-		addMenuItem(1, "#", "Classification");
 	}
 	
 	@Override
 	protected void buildFooter() {
-		HtmlTag footer = new DivHtmlTag("footer");
+		HtmlTag footer = HtmlTagFactory.div("footer");
 		String sFooter = "Copyleft Nicolas Zwahlen &mdash; " + 
-				dateFormat.format(new Date()) + 
+				dateFormatFr.format(new Date()) + 
 				" &mdash; Panorpa v" + Panorpa.getInstance().getAppVersion();
 		footer.addTag(new HtmlTag("p", sFooter));
 		body.addTag(footer);
@@ -91,7 +90,7 @@ public class PanorpaHtmlPage extends HtmlPage {
 		for (int i=1; i<3; ++i) {
 			HtmlTag linkImage = new HtmlTag("a");
 			linkImage.addAttribute("href", "photos/idaea-aureolaria00" + i + ".jpg");
-			linkImage.addTag(HtmlTagFactory.image("medium/idaea-aureolaria00" + i + ".jpg", sSpecies));
+			linkImage.addTag(HtmlTagFactory.image("medium/idaea-aureolaria00" + i + ".jpg", sSpecies, sSpecies));
 			Vector<HtmlTag> vecTags = new Vector<>();
 			vecTags.add(HtmlTagFactory.anchor("Idaea_auro" + i));
 			vecTags.add(linkImage);
