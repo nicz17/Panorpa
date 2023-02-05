@@ -33,9 +33,11 @@ public class WebsiteExporter extends BaseExporter {
 	private HtmlPage htmlPage;
 	private HtmlComposite menuDiv;
 	protected TaxonUrlProvider taxonUrlProvider;
+	private TaxonExporter taxonExporter;
 	
 	public WebsiteExporter() {
 		taxonUrlProvider = new TaxonUrlProvider();
+		taxonExporter = new TaxonExporter();
 	}
 	
 	public void export(Set<Taxon> taxa) {
@@ -217,7 +219,8 @@ public class WebsiteExporter extends BaseExporter {
 				Taxon nextTaxon = tsTaxa.higher(taxon);
 				if (nextTaxon == null) nextTaxon = tsTaxa.first();
 				
-				exportTaxon(taxon, prevTaxon, nextTaxon);
+				//exportTaxon(taxon, prevTaxon, nextTaxon);
+				taxonExporter.exportTaxon(taxon, prevTaxon, nextTaxon);
 			}
 		}
 		
@@ -658,7 +661,7 @@ public class WebsiteExporter extends BaseExporter {
 		// External links
 		HtmlComposite par = main.addPar();
 		par.addText("Pages ");
-		taxonUrlProvider.addLinks(par, taxon);
+		//taxonUrlProvider.addLinks(par, taxon);
 		
 		// classification
 		HtmlComposite divClassif = addBoxDiv(main, "Classification");

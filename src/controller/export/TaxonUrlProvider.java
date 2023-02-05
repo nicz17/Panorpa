@@ -6,7 +6,8 @@ import java.util.Set;
 
 import model.Taxon;
 import model.TaxonRank;
-import common.io.HtmlComposite;
+//import common.io.ParHtmlTag;
+import common.html.ParHtmlTag;
 
 /**
  * This class provides html links to external websites offering additional info about taxa,
@@ -17,6 +18,8 @@ import common.io.HtmlComposite;
  *
  */
 public class TaxonUrlProvider {
+	
+	private static final String sSeparator = " | ";
 	
 	private final Set<String> setClassInGalerieInsecte;
 	private final Set<String> setFamilyInHomoptera;
@@ -45,9 +48,13 @@ public class TaxonUrlProvider {
 	 * @param par    the html composite to add links to
 	 * @param taxon  the taxon to find links for
 	 */
-	public void addLinks(HtmlComposite par, Taxon taxon) {
-		par.addLinkExternal(getWikipediaUrl(taxon),   "Wikipedia",   "Wikipedia");
-		par.addText(" | ");
+	public void addLinks(ParHtmlTag par, Taxon taxon) {
+		par.addLinkExternal(getWikipediaUrl(taxon, "fr"), "Wikipedia", "Wikipedia [fr]");
+		par.addText(sSeparator);
+		par.addNewLine(4);
+		par.addLinkExternal(getWikipediaUrl(taxon, "en"), "Wikipedia in English", "Wikipedia [en]");
+		par.addText(sSeparator);
+		par.addNewLine(4);
 		par.addLinkExternal(getWikispeciesUrl(taxon), "Wikispecies", "Wikispecies");
 		
 		// TODO use a switch on rank and class to avoid multiple taxon lookups
@@ -103,9 +110,10 @@ public class TaxonUrlProvider {
 	 * @param text    the link text
 	 * @param tooltip the link tooltip text
 	 */
-	private void addLink(HtmlComposite par, Taxon taxon, String url, String text, String tooltip) {
+	private void addLink(ParHtmlTag par, Taxon taxon, String url, String text, String tooltip) {
 		if (url != null) {
-			par.addText(" | ");
+			par.addText(sSeparator);
+			par.addNewLine(4);
 			par.addLinkExternal(url, taxon.getNameFr() + " chez " + tooltip, text);
 		}
 	}
@@ -251,8 +259,14 @@ public class TaxonUrlProvider {
 		return url;
 	}
 	
-	private String getWikipediaUrl(Taxon taxon) {
-		String url = "http://fr.wikipedia.org/wiki/" + taxon.getName();
+	/**
+	 * Get a Wikipedia link.
+	 * @param taxon  the taxon to link to
+	 * @param sLang  the language, fr or en
+	 * @return a Wikipedia URL
+	 */
+	private String getWikipediaUrl(Taxon taxon, String sLang) {
+		String url = "http://" + sLang + ".wikipedia.org/wiki/" + taxon.getName();
 		return url;
 	}
 	

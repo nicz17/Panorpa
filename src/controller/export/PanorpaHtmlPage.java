@@ -24,11 +24,13 @@ public class PanorpaHtmlPage extends HtmlPage {
 	private HtmlTag menu;
 
 	/**
-	 * @param sTitle
-	 * @param sFilename
+	 * Constructor.
+	 * @param sTitle     the page title
+	 * @param sFilename  the filename for saving the page
+	 * @param sPath      the relative path for links
 	 */
-	public PanorpaHtmlPage(String sTitle, String sFilename) {
-		super(sTitle, sFilename, "style.css", Panorpa.getInstance().getAppName());
+	public PanorpaHtmlPage(String sTitle, String sFilename, String sPath) {
+		super(sTitle, sFilename, sPath, "style.css", Panorpa.getInstance().getAppName());
 	}
 	
 	@Override
@@ -42,12 +44,14 @@ public class PanorpaHtmlPage extends HtmlPage {
 	protected void buildMenu() {
 		this.menu = new DivHtmlTag("menu");
 		body.addTag(menu);
-		addMenuItem(1, "index.html", "Accueil");
-		addMenuItem(3, "tree.html", "Classification");
-		addMenuItem(3, "latest.html", "Dernières photos");
-		addMenuItem(3, "lieux.html", "Lieux");
-		addMenuItem(3, "journal.html", "Excursions");
-		addMenuItem(3, "liens.html", "Liens");
+		addMenuItem(1, sPath + "index.html", "Accueil");
+		addMenuItem(3, sPath + "tree.html", "Classification");
+		addMenuItem(3, sPath + "latest.html", "Dernières photos");
+		addMenuItem(3, sPath + "lieux.html", "Lieux");
+		addMenuItem(3, sPath + "noms-latins.html", "Noms latins");
+		addMenuItem(3, sPath + "noms-verna.html", "Noms communs");
+		addMenuItem(3, sPath + "journal.html", "Excursions");
+		addMenuItem(3, sPath + "liens.html", "Liens");
 		addMenuItem(3, "http://www.tf79.ch", "TF79.ch");
 		addMenuItem(1, "#", "Classification");
 	}
@@ -62,6 +66,12 @@ public class PanorpaHtmlPage extends HtmlPage {
 		body.addTag(footer);
 	}
 	
+	/**
+	 * Adds a menu item to the menu on the left.
+	 * @param iLevel  the menu item level (1 to 3)
+	 * @param url     the link url
+	 * @param text    the link text
+	 */
 	public void addMenuItem(int iLevel, String url, String text) {
 		HtmlTag item = new HtmlTag("h" + iLevel);
 		item.addTag(HtmlTagFactory.link(url, text));
@@ -71,13 +81,13 @@ public class PanorpaHtmlPage extends HtmlPage {
 	private static void test() {
 		String sFilename = Controller.htmlPath + "test.html";
 		String sSpecies = "Idaea aureolaria";
-		PanorpaHtmlPage page = new PanorpaHtmlPage("Nature - Test", sFilename);
+		PanorpaHtmlPage page = new PanorpaHtmlPage("Nature - Test", sFilename, "");
 		page.add(HtmlTagFactory.title(1, "PanorpaHtmlPage Test -- " + sSpecies));
 		page.addMenuItem(3, "#", sSpecies);
 		
 		TableHtmlTag tablePhotos = new TableHtmlTag(2);
 		tablePhotos.addAttribute("width", "1040px");
-		tablePhotos.addAttribute("class", "table-medium");
+		tablePhotos.setClass("table-medium");
 		for (int i=1; i<3; ++i) {
 			HtmlTag linkImage = new HtmlTag("a");
 			linkImage.addAttribute("href", "photos/idaea-aureolaria00" + i + ".jpg");
