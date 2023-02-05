@@ -3,6 +3,7 @@ package controller.export;
 import java.text.DateFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,6 +12,10 @@ import model.Location;
 import model.Taxon;
 import model.TaxonRank;
 import common.base.Logger;
+import common.html.HtmlTag;
+import common.html.HtmlTagFactory;
+import common.html.ParHtmlTag;
+import common.html.TableHtmlTag;
 import common.io.HtmlComposite;
 
 import controller.Controller;
@@ -104,7 +109,19 @@ public class BaseExporter {
 	 * @param table      the html table
 	 * @param bWithDate  flag to write picture date or not
 	 */
+	@Deprecated  // Use TableHtmlTag
 	protected void exportPicture(final HerbierPic hpic, final HtmlComposite table, boolean bWithDate) {
+		exportPicture(hpic, table, bWithDate, null);
+	}
+	
+	/**
+	 * Exports the specified picture to the specified html table.
+	 * 
+	 * @param hpic       the picture to export
+	 * @param table      the html table
+	 * @param bWithDate  flag to write picture date or not
+	 */
+	protected void exportPicture(final HerbierPic hpic, final TableHtmlTag table, boolean bWithDate) {
 		exportPicture(hpic, table, bWithDate, null);
 	}
 	
@@ -145,6 +162,48 @@ public class BaseExporter {
 		if (bWithDate) {
 			td.addText("<br><font color='gray'>" + dateFormat.format(hpic.getShotAt()) + "</font>");
 		}
+	}
+	
+	/**
+	 * Exports the specified picture to the specified html table.
+	 * 
+	 * @param hpic       the picture to export
+	 * @param table      the html table
+	 * @param bWithDate  flag to write picture date or not
+	 * @param nPics      number of pictures represented, may be null
+	 */
+	protected void exportPicture(final HerbierPic hpic, final TableHtmlTag table, boolean bWithDate, Integer nPics) {
+		String name = hpic.getName();
+		Vector<HtmlTag> vecCell = new Vector<>();
+		
+		// image with link
+		String picFile = getTaxonHtmlFileName(hpic.getTaxon());
+		String picAnchor = "#" + hpic.getFileName().replace(".jpg", "");
+		HtmlTag link = HtmlTagFactory.imageLink("pages/" + picFile + picAnchor, name, 
+				"thumbs/" + hpic.getFileName(), name);
+		TaxonRank rank = hpic.getTaxon().getRank();
+		if (rank == TaxonRank.SPECIES || rank == TaxonRank.GENUS) {
+			link.addTag(new HtmlTag("i", "<br>" + name));
+		} else {
+			link.addTag(HtmlTagFactory.grayFont("<br>Genre indéterminé"));
+		}
+		vecCell.add(link);
+
+		vecCell.add(HtmlTagFactory.anchor(name));
+		vecCell.add(new HtmlTag("span", "<br>" + hpic.getFrenchName()));
+		
+		if (nPics != null) {
+			vecCell.add(HtmlTagFactory.grayFont("<br>" + nPics.intValue() + " photo" + 
+					(nPics.intValue() > 1 ? "s" : "")));
+		} else {
+			vecCell.add(new HtmlTag("span", "<br>" + hpic.getFamily()));
+		}
+		
+		
+		if (bWithDate) {
+			vecCell.add(HtmlTagFactory.grayFont("<br>" + dateFormat.format(hpic.getShotAt())));
+		}
+		table.addCell(vecCell);
 	}
 	
 	/**

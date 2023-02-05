@@ -36,7 +36,7 @@ public class PanorpaHtmlPage extends HtmlPage {
 	@Override
 	protected void buildHeader() {
 		HtmlTag header = HtmlTagFactory.div("header");
-		header.addTag(new HtmlTag("small", "Photos de nature par Nicolas Zwahlen"));
+		header.addTag(new HtmlTag("small", "Photos de nature &mdash; par Nicolas Zwahlen"));
 		body.addTag(header);
 	}
 	

@@ -13,7 +13,7 @@ import java.util.Vector;
 import model.HerbierPic;
 import model.Taxon;
 import model.TaxonRank;
-
+import common.html.TableHtmlTag;
 import common.io.HtmlComposite;
 
 import controller.DataAccess;
@@ -132,10 +132,8 @@ public class PictureExporter extends BaseExporter {
 	 * Creates a HTML page with the latest pictures.
 	 */
 	private void createLatestPicsPage() {
-		HtmlPage page = new HtmlPage("Nature - Dernières photos");
-		HtmlComposite main = page.getMainDiv();
-		
-		main.addTitle(1, "Dernières photos");
+		PanorpaHtmlPage page = new PanorpaHtmlPage("Nature - Dernières photos", htmlPath + "latest.html", "");
+		page.addTitle(1, "Dernières photos");
 		
 		Vector<HerbierPic> pics = new Vector<>(PictureCache.getInstance().getAll());
 		Collections.sort(pics, new Comparator<HerbierPic>() {
@@ -150,8 +148,9 @@ public class PictureExporter extends BaseExporter {
 			}
 		});
 		
-		HtmlComposite table = main.addFillTable(nColumns);
-		table.setCssClass("table-thumbs");
+		TableHtmlTag table = page.addTable(nColumns);
+		table.addAttribute("width", "100%");
+		table.setClass("table-thumbs");
 		
 		Iterator<HerbierPic> it = pics.iterator();
 		int nPics = 0;
@@ -161,7 +160,7 @@ public class PictureExporter extends BaseExporter {
 			exportPicture(pic, table, true);
 		}
 		
-		page.saveAs(htmlPath + "latest.html");
+		page.save();
 	}
 	
 	/**

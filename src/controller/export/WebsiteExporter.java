@@ -6,7 +6,6 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import model.HerbierPic;
-import model.Location;
 import model.Taxon;
 import model.TaxonRank;
 
@@ -32,11 +31,11 @@ public class WebsiteExporter extends BaseExporter {
 	
 	private HtmlPage htmlPage;
 	private HtmlComposite menuDiv;
-	protected TaxonUrlProvider taxonUrlProvider;
+	//protected TaxonUrlProvider taxonUrlProvider;
 	private TaxonExporter taxonExporter;
 	
 	public WebsiteExporter() {
-		taxonUrlProvider = new TaxonUrlProvider();
+		//taxonUrlProvider = new TaxonUrlProvider();
 		taxonExporter = new TaxonExporter();
 	}
 	
@@ -231,7 +230,7 @@ public class WebsiteExporter extends BaseExporter {
 		orderPage.saveAs(htmlPath + name + ".html");
 	}
 	
-	
+	/* TODO to remove (moved to TaxonExporter)
 	private void addClassificationTableData(HtmlComposite table, Taxon taxon) {
 		switch(taxon.getRank()) {
 		case KINGDOM:
@@ -265,6 +264,7 @@ public class WebsiteExporter extends BaseExporter {
 			break;
 		}
 	}
+	*/
 	
 	private void createLinksPage() {
 		HtmlPage linksPage = new HtmlPage("Nature - Liens");
@@ -470,7 +470,7 @@ public class WebsiteExporter extends BaseExporter {
 	}
 	
 	
-	// TODO refactor code (moved from TaxonPicsExporter...)
+	/* TODO to remove (moved to TaxonExporter)
 	private void exportTaxon(Taxon taxon, Taxon prevTaxon, Taxon nextTaxon) {
 		Set<HerbierPic> pics = taxon.getPics();
 		if (pics.isEmpty()) {
@@ -600,7 +600,7 @@ public class WebsiteExporter extends BaseExporter {
 		
 		picPage.saveAs(htmlPath + "pages/" + filename);
 	}
-
+	*/
 	
 	/**
 	 * @param args unused
