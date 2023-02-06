@@ -14,7 +14,6 @@ import model.TaxonRank;
 import common.base.Logger;
 import common.html.HtmlTag;
 import common.html.HtmlTagFactory;
-import common.html.ParHtmlTag;
 import common.html.TableHtmlTag;
 import common.io.HtmlComposite;
 
@@ -98,6 +97,7 @@ public class BaseExporter {
 	 * @param hpic       the picture to export
 	 * @param table      the html table
 	 */
+	@Deprecated  // Use TableHtmlTag
 	protected void exportPicture(final HerbierPic hpic, final HtmlComposite table) {
 		exportPicture(hpic, table, false);
 	}

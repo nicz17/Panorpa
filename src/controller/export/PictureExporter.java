@@ -167,10 +167,8 @@ public class PictureExporter extends BaseExporter {
 	 * Creates a HTML page with the best pictures.
 	 */
 	private void createBestPicsPage() {
-		HtmlPage page = new HtmlPage("Nature - Florilège");
-		HtmlComposite main = page.getMainDiv();
-		
-		main.addTitle(1, "Florilège");
+		PanorpaHtmlPage page = new PanorpaHtmlPage("Nature - Florilège", htmlPath + "bestof.html", "");
+		page.addTitle(1, "Florilège");
 		
 		Vector<HerbierPic> pics = 
 				DataAccess.getInstance().getHerbierPics("WHERE picRating >= 5", null, null);
@@ -187,10 +185,11 @@ public class PictureExporter extends BaseExporter {
 		});
 
 		int nPics = pics.size();
-		main.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
-		
-		HtmlComposite table = main.addFillTable(nColumns);
-		table.setCssClass("table-thumbs");
+		page.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
+
+		TableHtmlTag table = page.addTable(nColumns);
+		table.addAttribute("width", "100%");
+		table.setClass("table-thumbs");
 		
 		Iterator<HerbierPic> it = pics.iterator();
 		while (it.hasNext()) {
@@ -200,7 +199,7 @@ public class PictureExporter extends BaseExporter {
 			exportPicture(pic, table, true);
 		}
 		
-		page.saveAs(htmlPath + "bestof.html");
+		page.save();
 	}
 	
 

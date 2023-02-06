@@ -13,6 +13,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import common.base.Logger;
+import common.html.HtmlTagFactory;
+import common.html.ListHtmlTag;
 import common.io.HtmlComposite;
 import common.io.SpecialChars;
 
@@ -266,50 +268,48 @@ public class WebsiteExporter extends BaseExporter {
 	}
 	*/
 	
+	/**
+	 * Creates a HTML page with web links and a bibliography.
+	 */
 	private void createLinksPage() {
-		HtmlPage linksPage = new HtmlPage("Nature - Liens");
-		linksPage.addCss("style.css");
-		HtmlComposite main = linksPage.getMainDiv();
+		PanorpaHtmlPage linksPage = new PanorpaHtmlPage("Nature - Liens", htmlPath + "liens.html", "");
+		linksPage.addTitle(1, "Liens externes");
 		
-		main.addTitle(1, "Liens externes");
+		linksPage.addTitle(2, "Insectes");
+		ListHtmlTag ul = linksPage.addList();
+		ul.addItem(HtmlTagFactory.link("http://www.insecte.org/forum/", "Le monde des insectes - forum", true));
+		ul.addItem(HtmlTagFactory.link("http://www.galerie-insecte.org/galerie/fichier.php", 
+				"Le monde des insectes - galerie", true));
+		ul.addItem(HtmlTagFactory.link("http://www.galerie-insecte.org/galerie/auteur.php?aut=6169", 
+				"Le monde des insectes - mes photos", true));
+		ul.addItem(HtmlTagFactory.link("http://www.quelestcetanimal.com/", "Quel est cet animal ?", true));
+		ul.addItem(HtmlTagFactory.link("http://spipoll.snv.jussieu.fr/mkey/mkey-spipoll.html", 
+				"SpiPoll - Suivi photographique des insectes pollinisateurs", true));
+		ul.addItem(HtmlTagFactory.link("http://lepus.unine.ch/carto/", "InfoFauna UniNe", true));
+		ul.addItem(HtmlTagFactory.link("http://www.lepido.ch/", "Papillons diurnes de Suisse", true));
+		ul.addItem(HtmlTagFactory.link("http://cle.fourmis.free.fr/castes-fourmis.html", "Fourmis de France", true));
+		ul.addItem(HtmlTagFactory.link("http://home.hccnet.nl/mp.van.veen/conopidae/ConGenera.html", "Clé des Conopidae", true));
 		
-		// TODO method addExternalLinkToCheck(url, text) and check with WebProbe in ExternalLinkChecker singleton
+		linksPage.addTitle(2, "Plantes");
+		ul = linksPage.addList();
+		ul.addItem(HtmlTagFactory.link("http://www.visoflora.com/", "Visoflora", true));
+		ul.addItem(HtmlTagFactory.link("https://www.infoflora.ch/fr/", "Infoflora - flore de Suisse", true));
+		ul.addItem(HtmlTagFactory.link("http://www.tela-botanica.org/bdtfx-nn-60585-synthese", "Tela botanica", true));
+		ul.addItem(HtmlTagFactory.link("http://abiris.snv.jussieu.fr/flore/flore.php", 
+				"Identification assistée par ordinateur", true));
 		
-		main.addTitle(2, "Insectes");
-		HtmlComposite ul = main.addList();
-		ul.addListItem().addLinkExternal("http://www.insecte.org/forum/", "Le monde des insectes - forum");
-		ul.addListItem().addLinkExternal("http://www.galerie-insecte.org/galerie/fichier.php", 
-				"Le monde des insectes - galerie");
-		ul.addListItem().addLinkExternal("http://www.galerie-insecte.org/galerie/auteur.php?aut=6169", 
-				"Le monde des insectes - mes photos");
-		ul.addListItem().addLinkExternal("http://www.quelestcetanimal.com/", "Quel est cet animal ?");
-		ul.addListItem().addLinkExternal("http://spipoll.snv.jussieu.fr/mkey/mkey-spipoll.html", 
-				"SpiPoll - Suivi photographique des insectes pollinisateurs");
-		ul.addListItem().addLinkExternal("http://lepus.unine.ch/carto/", "InfoFauna UniNe");
-		ul.addListItem().addLinkExternal("http://www.lepido.ch/", "Papillons diurnes de Suisse");
-		ul.addListItem().addLinkExternal("http://cle.fourmis.free.fr/castes-fourmis.html", "Fourmis de France");
-		ul.addListItem().addLinkExternal("http://home.hccnet.nl/mp.van.veen/conopidae/ConGenera.html", "Clé des Conopidae");
-		
-		main.addTitle(2, "Plantes");
-		ul = main.addList();
-		ul.addListItem().addLinkExternal("http://www.visoflora.com/", "Visoflora");
-		ul.addListItem().addLinkExternal("https://www.infoflora.ch/fr/", "Infoflora - flore de Suisse");
-		ul.addListItem().addLinkExternal("http://www.tela-botanica.org/bdtfx-nn-60585-synthese", "Tela botanica");
-		ul.addListItem().addLinkExternal("http://abiris.snv.jussieu.fr/flore/flore.php", 
-				"Identification assistée par ordinateur");
-		
-		main.addTitle(2, "Autres");
-		ul = main.addList();
-		ul.addListItem().addLinkExternal("http://www.inaturalist.org/observations/nicz", "iNaturalist");
-		ul.addListItem().addLinkExternal("http://www.salamandre.net/", "La Salamandre - la revue des curieux de nature");
-		ul.addListItem().addLinkExternal("http://www.pronatura-vd.ch/nos_reserves", "Réserves Pro Natura Vaud");
-		ul.addListItem().addLinkExternal("http://www.arocha.ch/fr/projects/aide-entretien-pps/", "A Rocha - entretien de prairies sèches");
-		ul.addListItem().addLinkExternal("http://www.ornitho.ch/index.php?m_id=1", "Plate-forme ornithologique suisse");
-		ul.addListItem().addLinkExternal("https://www.thunderforest.com/", "Cartes par Thunderforest et OpenLayers");
+		linksPage.addTitle(2, "Autres");
+		ul = linksPage.addList();
+		ul.addItem(HtmlTagFactory.link("http://www.inaturalist.org/observations/nicz", "iNaturalist", true));
+		ul.addItem(HtmlTagFactory.link("http://www.salamandre.net/", "La Salamandre - la revue des curieux de nature", true));
+		ul.addItem(HtmlTagFactory.link("http://www.pronatura-vd.ch/nos_reserves", "Réserves Pro Natura Vaud", true));
+		ul.addItem(HtmlTagFactory.link("http://www.arocha.ch/fr/projects/aide-entretien-pps/", "A Rocha - entretien de prairies sèches", true));
+		ul.addItem(HtmlTagFactory.link("http://www.ornitho.ch/index.php?m_id=1", "Plate-forme ornithologique suisse", true));
+		ul.addItem(HtmlTagFactory.link("https://www.thunderforest.com/", "Cartes par Thunderforest et OpenLayers", true));
 		
 		// Bibliographie
-		main.addTitle(1, "Bibliographie");
-		HtmlComposite biblio = main.addList();
+		linksPage.addTitle(1, "Bibliographie");
+		ListHtmlTag biblio = linksPage.addList();
 		addBiblioRef(biblio, "P. Leraut, P. Blanchot", "Le guide entomologique", "Delachaux et Niestlé", "2012");
 		addBiblioRef(biblio, "R. Dajoz", "Dictionnaire d'entomologie", "Lavoisier", "2010");
 		addBiblioRef(biblio, "D. Martiré", "Guide des plus beaux coléoptères", "Belin", "2017");
@@ -322,15 +322,23 @@ public class WebsiteExporter extends BaseExporter {
 		addBiblioRef(biblio, "F. Dupont, J.-L. Guignard", "Botanique, les familles de plantes", "15e édition, Elsevier Masson", "2012");
 		addBiblioRef(biblio, "Collectif", "Les guides Salamandre", "Editions de la Salamandre, Neuchâtel", null);
 		
-		linksPage.saveAs(htmlPath + "liens.html");
+		linksPage.save();
 	}
 	
-	private void addBiblioRef(HtmlComposite biblio, String sAuthors, String sTitle, String sEditor, String sYear) {
+	/**
+	 * Adds a bibliographical reference to the specified list.
+	 * @param biblio    the HTML list
+	 * @param sAuthors  the author name(s)
+	 * @param sTitle    the publication title
+	 * @param sEditor   the editor
+	 * @param sYear     the publication year
+	 */
+	private void addBiblioRef(ListHtmlTag biblio, String sAuthors, String sTitle, String sEditor, String sYear) {
 		String sRef = sAuthors + " : <b>" + sTitle + "</b>, " + sEditor;
 		if (sYear != null && !sYear.isEmpty()) {
 			sRef += ", <font color='grey'>" + sYear + "</font>";
 		}
-		biblio.addListItem().addText(sRef);
+		biblio.addItem(sRef);
 	}
 	
 	
