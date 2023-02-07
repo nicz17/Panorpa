@@ -13,8 +13,10 @@ import java.util.Vector;
 import model.HerbierPic;
 import model.Taxon;
 import model.TaxonRank;
+import common.html.HtmlTag;
+import common.html.HtmlTagFactory;
+import common.html.ListHtmlTag;
 import common.html.TableHtmlTag;
-import common.io.HtmlComposite;
 
 import controller.DataAccess;
 import controller.DatabaseTools.eOrdering;
@@ -45,18 +47,17 @@ public class PictureExporter extends BaseExporter {
 	
 	
 	private void createAlphaNamesPage(String title, String menuTitle, String filename, eOrdering order) {
-		HtmlPage page = new HtmlPage("Nature - " + title);
-		HtmlComposite main = page.getMainDiv();
-		
-		main.addTitle(1, title);
+		PanorpaHtmlPage page = new PanorpaHtmlPage("Nature - " + title, htmlPath + filename, "");
+		page.addTitle(1, title);
 
 		// menu
-		HtmlComposite menu = page.getMenuDiv();
-		menu.addTitle(2, menuTitle);
-		HtmlComposite menuTable = menu.addFillTable(4, "120px");
+		page.addMenuItem(2, menuTitle, menuTitle);
+		TableHtmlTag menuTable = new TableHtmlTag(4);
+		menuTable.addAttribute("width", "120px");
+		page.getMenu().addTag(menuTable);
 		
 		// taxon list
-		HtmlComposite ul = null;
+		ListHtmlTag ul = null;
 		String currLetter = null;
 		
 		Comparator<Taxon> comparator = null;
@@ -113,19 +114,22 @@ public class PictureExporter extends BaseExporter {
 			
 			String letter = name.substring(0, 1);
 			if (!letter.equals(currLetter)) {
-				main.addAnchor(letter).addTitle(2, letter);
-				ul = main.addList();
-				menuTable.addTableData().addLink("#" + letter, "Aller à la lettre " + letter, letter);
+				HtmlTag tAnchor = HtmlTagFactory.anchor(letter);
+				tAnchor.addTag(HtmlTagFactory.title(2, letter));
+				page.add(tAnchor);
+				ul = page.addList();
+				menuTable.addCell(HtmlTagFactory.link("#" + letter, letter, "Aller à la lettre " + letter));
 				currLetter = letter;
 			}
 			
 			String picFile = getTaxonHtmlFileName(taxon);
-			HtmlComposite li = ul.addListItem();
-			li.addLink("pages/" + picFile, getTooltiptext(taxon), name);
-			li.addText("<font color='gray'> - " + taxon.getAncestor(TaxonRank.FAMILY).getName() + "</font>");
+			Vector<HtmlTag> tags = new Vector<>();
+			tags.add(HtmlTagFactory.link("pages/" + picFile, name, getTooltiptext(taxon)));
+			tags.add(HtmlTagFactory.grayFont(" - " + taxon.getAncestor(TaxonRank.FAMILY).getName()));
+			ul.addItem(tags);
 		}
 		
-		page.saveAs(htmlPath + filename);
+		page.save();
 	}
 	
 	/**

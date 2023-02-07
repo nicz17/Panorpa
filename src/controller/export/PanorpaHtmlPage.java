@@ -51,6 +51,7 @@ public class PanorpaHtmlPage extends HtmlPage {
 		addMenuItem(3, sPath + "noms-latins.html", "Noms latins");
 		addMenuItem(3, sPath + "noms-verna.html", "Noms communs");
 		addMenuItem(3, sPath + "journal.html", "Excursions");
+		addMenuItem(3, sPath + "search.html", "Chercher");
 		addMenuItem(3, sPath + "liens.html", "Liens");
 		addMenuItem(3, "http://www.tf79.ch", "TF79.ch");
 	}
@@ -63,6 +64,10 @@ public class PanorpaHtmlPage extends HtmlPage {
 				" &mdash; Panorpa v" + Panorpa.getInstance().getAppVersion();
 		footer.addTag(new HtmlTag("p", sFooter));
 		body.addTag(footer);
+	}
+	
+	public HtmlTag getMenu() {
+		return this.menu;
 	}
 	
 	/**
