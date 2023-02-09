@@ -355,4 +355,14 @@ public class BaseExporter {
 		page.getHead().addScript("js/panorpa-maps.js");
 		page.getHead().addCss("css/OpenLayers-v5.3.0.css");
 	}
+	
+	/**
+	 * Adds OpenLayers scripts to the header of the specified page.
+	 * @param page  the HTML page
+	 */
+	protected void addOpenLayersHeaders(final PanorpaHtmlPage page) {
+		page.getHead().addTag(HtmlTagFactory.script("js/OpenLayers-v5.3.0.js"));
+		page.getHead().addTag(HtmlTagFactory.script("js/panorpa-maps.js"));
+		page.getHead().addTag(HtmlTagFactory.cssLink("css/OpenLayers-v5.3.0.css"));
+	}
 }

@@ -15,6 +15,10 @@ import model.Location;
 
 import common.base.Logger;
 import common.data.HasMapCoordinates;
+import common.html.HtmlTag;
+import common.html.HtmlTagFactory;
+import common.html.ListHtmlTag;
+import common.html.TableHtmlTag;
 import common.io.HtmlComposite;
 
 import controller.Controller;
@@ -47,22 +51,21 @@ public class LocationExporter extends BaseExporter {
 	 * and links to all locations.
 	 */
 	private void createLocationsPage() {
-		HtmlPage page = new HtmlPage("Nature - Lieux");
+		PanorpaHtmlPage page = new PanorpaHtmlPage("Nature - Lieux", htmlPath + "lieux.html", "");
 		addOpenLayersHeaders(page);
 		
-		HtmlComposite main = page.getMainDiv();	
-		main.addTitle(1, "Lieux");
-		HtmlComposite divMap = main.addDiv("ol-map");
-		divMap.setCssClass("ol-map");
-		divMap.addDiv("ol-popup");
+		page.addTitle(1, "Lieux");
+		HtmlTag divMap = page.addDiv("ol-map");
+		divMap.setClass("ol-map");
+		divMap.addTag(HtmlTagFactory.div("ol-popup"));
 		
 		// Call map rendering Javascript code
-		String sRenderMap = "var oVectorSource, oIconStyle;\n" +
-			"renderMap(6.3902, 46.5377, 9);\n";
+		final String sIndent = "\n        ";
+		String sRenderMap = sIndent + "var oVectorSource, oIconStyle;";
+		sRenderMap += sIndent + "renderMap(6.3902, 46.5377, 9);";
 		
-		HtmlComposite table = main.addFillTable(2, "800px");
-		table.setCssClass("align-top");
-		HtmlComposite td = table.addTableData();
+		TableHtmlTag table = page.addTable(2, "800px");
+		table.setClass("align-top");
 		
 		List<Location> locations = new ArrayList<>(LocationCache.getInstance().getAll());
 		Collections.sort(locations, new Comparator<Location>() {
@@ -80,8 +83,9 @@ public class LocationExporter extends BaseExporter {
 		});
 		log.info("Exporting " + locations.size() + " locations");
 		
-		HashMap<AltitudeLevel, HtmlComposite> mapLevels = new HashMap<>();
+		HashMap<AltitudeLevel, ListHtmlTag> mapLevels = new HashMap<>();
 		int nLevels = 0;
+		Vector<HtmlTag> vecCells = new Vector<>();
 		
 		for (Location location : locations) {
 			if (location.getPics().isEmpty()) {
@@ -89,25 +93,26 @@ public class LocationExporter extends BaseExporter {
 			} else {
 				AltitudeLevel level = location.getAltitudeLevel();
 				
-				HtmlComposite ul = mapLevels.get(level);
+				ListHtmlTag ul = mapLevels.get(level);
 				if (ul == null) {
 					nLevels++;
 					if (nLevels == 2) {
-						td = table.addTableData();
+						table.addCell(vecCells);
+						vecCells.clear();
 					}
-					td.addTitle(2, level.getLabel());
-					ul = td.addList();
+					vecCells.add(new HtmlTag("h2", level.getLabel()));
+					ul = new ListHtmlTag();
+					vecCells.add(ul);
 					mapLevels.put(level, ul);
 				}
 				
-				HtmlComposite li = ul.addListItem();
 				String filename = "lieu" + location.getIdx() + ".html";
-				li.addLink(filename, location.getName(), location.getName());
+				ul.addItem(HtmlTagFactory.link(filename, location.getName(), location.getName()));
 				
 				if (location.getLongitude() != null && location.getLatitude() != null) {
 					int nPics = location.getPics().size();
 					String sLabel = "<a href='" + filename + "'>" + location.getName() + "</a><br>" + nPics + " photos";
-					sRenderMap += String.format("addMapMarker(%.6f, %.6f, \"%s\");\n", 
+					sRenderMap += sIndent + String.format("addMapMarker(%.6f, %.6f, \"%s\");", 
 						location.getLongitude().doubleValue(), location.getLatitude().doubleValue(), sLabel);
 //					sRenderMap += String.format("addMapMarker(%.6f, %.6f, \"%s\", '%s');\n", 
 //							location.getLongitude().doubleValue(), location.getLatitude().doubleValue(), location.getName(), filename);
@@ -116,9 +121,11 @@ public class LocationExporter extends BaseExporter {
 				createLocationPage(location);
 			}
 		}
-
-		main.addJavascript(sRenderMap);
-		page.saveAs(htmlPath + "lieux.html");
+		table.addCell(vecCells);
+		
+		sRenderMap += sIndent;
+		page.addJavascript(sRenderMap);
+		page.save();
 	}
 	
 	/**
