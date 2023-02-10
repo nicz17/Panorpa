@@ -107,6 +107,16 @@ public class BaseExporter {
 	 * 
 	 * @param hpic       the picture to export
 	 * @param table      the html table
+	 */
+	protected void exportPicture(final HerbierPic hpic, final TableHtmlTag table) {
+		exportPicture(hpic, table, false);
+	}
+	
+	/**
+	 * Exports the specified picture to the specified html table.
+	 * 
+	 * @param hpic       the picture to export
+	 * @param table      the html table
 	 * @param bWithDate  flag to write picture date or not
 	 */
 	@Deprecated  // Use TableHtmlTag
@@ -286,6 +296,7 @@ public class BaseExporter {
 	 * @param loc   the location to display on the map
 	 * @param page  the HTML page to which to add a map
 	 */
+	@Deprecated 
 	protected void addOpenStreetMap(Location loc, HtmlPage page, HtmlComposite parent, 
 			List<Location> listNeighbors, List<HerbierPic> listPics, String sGpxFile) {
 		// Check the location has valid map coords
@@ -347,9 +358,80 @@ public class BaseExporter {
 	}
 	
 	/**
+	 * Adds a geographical map for the specified location if possible.
+	 * To enable the map, the location must have valid coordinates.
+	 * 
+	 * @param loc   the location to display on the map
+	 * @param page  the HTML page to which to add a map
+	 * @param parent  the TD where to display the map
+	 */
+	protected void addOpenStreetMap(Location loc, PanorpaHtmlPage page, HtmlTag parent, 
+			List<Location> listNeighbors, List<HerbierPic> listPics, String sGpxFile) {
+		// Check the location has valid map coords
+		Location locNullIsland = new Location(0, "Null Island");
+		locNullIsland.setLongitude(0.0);
+		locNullIsland.setLatitude(0.0);
+		locNullIsland.setMapZoom(5);
+		Double dDistance = loc.getDistance(locNullIsland);
+		boolean bValidCoords = (dDistance != null && dDistance.doubleValue() > 0.1);
+		
+		if (bValidCoords) {
+			// Add headers and a map div
+			addOpenLayersHeaders(page);
+			HtmlTag divMap = HtmlTagFactory.div("ol-map");
+			parent.addTag(divMap);
+			divMap.setClass("ol-map");
+			divMap.addTag(HtmlTagFactory.div("ol-popup"));
+			
+			// Call map rendering Javascript code
+			final String sIndent = "\n        ";
+			String sRenderMap = sIndent + "var oVectorSource, oIconStyle;";
+			sRenderMap += sIndent + String.format("renderMap(%.6f, %.6f, %d);", 
+					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getMapZoom());
+			sRenderMap += sIndent + String.format("addMapMarker(%.6f, %.6f, \"%s\");", 
+					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getName());
+
+			// Add markers for neighbor locations, with links
+			if (listNeighbors != null) {
+				for (Location locNeighbor : listNeighbors) {
+					String sUrl = "lieu" + locNeighbor.getIdx() + ".html";
+					sRenderMap += sIndent + String.format("addMapMarker(%.6f, %.6f, \"%s\", '%s');", 
+						locNeighbor.getLongitude().doubleValue(), locNeighbor.getLatitude().doubleValue(), 
+						locNeighbor.getName(), sUrl);
+				}
+			}
+			
+			// Add map track
+			if (sGpxFile != null) {
+				sRenderMap += "addMapTrack(\"" + sGpxFile + "\");\n";
+			}
+			
+			// Add photo markers
+			if (listPics != null) {
+				for (HerbierPic pic : listPics) {
+					if (pic.getLatitude() != null && pic.getLongitude() != null) {
+						String picFile = getTaxonHtmlFileName(pic.getTaxon());
+						String picAnchor = "#" + pic.getFileName().replace(".jpg", "");
+						String sUrl = "pages/" + picFile + picAnchor;
+						String sText = "<img src='thumbs/" + pic.getFileName() + "'>";
+						sRenderMap += sIndent + String.format("addPicMarker(%.6f, %.6f, \"%s\", '%s');", 
+								pic.getLongitude().doubleValue(), pic.getLatitude().doubleValue(), 
+								sText, sUrl);
+					}
+				}
+			}
+			sRenderMap += sIndent;
+			page.addJavascript(sRenderMap);
+		} else {
+			log.info("Can't add map for location " + loc + ": distance to Null Island is " + dDistance);
+		}
+	}
+	
+	/**
 	 * Adds OpenLayers scripts to the header of the specified page.
 	 * @param page  the HTML page
 	 */
+	@Deprecated  // Use PanorpaHtmlPage
 	protected void addOpenLayersHeaders(final HtmlPage page) {
 		page.getHead().addScript("js/OpenLayers-v5.3.0.js");
 		page.getHead().addScript("js/panorpa-maps.js");

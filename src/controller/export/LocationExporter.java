@@ -18,8 +18,8 @@ import common.data.HasMapCoordinates;
 import common.html.HtmlTag;
 import common.html.HtmlTagFactory;
 import common.html.ListHtmlTag;
+import common.html.ParHtmlTag;
 import common.html.TableHtmlTag;
-import common.io.HtmlComposite;
 
 import controller.Controller;
 import controller.ExpeditionManager;
@@ -136,79 +136,81 @@ public class LocationExporter extends BaseExporter {
 	 * @param location  the location to export as HTML
 	 */
 	private void createLocationPage(Location location) {
-		HtmlPage page = new HtmlPage("Nature &mdash; " + location.getName());
-		HtmlComposite main = page.getMainDiv();
+		String filename = "lieu" + location.getIdx() + ".html";
+		PanorpaHtmlPage page = new PanorpaHtmlPage("Nature &mdash; " + location.getName(), htmlPath + filename, "");
+		page.addTitle(1, location.getName());
 		
-		main.addTitle(1, location.getName());
-		
-		HtmlComposite tableTop = main.addFillTable(2, "1440px");
-		tableTop.setCssClass("align-top");
-		HtmlComposite tdLeft = tableTop.addTableData();
-		HtmlComposite tdRight = tableTop.addTableData();
+		TableHtmlTag tableTop = page.addTable(2, "1440px");
+		tableTop.setClass("align-top");
+		HtmlTag tdLeft  = tableTop.addCell();
+		HtmlTag tdRight = tableTop.addCell();
 
 		// Description
-		HtmlComposite divDescription = addBoxDiv(tdRight, "Description", "myBox");
-		divDescription.addPar(location.getDescription());
-		divDescription.addPar(location.getAltitudeLevel().getLabel() + 
-				", altitude " + (location.getAltitude() >= 700 ? "moyenne " : "") + location.getAltitude() + "m");
-		divDescription.addPar(location.getRegion() + ", " + location.getState());
+		HtmlTag divDescription = HtmlTagFactory.blueBox("Description");
+		tdRight.addTag(divDescription);
+		divDescription.addTag(new ParHtmlTag(location.getDescription()));
+		divDescription.addTag(new ParHtmlTag(location.getAltitudeLevel().getLabel() + 
+				", altitude " + (location.getAltitude() >= 700 ? "moyenne " : "") + location.getAltitude() + "m"));
+		divDescription.addTag(new ParHtmlTag(location.getRegion() + ", " + location.getState()));
 		
 		// Expeditions list
 		Vector<Expedition> vecExpeditions = Controller.getInstance().getExpeditions(location);
 		int nExpeditions = vecExpeditions.size();
 		if (nExpeditions > 0) {
-			HtmlComposite divExpeditions = addBoxDiv(tdRight, "Excursions");
+			HtmlTag divExpeditions = HtmlTagFactory.blueBox("Excursions");
+			tdRight.addTag(divExpeditions);
 			if (nExpeditions > 8) {
-				divExpeditions.addPar("Observations fréquentes depuis le " 
-						+ dateFormat.format(vecExpeditions.lastElement().getDateFrom()) + ".");
+				divExpeditions.addTag(new ParHtmlTag("Observations fréquentes depuis le " 
+						+ dateFormat.format(vecExpeditions.lastElement().getDateFrom()) + "."));
 			} else {
-				HtmlComposite ul = divExpeditions.addList();
+				ListHtmlTag ul = new ListHtmlTag();
+				divExpeditions.addTag(ul);
 				for (Expedition exp : vecExpeditions) {
-					HtmlComposite li = ul.addListItem();
-					li.addLink("excursion" + exp.getIdx() + ".html", "Voir les notes de terrain", exp.getTitle());
-					li.addText(" &mdash; <font color='gray'>" + dateFormat.format(exp.getDateFrom()) + 
-							" (" + exp.getPics().size() + " photos)</font>");
+					HtmlTag li = ul.addItem();
+					li.addTag(HtmlTagFactory.link("excursion" + exp.getIdx() + ".html", exp.getTitle(), "Voir les notes de terrain"));
+					li.addTag(HtmlTagFactory.grayFont(" &mdash; " + dateFormat.format(exp.getDateFrom()) + 
+							" (" + exp.getPics().size() + " photos)"));
 				}
 			}
 		}
 		
 		// Neighbor locations
-		HtmlComposite divNeighbors = addBoxDiv(tdRight, "Lieux à proximité");
+		HtmlTag divNeighbors = HtmlTagFactory.blueBox("Lieux à proximité");
+		tdRight.addTag(divNeighbors);
 		List<Location> listNeighbors = getClosestLocations(location, 4);
 		if (listNeighbors != null && !listNeighbors.isEmpty()) {
-			HtmlComposite ul = divNeighbors.addList();
+			ListHtmlTag ul = new ListHtmlTag();
+			divNeighbors.addTag(ul);
 			for (Location locNeighbor : listNeighbors) {
-				HtmlComposite li = ul.addListItem();
-				String filename = "lieu" + locNeighbor.getIdx() + ".html";
-				li.addLink(filename, locNeighbor.getName(), locNeighbor.getName());
+				HtmlTag li = ul.addItem();
+				String filenameLoc = "lieu" + locNeighbor.getIdx() + ".html";
+				li.addTag(HtmlTagFactory.link(filenameLoc, locNeighbor.getName(), locNeighbor.getName()));
 				double dDistance = getDistanceKm(location, locNeighbor);
 				String sDistance = String.format(" à %.3f km", dDistance);
 				if (dDistance < 1.0) {
 					sDistance = String.format(" à %d m", (int)(1000.0 * dDistance));
 				}
-				li.addText(sDistance);
+				li.addTag(HtmlTagFactory.grayFont(sDistance));
 			}
 		} else {
-			divNeighbors.addPar("<font color='grey'>Pas encore de lieux dans le voisinage.</font>");
+			divNeighbors.addTag(HtmlTagFactory.grayFont("Pas encore de lieux dans le voisinage."));
 		}
 		
 		// OpenStreetMap
 		addOpenStreetMap(location, page, tdLeft, listNeighbors, null, null);
 		
+		// Photos
 		final Set<HerbierPic> tsPics = location.getPics();
 		int nPics = tsPics.size();
-		
-		main.addTitle(2, "Photos");
-		main.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
-		HtmlComposite table = main.addFillTable(nColumns);
-		table.setCssClass("table-thumbs");
-		
+		page.addTitle(2, "Photos");
+		page.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
+		TableHtmlTag table = page.addTable(nColumns, "100%");
+		table.setClass("table-thumbs");
 		for (HerbierPic pic : tsPics) {
 			exportPicture(pic, table);
 		}
 		
-		String filename = "lieu" + location.getIdx() + ".html";
-		page.saveAs(htmlPath + filename);
+		page.save();
 	}
 	
 	/**
