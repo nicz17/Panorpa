@@ -17,6 +17,7 @@ import common.base.Logger;
 import common.data.HasMapCoordinates;
 import common.html.HtmlTag;
 import common.html.HtmlTagFactory;
+import common.html.JavascriptHtmlTag;
 import common.html.ListHtmlTag;
 import common.html.ParHtmlTag;
 import common.html.TableHtmlTag;
@@ -60,9 +61,9 @@ public class LocationExporter extends BaseExporter {
 		divMap.addTag(HtmlTagFactory.div("ol-popup"));
 		
 		// Call map rendering Javascript code
-		final String sIndent = "\n        ";
-		String sRenderMap = sIndent + "var oVectorSource, oIconStyle;";
-		sRenderMap += sIndent + "renderMap(6.3902, 46.5377, 9);";
+		final JavascriptHtmlTag jsRenderMap = new JavascriptHtmlTag();
+		jsRenderMap.addLine("var oVectorSource, oIconStyle;");
+		jsRenderMap.addLine("renderMap(6.3902, 46.5377, 9);");
 		
 		TableHtmlTag table = page.addTable(2, "800px");
 		table.setClass("align-top");
@@ -112,8 +113,8 @@ public class LocationExporter extends BaseExporter {
 				if (location.getLongitude() != null && location.getLatitude() != null) {
 					int nPics = location.getPics().size();
 					String sLabel = "<a href='" + filename + "'>" + location.getName() + "</a><br>" + nPics + " photos";
-					sRenderMap += sIndent + String.format("addMapMarker(%.6f, %.6f, \"%s\");", 
-						location.getLongitude().doubleValue(), location.getLatitude().doubleValue(), sLabel);
+					jsRenderMap.addLine(String.format("addMapMarker(%.6f, %.6f, \"%s\");", 
+						location.getLongitude().doubleValue(), location.getLatitude().doubleValue(), sLabel));
 //					sRenderMap += String.format("addMapMarker(%.6f, %.6f, \"%s\", '%s');\n", 
 //							location.getLongitude().doubleValue(), location.getLatitude().doubleValue(), location.getName(), filename);
 				}
@@ -123,8 +124,7 @@ public class LocationExporter extends BaseExporter {
 		}
 		table.addCell(vecCells);
 		
-		sRenderMap += sIndent;
-		page.addJavascript(sRenderMap);
+		page.add(jsRenderMap);
 		page.save();
 	}
 	

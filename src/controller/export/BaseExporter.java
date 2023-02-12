@@ -14,6 +14,7 @@ import model.TaxonRank;
 import common.base.Logger;
 import common.html.HtmlTag;
 import common.html.HtmlTagFactory;
+import common.html.JavascriptHtmlTag;
 import common.html.TableHtmlTag;
 import common.io.HtmlComposite;
 
@@ -384,26 +385,26 @@ public class BaseExporter {
 			divMap.addTag(HtmlTagFactory.div("ol-popup"));
 			
 			// Call map rendering Javascript code
-			final String sIndent = "\n        ";
-			String sRenderMap = sIndent + "var oVectorSource, oIconStyle;";
-			sRenderMap += sIndent + String.format("renderMap(%.6f, %.6f, %d);", 
-					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getMapZoom());
-			sRenderMap += sIndent + String.format("addMapMarker(%.6f, %.6f, \"%s\");", 
-					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getName());
+			final JavascriptHtmlTag jsRenderMap = new JavascriptHtmlTag();
+			jsRenderMap.addLine("var oVectorSource, oIconStyle;");
+			jsRenderMap.addLine(String.format("renderMap(%.6f, %.6f, %d);", 
+					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getMapZoom()));
+			jsRenderMap.addLine(String.format("addMapMarker(%.6f, %.6f, \"%s\");", 
+					loc.getLongitude().doubleValue(), loc.getLatitude().doubleValue(), loc.getName()));
 
 			// Add markers for neighbor locations, with links
 			if (listNeighbors != null) {
 				for (Location locNeighbor : listNeighbors) {
 					String sUrl = "lieu" + locNeighbor.getIdx() + ".html";
-					sRenderMap += sIndent + String.format("addMapMarker(%.6f, %.6f, \"%s\", '%s');", 
+					jsRenderMap.addLine(String.format("addMapMarker(%.6f, %.6f, \"%s\", '%s');", 
 						locNeighbor.getLongitude().doubleValue(), locNeighbor.getLatitude().doubleValue(), 
-						locNeighbor.getName(), sUrl);
+						locNeighbor.getName(), sUrl));
 				}
 			}
 			
 			// Add map track
 			if (sGpxFile != null) {
-				sRenderMap += "addMapTrack(\"" + sGpxFile + "\");\n";
+				jsRenderMap.addLine("addMapTrack(\"" + sGpxFile + "\");");
 			}
 			
 			// Add photo markers
@@ -414,14 +415,13 @@ public class BaseExporter {
 						String picAnchor = "#" + pic.getFileName().replace(".jpg", "");
 						String sUrl = "pages/" + picFile + picAnchor;
 						String sText = "<img src='thumbs/" + pic.getFileName() + "'>";
-						sRenderMap += sIndent + String.format("addPicMarker(%.6f, %.6f, \"%s\", '%s');", 
+						jsRenderMap.addLine(String.format("addPicMarker(%.6f, %.6f, \"%s\", '%s');", 
 								pic.getLongitude().doubleValue(), pic.getLatitude().doubleValue(), 
-								sText, sUrl);
+								sText, sUrl));
 					}
 				}
 			}
-			sRenderMap += sIndent;
-			page.addJavascript(sRenderMap);
+			page.add(jsRenderMap);
 		} else {
 			log.info("Can't add map for location " + loc + ": distance to Null Island is " + dDistance);
 		}
