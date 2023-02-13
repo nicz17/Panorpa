@@ -7,6 +7,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import common.html.HtmlTag;
+import common.html.HtmlTagFactory;
+import common.html.ListHtmlTag;
 import common.io.HtmlComposite;
 import common.text.DurationFormat;
 import controller.Controller;
@@ -31,7 +34,7 @@ public class ExpeditionsExporter extends BaseExporter {
 	public static final String dirTrack = "geotrack/";
 	
 	private String sLastMonthYear;
-	private HtmlComposite ul;
+	private ListHtmlTag ul;
 
 	public ExpeditionsExporter() {
 		sLastMonthYear = null;
@@ -44,22 +47,20 @@ public class ExpeditionsExporter extends BaseExporter {
 	}
 	
 	private void createExpeditionsPage() {
-		HtmlPage page = new HtmlPage("Nature - Excursions récentes");
-		HtmlComposite main = page.getMainDiv();
-		HtmlComposite menu = page.getMenuDiv();
+		PanorpaHtmlPage page = new PanorpaHtmlPage("Nature - Excursions récentes", htmlPath + "journal.html", "");
 		
-		main.addTitle(1, "Excursions récentes");
-		menu.addTitle(1, "Excursions");
+		page.addTitle(1, "Excursions récentes");
+		page.getMenu().addTag(new HtmlTag("h1", "Excursions"));
 		
 		// List<Expedition> vecExpeditions = ExpeditionManager.getInstance().getRecentExpeditions(8);
 		List<Expedition> vecExpeditions = Controller.getInstance().getExpeditions(eOrdering.BY_DATE, null);
 		for (Expedition exp : vecExpeditions) {
 			ExpeditionManager.getInstance().setExpeditionPics(exp);
-			exportExpedition(exp, main, menu);
+			exportExpedition(exp, page);
 			createExcursionPage(exp);
 		}
 		
-		page.saveAs(htmlPath + "journal.html");
+		page.save();
 	}
 	
 	private void createExcursionPage(Expedition exp) {
@@ -121,24 +122,22 @@ public class ExpeditionsExporter extends BaseExporter {
 		page.saveAs(htmlPath + filename);
 	}
 	
-	private void exportExpedition(Expedition exp, HtmlComposite parent, HtmlComposite menu) {
+	private void exportExpedition(Expedition exp, PanorpaHtmlPage parent) {
 		// add month and year to menu if needed
 		String sYear = upperCaseFirst(dateFormatMenu.format(exp.getDateFrom()));
 		if (!sYear.equals(sLastMonthYear)) {
 			sLastMonthYear = sYear;
 			String sAnchor = dateFormatAnchor.format(exp.getDateFrom());
-			menu.addLink("#" + sAnchor, "Voir les observations de " + sYear.toLowerCase(), sYear);
-			menu.addBr();
-			parent.addAnchor(sAnchor).addTitle(2, sYear);
+			parent.addMenuItem(3, "#" + sAnchor, sYear); //, "Voir les observations de " + sYear.toLowerCase()));
+			HtmlTag tAnchor = HtmlTagFactory.anchor(sAnchor);
+			tAnchor.addTag(HtmlTagFactory.title(2, sYear));
+			parent.add(tAnchor);
 			ul = parent.addList();
 		}
 		
-		HtmlComposite li = ul.addListItem();
+		HtmlTag li = ul.addItem();
 		String filename = "excursion" + exp.getIdx() + ".html";
-		li.addLink(filename, "Voir le journal", exp.getTitle());
-		li.addText(" <font color='gray'>&mdash; ");
-		li.addText(dateFormat.format(exp.getDateFrom()));
-		//li.addText(" &mdash; " + exp.getPics().size() + " photos");
-		li.addText("</font>");
+		li.addTag(HtmlTagFactory.link(filename, exp.getTitle(), "Voir le journal"));
+		li.addTag(HtmlTagFactory.grayFont(" &mdash; " + dateFormat.format(exp.getDateFrom())));
 	}
 }
