@@ -10,7 +10,8 @@ import java.util.Locale;
 import common.html.HtmlTag;
 import common.html.HtmlTagFactory;
 import common.html.ListHtmlTag;
-import common.io.HtmlComposite;
+import common.html.ParHtmlTag;
+import common.html.TableHtmlTag;
 import common.text.DurationFormat;
 import controller.Controller;
 import controller.DatabaseTools.eOrdering;
@@ -56,7 +57,7 @@ public class ExpeditionsExporter extends BaseExporter {
 		List<Expedition> vecExpeditions = Controller.getInstance().getExpeditions(eOrdering.BY_DATE, null);
 		for (Expedition exp : vecExpeditions) {
 			ExpeditionManager.getInstance().setExpeditionPics(exp);
-			exportExpedition(exp, page);
+			exportExcursion(exp, page);
 			createExcursionPage(exp);
 		}
 		
@@ -64,15 +65,14 @@ public class ExpeditionsExporter extends BaseExporter {
 	}
 	
 	private void createExcursionPage(Expedition exp) {
-		HtmlPage page = new HtmlPage("Excursion &mdash; " + exp.getTitle());
-		HtmlComposite main = page.getMainDiv();
+		String filename = "excursion" + exp.getIdx() + ".html";
+		PanorpaHtmlPage page = new PanorpaHtmlPage("Excursion &mdash; " + exp.getTitle(), htmlPath + filename, "");
+		page.addTitle(1, exp.getTitle());
 		
-		main.addTitle(1, exp.getTitle());
-		
-		HtmlComposite tableTop = main.addFillTable(2, "1440px");
-		tableTop.setCssClass("align-top");
-		HtmlComposite tdLeft = tableTop.addTableData();
-		HtmlComposite tdRight = tableTop.addTableData();
+		TableHtmlTag tableTop = page.addTable(2, "1440px");
+		tableTop.setClass("align-top");
+		HtmlTag tdLeft  = tableTop.addCell();
+		HtmlTag tdRight = tableTop.addCell();
 		
 		// Photos
 		List<HerbierPic> listPics = new ArrayList<>();
@@ -92,37 +92,34 @@ public class ExpeditionsExporter extends BaseExporter {
 		addOpenStreetMap(exp.getLocation(), page, tdLeft, null, listPics, sGpxFile);
 
 		// Description
-		HtmlComposite div = addBoxDiv(tdRight, "Excursion", "myBox");
+		HtmlTag div = HtmlTagFactory.blueBox("Excursion");
+		tdRight.addTag(div);
 		Location loc = exp.getLocation();
 		String filenameLoc = "lieu" + loc.getIdx() + ".html";
-		div.addPar().addLink(filenameLoc, loc.getName(), loc.getName());
-		HtmlComposite par = div.addPar();
-		par.addText("<font color='gray'>");
-		par.addText(dateFormat.format(exp.getDateFrom()));
-		par.addText(" &mdash; " + exp.getPics().size() + " photos</font>");
-		div.addPar(exp.getNotes());
-		div.addPar("Durée " + durationFormat.format(exp.getDuration(), false));
+		ParHtmlTag par = new ParHtmlTag(null);
+		par.addTag(HtmlTagFactory.link(filenameLoc, loc.getName(), loc.getName()));
+		div.addTag(par);
+		par = new ParHtmlTag(null);
+		par.addTag(HtmlTagFactory.grayFont(dateFormat.format(exp.getDateFrom()) + 
+				" &mdash; " + exp.getPics().size() + " photos"));
+		div.addTag(par);
+		div.addTag(new ParHtmlTag(exp.getNotes()));
+		div.addTag(new ParHtmlTag("Durée " + durationFormat.format(exp.getDuration(), false)));
 		
 		// Photos table
-		main.addTitle(2, "Photos");
-		main.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
-		HtmlComposite tablePics = main.addFillTable(nColumns);
-		tablePics.setCssClass("table-thumbs");
+		page.addTitle(2, "Photos");
+		page.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
+		TableHtmlTag tablePics = page.addTable(nColumns, "100%");
+		tablePics.setClass("table-thumbs");
 		
 		for (HerbierPic hpic : listPics) {
-			String name = hpic.getName();
-			HtmlComposite td = tablePics.addTableData();
-			String picFile = getTaxonHtmlFileName(hpic.getTaxon());
-			String picAnchor = "#" + hpic.getFileName().replace(".jpg", "");
-			HtmlComposite link = td.addLink("pages/" + picFile + picAnchor, getTooltiptext(hpic.getTaxon()));
-			link.addImage("thumbs/" + hpic.getFileName(), name);
+			exportPicture(hpic, tablePics, false);
 		}
 		
-		String filename = "excursion" + exp.getIdx() + ".html";
-		page.saveAs(htmlPath + filename);
+		page.save();
 	}
 	
-	private void exportExpedition(Expedition exp, PanorpaHtmlPage parent) {
+	private void exportExcursion(Expedition exp, PanorpaHtmlPage parent) {
 		// add month and year to menu if needed
 		String sYear = upperCaseFirst(dateFormatMenu.format(exp.getDateFrom()));
 		if (!sYear.equals(sLastMonthYear)) {
