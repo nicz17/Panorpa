@@ -18,6 +18,7 @@ import controller.DatabaseTools;
  * @author nicz
  *
  */
+@Deprecated // Use PanorpaHtmlPage instead
 public class HtmlPage extends HtmlComposite {
 
 	private static final Logger log = new Logger(HtmlPage.class.getSimpleName(), true);

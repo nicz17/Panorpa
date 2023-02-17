@@ -121,46 +121,6 @@ public class BaseExporter {
 	 * @param bWithDate  flag to write picture date or not
 	 * @param nPics      number of pictures represented, may be null
 	 */
-	@Deprecated
-	protected void exportPicture(final HerbierPic hpic, final HtmlComposite table, boolean bWithDate, Integer nPics) {
-		String name = hpic.getName();
-		HtmlComposite td = table.addTableData();
-		
-		// image with link
-		String picFile = getTaxonHtmlFileName(hpic.getTaxon());
-		//String picFile = hpic.getFileName().replace(".jpg", ".html");
-		String picAnchor = "#" + hpic.getFileName().replace(".jpg", "");
-		HtmlComposite link = td.addLink("pages/" + picFile + picAnchor, name);
-		link.addImage("thumbs/" + hpic.getFileName(), name);
-		TaxonRank rank = hpic.getTaxon().getRank();
-		if (rank == TaxonRank.SPECIES || rank == TaxonRank.GENUS) {
-			link.addText("<br><i>" + name + "</i>");
-		} else {
-			link.addText("<br><font color='gray'>Genre indéterminé</font>");
-		}
-
-		td.addAnchor(name);
-		td.addText("<br>" + hpic.getFrenchName());
-		if (nPics != null) {
-			td.addText("<br><font color='gray'>" + nPics.intValue() + " photo" + 
-					(nPics.intValue() > 1 ? "s" : "") + "</font>");
-		} else {
-			td.addText("<br>" + hpic.getFamily());
-		}
-		
-		if (bWithDate) {
-			td.addText("<br><font color='gray'>" + dateFormat.format(hpic.getShotAt()) + "</font>");
-		}
-	}
-	
-	/**
-	 * Exports the specified picture to the specified html table.
-	 * 
-	 * @param hpic       the picture to export
-	 * @param table      the html table
-	 * @param bWithDate  flag to write picture date or not
-	 * @param nPics      number of pictures represented, may be null
-	 */
 	protected void exportPicture(final HerbierPic hpic, final TableHtmlTag table, boolean bWithDate, Integer nPics) {
 		String name = hpic.getName();
 		Vector<HtmlTag> vecCell = new Vector<>();

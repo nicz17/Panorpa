@@ -13,9 +13,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import common.base.Logger;
+import common.html.HtmlTag;
 import common.html.HtmlTagFactory;
 import common.html.ListHtmlTag;
-import common.io.HtmlComposite;
+import common.html.TableHtmlTag;
 import common.io.SpecialChars;
 
 import controller.Controller;
@@ -31,9 +32,8 @@ public class WebsiteExporter extends BaseExporter {
 
 	private static final Logger log = new Logger("WebsiteExporter", true);
 	
-	private HtmlPage htmlPage;
-	private HtmlComposite menuDiv;
-	//protected TaxonUrlProvider taxonUrlProvider;
+	private PanorpaHtmlPage htmlPage;
+	//private HtmlTag menuDiv;
 	private TaxonExporter taxonExporter;
 	
 	public WebsiteExporter() {
@@ -49,14 +49,11 @@ public class WebsiteExporter extends BaseExporter {
 			return;
 		}
 		
-		htmlPage = new HtmlPage("Photos de nature");
-		htmlPage.addCss(Controller.appPath + "style.css");
+		htmlPage = new PanorpaHtmlPage("Photos de nature", htmlPath + "classification.html");
+		htmlPage.addTitle(1, "Classification");
 		
-		HtmlComposite main = htmlPage.getMainDiv();
-		main.addTitle(1, "Classification");
-		
-		menuDiv = htmlPage.getMenuDiv();
-		menuDiv.addTitle(1, "Classification");
+		//menuDiv = htmlPage.getMenu();
+		htmlPage.addMenuItem(1, "#", "Classification");
 		
 		for (Taxon taxon : taxa) {
 			if (TaxonRank.KINGDOM.equals(taxon.getRank())) {
@@ -67,7 +64,7 @@ public class WebsiteExporter extends BaseExporter {
 					addMenuLink(child);
 				}
 				
-				exportTaxon(taxon, main);
+				exportTaxon(taxon, this.htmlPage);
 			} else {
 				log.warn("Skipping non-kingdom " + taxon);
 			}
@@ -75,39 +72,40 @@ public class WebsiteExporter extends BaseExporter {
 		
 		createLinksPage();
 		
-		htmlPage.saveAs(htmlPath + "classification.html");
+		htmlPage.save();
 		
 		exportJsonTree();
 	}
 	
-	private void exportTaxon(Taxon taxon, HtmlComposite html) {
+	private void exportTaxon(Taxon taxon, PanorpaHtmlPage page) {
 		TaxonRank rank = taxon.getRank();
 		TaxonRank rankChild = rank.getChildRank();
 		String name = taxon.getName();
 		
-		html.addAnchor(name);
-		html.addTitle(2, rank.getGuiName() + " " + taxon.getName() + taxonNameSeparator + taxon.getNameFr());
+		page.addAnchor(name);
+		page.addTitle(2, rank.getGuiName() + " " + taxon.getName() + taxonNameSeparator + taxon.getNameFr());
 		
 		int nPics = taxon.getPicsCascade().size();
 		if (nPics > 0) {
-			html.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
+			page.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
 
 			if (TaxonRank.ORDER.equals(rankChild) || TaxonRank.PHYLUM.equals(rankChild)) {
-				HtmlComposite table = html.addFillTable(nColumns);
-				table.setCssClass("table-thumbs");
+				TableHtmlTag table = page.addFillTable(nColumns, "100%");
+				table.setClass("table-thumbs");
 
 				for (Taxon child : taxon.getChildren()) {
 					nPics = child.getPicsCascade().size();
 					if (nPics > 0) {
-						HtmlComposite td = table.addTableData();
+						HtmlTag td = table.addCell();
 						HerbierPic hpic = child.getTypicalPic();
 
 						// image with link to order page
 						String orderName = child.getName();
-						td.addAnchor(orderName);
-						HtmlComposite link = td.addLink(orderName + ".html", "Aller à la page des " + orderName);
-						link.addImage("thumbs/" + hpic.getFileName(), hpic.getName());
-						link.addText("<br>" + orderName + " (" + nPics + ")");
+						td.addTag(HtmlTagFactory.anchor(orderName));
+						HtmlTag link = HtmlTagFactory.imageLink(orderName + ".html", "Aller à la page des " + orderName, 
+								"thumbs/" + hpic.getFileName(), hpic.getName());
+						link.addTag(new HtmlTag("span", "<br>" + orderName + " (" + nPics + ")"));
+						td.addTag(link);
 
 						if (TaxonRank.PHYLUM.equals(rankChild)) {
 							exportPhylum(child);
@@ -118,7 +116,7 @@ public class WebsiteExporter extends BaseExporter {
 				}
 			} else {
 				for (Taxon child : taxon.getChildren()) {
-					exportTaxon(child, html);
+					exportTaxon(child, page);
 				}
 			}
 		}
@@ -126,50 +124,43 @@ public class WebsiteExporter extends BaseExporter {
 	
 	private void exportPhylum(Taxon phylum) {
 		String name = phylum.getName();
-		
-		HtmlPage orderPage = new HtmlPage("Nature - " + name);
-		HtmlComposite main = orderPage.getMainDiv();
-		HtmlComposite menu = orderPage.getMenuDiv();
+		PanorpaHtmlPage orderPage = new PanorpaHtmlPage("Nature - " + name, htmlPath + name + ".html");
 		
 		final TreeSet<HerbierPic> tsOrderPics = phylum.getPicsCascade();
 		int nPics = tsOrderPics.size();
 
-		main.addTitle(1, "Phylum " + name + taxonNameSeparator + phylum.getNameFr());
-		main.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
+		orderPage.addTitle(1, "Phylum " + name + taxonNameSeparator + phylum.getNameFr());
+		orderPage.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
 		
-		menu.addTitle(1, "Classification");
-		writeTaxonHierarchy(menu, phylum);
-		menu.addTitle(2, "Classes");
+		orderPage.addMenuItem(1, "#", "Classification");
+		writeTaxonHierarchy(orderPage, phylum);
+		orderPage.addMenuItem(2, "#", "Classes");
 		
 		for (Taxon child : phylum.getChildren()) {
-			addRankIcon(menu, child.getRank());
-			menu.addLink("#" + child.getName(), "Aller aux " + child.getName(), child.getName());
-			menu.addBr();
-			
-			exportTaxon(child, main);
+			//addRankIcon(orderPage, child.getRank());
+			orderPage.addMenuItem(3, "#" + child.getName(), child.getName());
+			exportTaxon(child, orderPage);
 		}
 		
-		main.addCenter().addLink("classification.html#" + name, "Retour").addImage("pages/home.gif", "Retour");
-		
-		orderPage.saveAs(htmlPath + name + ".html");
+		HtmlTag tCenter = new HtmlTag("center");
+		tCenter.addTag(HtmlTagFactory.imageLink("classification.html#" + name, "Retour", "pages/home.gif", "Retour"));
+		orderPage.add(tCenter);
+		orderPage.save();
 	}
 	
 	private void exportOrder(Taxon order) {
 		String name = order.getName();
-		
-		HtmlPage orderPage = new HtmlPage("Nature - " + name);
-		HtmlComposite main = orderPage.getMainDiv();
-		HtmlComposite menu = orderPage.getMenuDiv();
+		PanorpaHtmlPage orderPage = new PanorpaHtmlPage("Nature - " + name, htmlPath + name + ".html");
 		
 		final TreeSet<HerbierPic> tsOrderPics = order.getPicsCascade();
 		int nPics = tsOrderPics.size();
 
-		main.addTitle(1, "Ordre des " + name + taxonNameSeparator + order.getNameFr());
-		main.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
+		orderPage.addTitle(1, "Ordre des " + name + taxonNameSeparator + order.getNameFr());
+		orderPage.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
 		
-		menu.addTitle(1, "Classification");
-		writeTaxonHierarchy(menu, order);
-		menu.addTitle(2, "Familles");
+		orderPage.addMenuItem(1, "#", "Classification");
+		writeTaxonHierarchy(orderPage, order);
+		orderPage.addMenuItem(2, "#", "Familles");
 		
 		for (Taxon family : order.getChildren()) {
 			final TreeSet<HerbierPic> tsFamilyPics = family.getPicsCascade();
@@ -177,20 +168,19 @@ public class WebsiteExporter extends BaseExporter {
 			
 			TreeSet<Taxon> tsTaxa = new TreeSet<>();
 			
-			main.addAnchor(family.getName());
+			orderPage.addAnchor(family.getName());
 			String title = family.getName();
 			if (!name.equals(family.getNameFr())) {
 				title += taxonNameSeparator + family.getNameFr();
 			}
-			main.addTitle(2, "Famille des " + title);
-			main.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
+			orderPage.addTitle(2, "Famille des " + title);
+			orderPage.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
 			
-			addRankIcon(menu, TaxonRank.FAMILY);
-			menu.addLink("#" + family.getName(), "Aller aux " + family.getName(), family.getName());
-			menu.addBr();
+			//addRankIcon(menu, TaxonRank.FAMILY);
+			orderPage.addMenuItem(3, "#" + family.getName(), family.getName());
 			
-			HtmlComposite table = main.addFillTable(nColumns);
-			table.setCssClass("table-thumbs");
+			TableHtmlTag table = orderPage.addFillTable(nColumns, "100%");
+			table.setClass("table-thumbs");
 			
 			// export each genus and species
 			for (Taxon genus : family.getChildren()) {
@@ -227,46 +217,11 @@ public class WebsiteExporter extends BaseExporter {
 		
 		// Go back to phylum
 		Taxon phylum = order.getAncestor(TaxonRank.PHYLUM);
-		main.addCenter().addLink(phylum.getName() + ".html#" + name, "Retour").addImage("pages/home.gif", "Retour");
-		
-		orderPage.saveAs(htmlPath + name + ".html");
+		HtmlTag tCenter = new HtmlTag("center");
+		tCenter.addTag(HtmlTagFactory.imageLink(phylum.getName() + ".html#" + name, "Retour", "pages/home.gif", "Retour"));
+		orderPage.add(tCenter);
+		orderPage.save();
 	}
-	
-	/* TODO to remove (moved to TaxonExporter)
-	private void addClassificationTableData(HtmlComposite table, Taxon taxon) {
-		switch(taxon.getRank()) {
-		case KINGDOM:
-			table.addTableData().addLink("../classification.html#" + taxon.getName(), 
-					"Aller aux " + taxon.getNameFr(), taxon.getName());
-			break;
-		case PHYLUM:
-			table.addTableData().addLink("../" + taxon.getName() + ".html", 
-					"Aller au phylum des " + taxon.getNameFr(), taxon.getName());
-			break;
-		case CLASS:
-			Taxon phylum = taxon.getParent();
-			table.addTableData().addLink("../" + phylum.getName() + ".html#" + taxon.getName(), 
-					"Aller à la classe des " + taxon.getNameFr(), taxon.getName());
-			break;
-		case ORDER:
-			table.addTableData().addLink("../" + taxon.getName() + ".html", 
-					"Aller à l'ordre des " + taxon.getNameFr(), taxon.getName());
-			break;
-		case FAMILY:
-			Taxon order = taxon.getParent();
-			table.addTableData().addLink("../" + order.getName() + ".html#" + taxon.getName(), 
-					"Aller à la famille des " + taxon.getNameFr(), taxon.getName());
-			break;
-		case GENUS:
-		case SPECIES:
-			table.addTableData("<i>" + taxon.getName() + "</i>");
-			break;
-		default:
-			table.addTableData(taxon.getName());
-			break;
-		}
-	}
-	*/
 	
 	/**
 	 * Creates a HTML page with web links and a bibliography.
@@ -341,11 +296,11 @@ public class WebsiteExporter extends BaseExporter {
 		biblio.addItem(sRef);
 	}
 	
-	
+	/* TODO remove (unused)
 	protected void addRankIcon(HtmlComposite html, TaxonRank rank) {
 		html.addImage("rank" + rank.getOrder() + ".svg", rank.getGuiName(), null, rank.getGuiName());
 		//html.addSvgSquare("16", rank.getColor(), rank.getGuiName());
-	}
+	} */
 	
 	/**
 	 * Writes the hierarchy of the specified taxon 
@@ -353,7 +308,7 @@ public class WebsiteExporter extends BaseExporter {
 	 * @param html  the html composite to write to
 	 * @param taxon the taxon
 	 */
-	private void writeTaxonHierarchy(HtmlComposite html, Taxon taxon) {
+	private void writeTaxonHierarchy(PanorpaHtmlPage html, Taxon taxon) {
 		if (taxon != null) {
 			Vector<Taxon> vecTaxa = new Vector<>();
 			vecTaxa.add(taxon);
@@ -365,19 +320,15 @@ public class WebsiteExporter extends BaseExporter {
 			
 			for (Taxon t : vecTaxa) {
 				String name = t.getName();
-				addRankIcon(html, t.getRank());
-				html.addLink(getTaxonLink(t, null), "Retour aux " + name + " (" + t.getNameFr() + ")", name);
-				//html.addLink("classification.html#" + name, "Retour aux " + name + " (" + t.getNameFr() + ")", name);
-				html.addBr();
+				//addRankIcon(html, t.getRank());
+				html.addMenuItem(3, getTaxonLink(t, null), name);
 			}
 		}
 	}
 	
 	private void addMenuLink(Taxon taxon) {
-		addRankIcon(menuDiv, taxon.getRank());
-		menuDiv.addLink("#" + taxon.getName(), taxon.getName() + " (" + taxon.getNameFr() + ")", 
-				taxon.getName());
-		menuDiv.addBr();
+		//addRankIcon(menuDiv, taxon.getRank());
+		htmlPage.addMenuItem(3, "#" + taxon.getName(), taxon.getName());
 	}
 	
 	private void exportJsonTree() {
@@ -454,10 +405,6 @@ public class WebsiteExporter extends BaseExporter {
 			url = "pages/" + getTaxonHtmlFileName(taxon);
 			break;
 		case GENUS:
-			// url = "pages/" + getTaxonHtmlFileName(taxon);  // does not always exist!
-//			if (typicalPic != null) {
-//				url = "pages/" + typicalPic.getFileName().replace(".jpg", ".html");
-//			}
 			return getTaxonLink(taxon.getParent(), typicalPic);
 		case FAMILY:
 		case CLASS:
@@ -477,138 +424,6 @@ public class WebsiteExporter extends BaseExporter {
 		return url;
 	}
 	
-	
-	/* TODO to remove (moved to TaxonExporter)
-	private void exportTaxon(Taxon taxon, Taxon prevTaxon, Taxon nextTaxon) {
-		Set<HerbierPic> pics = taxon.getPics();
-		if (pics.isEmpty()) {
-			return;
-		}
-		
-		TaxonRank rank = taxon.getRank();
-		String name = taxon.getName();
-		String filename = getTaxonHtmlFileName(taxon);
-		//log.info("Creating html page for " + name + " with " + pics.size() + " pics as " + filename);
-		
-		HtmlPage picPage = new HtmlPage("Nature - " + name, 1);
-		HtmlComposite main = picPage.getMainDiv();
-		
-		String title = name;
-		if (!name.equals(taxon.getNameFr())) {
-			title += taxonNameSeparator + taxon.getNameFr();
-		}
-		main.addTitle(1, title);
-		
-		if (rank != TaxonRank.SPECIES && rank != TaxonRank.GENUS) {
-			main.addTitle(2, "<font color='gray'>Genre indéterminé</font>");
-		}
-
-		// table for medium images
-		HtmlComposite table = main.addFillTable(2, "1040px");
-		table.setCssClass("table-medium");
-		
-		for (HerbierPic hpic : pics) {
-			// image with link
-			HtmlComposite td = table.addTableData();
-			td.addAnchor(hpic.getFileName().replace(".jpg", ""));
-			HtmlComposite link = td.addLink("../photos/" + hpic.getFileName(), name);
-			link.addImage("../medium/" + hpic.getFileName(), name);
-			
-			// image details
-			Location location = hpic.getLocation();
-			HtmlComposite par = td.addPar();
-			if (location != null) {
-				String locFilename = "../lieu" + location.getIdx() + ".html";
-				par.addLink(locFilename, location.getName(), location.getName());
-				int altitude = location.getAltitude();
-				if (altitude >= 1000) {
-					par.addText(" (" + altitude + "m)");
-				}
-				par.addText(", " + location.getRegion());
-				if (!"Suisse".equals(location.getState())) {
-					par.addText(", " + location.getState());
-				}
-				par.addText(", ");
-			}
-			par.addText(dateFormat.format(hpic.getShotAt()));
-			
-			String remarks = hpic.getRemarks();
-			if (remarks != null && !remarks.isEmpty()) {
-				remarks = replaceRemarkLinks(remarks);
-				td.addPar(remarks);
-			}
-		}
-		
-		// External links
-		HtmlComposite par = main.addPar();
-		par.addText("Pages ");
-		//taxonUrlProvider.addLinks(par, taxon);
-		
-		// classification
-		HtmlComposite divClassif = addBoxDiv(main, "Classification");
-		table = divClassif.addFillTable(3, "500px");
-		
-		Vector<Taxon> vecTaxa = new Vector<>();
-		vecTaxa.add(taxon);
-		Taxon parent = taxon.getParent();
-		while (parent != null) {
-			vecTaxa.add(0, parent);
-			parent = parent.getParent();
-		}
-		
-		for (Taxon t : vecTaxa) {
-			HtmlComposite td = table.addTableData();
-			TaxonRank rank2 = t.getRank();
-			addRankIcon(td, rank2);
-			td.addText(rank2.getGuiName());
-			addClassificationTableData(table, t);
-			table.addTableData(t.getNameFr());
-		}
-		
-		
-		// navigation links
-		Taxon family = taxon.getAncestor(TaxonRank.FAMILY);
-		Taxon order  = family.getParent();
-		Taxon taxClass = order.getParent();
-		Taxon phylum = taxClass.getParent();
-		Taxon kingdom = phylum.getParent();
-		
-		HtmlComposite tableNav = main.addFillTable(3, "500px");
-		tableNav.setCssClass("table-nav");
-		tableNav.addTableData().addLink(getTaxonHtmlFileName(prevTaxon), prevTaxon.getName()).addImage("prev.gif", "Précédante");
-		tableNav.addTableData().addLink("../" + order.getName() + ".html#" + family.getName(), 
-				"Retour à la page des " + order.getName())
-			.addImage("home.gif", "Retour");
-		tableNav.addTableData().addLink(getTaxonHtmlFileName(nextTaxon), nextTaxon.getName()).addImage("next.gif", "Suivante");
-		
-		// menu items
-		HtmlComposite menuDiv = picPage.getMenuDiv();
-		menuDiv.addTitle(1, "Classification");
-		
-		addRankIcon(menuDiv, TaxonRank.KINGDOM);
-		menuDiv.addLink("../classification.html#" + kingdom.getName(), kingdom.getNameFr(), kingdom.getName());
-		menuDiv.addBr();
-		
-		addRankIcon(menuDiv, TaxonRank.CLASS);
-		menuDiv.addLink("../" + phylum.getName() + ".html#" + taxClass.getName(), taxClass.getNameFr(), taxClass.getName());
-		menuDiv.addBr();
-		
-		addRankIcon(menuDiv, TaxonRank.ORDER);
-		menuDiv.addLink("../" + order.getName() + ".html", order.getNameFr(), order.getName());
-		menuDiv.addBr();
-		
-		addRankIcon(menuDiv, TaxonRank.FAMILY);
-		menuDiv.addLink("../" + order.getName() + ".html#" + family.getName(), family.getNameFr(), family.getName());
-			
-		if (TaxonRank.FAMILY != taxon.getRank()) {
-			menuDiv.addBr();
-			addRankIcon(menuDiv, taxon.getRank());
-			menuDiv.addText(name);
-		}
-		
-		picPage.saveAs(htmlPath + "pages/" + filename);
-	}
-	*/
 	
 	/**
 	 * @param args unused

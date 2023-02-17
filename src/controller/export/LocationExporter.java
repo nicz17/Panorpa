@@ -86,7 +86,7 @@ public class LocationExporter extends BaseExporter {
 		
 		HashMap<AltitudeLevel, ListHtmlTag> mapLevels = new HashMap<>();
 		int nLevels = 0;
-		Vector<HtmlTag> vecCells = new Vector<>();
+		HtmlTag tCell = table.addCell();
 		
 		for (Location location : locations) {
 			if (location.getPics().isEmpty()) {
@@ -98,12 +98,11 @@ public class LocationExporter extends BaseExporter {
 				if (ul == null) {
 					nLevels++;
 					if (nLevels == 2) {
-						table.addCell(vecCells);
-						vecCells.clear();
+						tCell = table.addCell();
 					}
-					vecCells.add(new HtmlTag("h2", level.getLabel()));
+					tCell.addTag(new HtmlTag("h2", level.getLabel()));
 					ul = new ListHtmlTag();
-					vecCells.add(ul);
+					tCell.addTag(ul);
 					mapLevels.put(level, ul);
 				}
 				
@@ -122,7 +121,6 @@ public class LocationExporter extends BaseExporter {
 				createLocationPage(location);
 			}
 		}
-		table.addCell(vecCells);
 		
 		page.add(jsRenderMap);
 		page.save();

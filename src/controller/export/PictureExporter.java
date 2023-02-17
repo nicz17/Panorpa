@@ -152,8 +152,7 @@ public class PictureExporter extends BaseExporter {
 			}
 		});
 		
-		TableHtmlTag table = page.addTable(nColumns);
-		table.addAttribute("width", "100%");
+		TableHtmlTag table = page.addTable(nColumns, "100%");
 		table.setClass("table-thumbs");
 		
 		Iterator<HerbierPic> it = pics.iterator();

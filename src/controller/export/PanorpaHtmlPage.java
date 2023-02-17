@@ -28,6 +28,16 @@ public class PanorpaHtmlPage extends HtmlPage {
 	 * @param sFilename  the filename for saving the page
 	 * @param sPath      the relative path for links
 	 */
+	public PanorpaHtmlPage(String sTitle, String sFilename) {
+		this(sTitle, sFilename, "");
+	}
+
+	/**
+	 * Constructor.
+	 * @param sTitle     the page title
+	 * @param sFilename  the filename for saving the page
+	 * @param sPath      the relative path for links
+	 */
 	public PanorpaHtmlPage(String sTitle, String sFilename, String sPath) {
 		super(sTitle, sFilename, sPath, "style.css", 
 				Panorpa.getInstance().getAppName() + " v" + Panorpa.getInstance().getAppVersion());

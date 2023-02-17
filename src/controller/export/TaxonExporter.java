@@ -63,8 +63,7 @@ public class TaxonExporter extends BaseExporter {
 		}
 		
 		// Photos table
-		TableHtmlTag tablePhotos = page.addTable(2);
-		tablePhotos.addAttribute("width", "1040px");
+		TableHtmlTag tablePhotos = page.addTable(2, "1040px");
 		tablePhotos.setClass("table-medium");
 		
 		for (HerbierPic hpic : pics) {
@@ -138,8 +137,7 @@ public class TaxonExporter extends BaseExporter {
 		Taxon phylum = taxClass.getParent();
 		Taxon kingdom = phylum.getParent();
 		
-		TableHtmlTag tableNav = page.addTable(3);
-		tableNav.addAttribute("width", "500px");
+		TableHtmlTag tableNav = page.addTable(3, "500px");
 		tableNav.setClass("table-nav");
 		tableNav.addCell(HtmlTagFactory.imageLink(getTaxonHtmlFileName(prevTaxon), prevTaxon.getName(), 
 				"prev.gif", "Précédante"));
