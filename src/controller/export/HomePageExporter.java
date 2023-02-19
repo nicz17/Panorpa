@@ -16,8 +16,10 @@ import model.Taxon;
 import model.TaxonRank;
 
 import common.base.Logger;
-import common.io.HtmlComposite;
-
+import common.html.HtmlTag;
+import common.html.HtmlTagFactory;
+import common.html.ListHtmlTag;
+import common.html.TableHtmlTag;
 import controller.Controller;
 import controller.DataAccess;
 import controller.PictureCache;
@@ -48,78 +50,91 @@ public class HomePageExporter extends BaseExporter {
 	 * Creates the website home page.
 	 */
 	public void export() {
-		HtmlPage page = new HtmlPage("Photos de nature");
-		HtmlComposite main = page.getMainDiv();
-		HtmlComposite table = main.addFillTable(2, "1420px");
-		HtmlComposite tdLeft  = table.addTableData();
-		HtmlComposite tdRight = table.addTableData();
+		PanorpaHtmlPage page = new PanorpaHtmlPage("Photos de nature", htmlPath + "index.html");
+		TableHtmlTag table = page.addFillTable(2, "1420px");
+		HtmlTag tdLeft  = table.addCell();
+		HtmlTag tdRight = table.addCell();
 		
 		tdLeft.addTitle(1, "Photos de nature");
 		
 		// Sample pictures
-		HtmlComposite divSamplePics = addBoxDiv(tdLeft, "Quelques photos", "myBox myBox-wide");
-		HtmlComposite tablePics = divSamplePics.addFillTable(nColumns);
-		tablePics.setCssClass("table-thumbs");
+		HtmlTag divSamplePics = HtmlTagFactory.blueBox("Quelques photos", "myBox myBox-wide");
+		tdLeft.addTag(divSamplePics);
+		TableHtmlTag tablePics = new TableHtmlTag(nColumns, true);
+		tablePics.addAttribute("width", "100%");
+		divSamplePics.addTag(tablePics);
+		tablePics.setClass("table-thumbs");
 		
 		Vector<HerbierPic> vecSamplePics = getSamplePics();		
 		for (HerbierPic hpic : vecSamplePics) {
 			String name = hpic.getName();
-			HtmlComposite td = tablePics.addTableData();
+			HtmlTag td = tablePics.addCell();
 			String picFile = getTaxonHtmlFileName(hpic.getTaxon());
 			String picAnchor = "#" + hpic.getFileName().replace(".jpg", "");
-			HtmlComposite link = td.addLink("pages/" + picFile + picAnchor, getTooltiptext(hpic.getTaxon()));
-			link.addImage("thumbs/" + hpic.getFileName(), name);
+			HtmlTag link = HtmlTagFactory.imageLink("pages/" + picFile + picAnchor, getTooltiptext(hpic.getTaxon()),
+					"thumbs/" + hpic.getFileName(), name);
+			td.addTag(link);
 		}
 		
 		// Categories
-		HtmlComposite divCategories = addBoxDiv(tdLeft, "Quelques catégories", "myBox myBox-wide");
-		HtmlComposite tableCat = divCategories.addFillTable(5);
+		HtmlTag divCategories = HtmlTagFactory.blueBox("Quelques catégories", "myBox myBox-wide");
+		tdLeft.addTag(divCategories);
+		TableHtmlTag tableCat = new TableHtmlTag(5, true);
+		tableCat.addAttribute("width", "100%");
+		divCategories.addTag(tableCat);
 		
-		HtmlComposite ul = tableCat.addTableData().addList();
-		ul.addListItem().addLink("Pteridophyta.html", "Fougères", "Fougères");
-		ul.addListItem().addLink("Pinophyta.html", "Conifères", "Conifères");
-		ul.addListItem().addLink("Magnoliophyta.html#Liliopsida", "Monocotylédones", "Monocots");
-		ul.addListItem().addLink("Magnoliophyta.html#Magnoliopsida", "Dicotylédones", "Dicots");
+		ListHtmlTag ul = new ListHtmlTag();
+		tableCat.addCell(ul);
+		ul.addItem(HtmlTagFactory.link("Pteridophyta.html", "Fougères", "Fougères"));
+		ul.addItem(HtmlTagFactory.link("Pinophyta.html", "Conifères", "Conifères"));
+		ul.addItem(HtmlTagFactory.link("Magnoliophyta.html#Liliopsida", "Monocots", "Monocotylédones"));
+		ul.addItem(HtmlTagFactory.link("Magnoliophyta.html#Magnoliopsida", "Dicots", "Dicotylédones"));
 		
-		ul = tableCat.addTableData().addList();
-		ul.addListItem().addLink("Malpighiales.html#Euphorbiaceae", "Euphorbes", "Euphorbes");
-		ul.addListItem().addLink("Saxifragales.html#Saxifragaceae", "Saxifrages", "Saxifrages");
-		ul.addListItem().addLink("Lamiales.html#Lamiaceae", "Lamiacées", "Lamiacées");
-		ul.addListItem().addLink("Asterales.html#Asteraceae", "Astéracées", "Astéracées");
+		ul = new ListHtmlTag();
+		tableCat.addCell(ul);
+		ul.addItem(HtmlTagFactory.link("Malpighiales.html#Euphorbiaceae", "Euphorbes", "Euphorbes"));
+		ul.addItem(HtmlTagFactory.link("Saxifragales.html#Saxifragaceae", "Saxifrages", "Saxifrages"));
+		ul.addItem(HtmlTagFactory.link("Lamiales.html#Lamiaceae", "Lamiacées", "Lamiacées"));
+		ul.addItem(HtmlTagFactory.link("Asterales.html#Asteraceae", "Astéracées", "Astéracées"));
 		
-		ul = tableCat.addTableData().addList();
-		ul.addListItem().addLink("Chordata.html#Aves", "Oiseaux", "Oiseaux");
-		ul.addListItem().addLink("Chordata.html#Mammalia", "Mammifères", "Mammifères");
-		ul.addListItem().addLink("Araneae.html", "Araignées", "Araignées");
-		ul.addListItem().addLink("Opiliones.html", "Opilions ou faucheux", "Opilions");
+		ul = new ListHtmlTag();
+		tableCat.addCell(ul);
+		ul.addItem(HtmlTagFactory.link("Chordata.html#Aves", "Oiseaux", "Oiseaux"));
+		ul.addItem(HtmlTagFactory.link("Chordata.html#Mammalia", "Mammifères", "Mammifères"));
+		ul.addItem(HtmlTagFactory.link("Araneae.html", "Araignées", "Araignées"));
+		ul.addItem(HtmlTagFactory.link("Opiliones.html", "Opilions", "Opilions ou faucheux"));
 		
-		ul = tableCat.addTableData().addList();
-		ul.addListItem().addLink("Arthropoda.html#Insecta", "Insectes", "Insectes");
-		ul.addListItem().addLink("Diptera.html", "Mouches, syrphes, tipules", "Diptères");
-		ul.addListItem().addLink("Hymenoptera.html", "Abeilles, fourmis, guêpes", "Hyménoptères");
-		ul.addListItem().addLink("Lepidoptera.html", "Papillons", "Papillons");
+		ul = new ListHtmlTag();
+		tableCat.addCell(ul);
+		ul.addItem(HtmlTagFactory.link("Arthropoda.html#Insecta", "Insectes", "Insectes"));
+		ul.addItem(HtmlTagFactory.link("Diptera.html", "Diptères", "Mouches, syrphes, tipules"));
+		ul.addItem(HtmlTagFactory.link("Hymenoptera.html", "Hyménoptères", "Abeilles, fourmis, guêpes"));
+		ul.addItem(HtmlTagFactory.link("Lepidoptera.html", "Papillons", "Papillons"));
 		
-		ul = tableCat.addTableData().addList();
-		ul.addListItem().addLink("Odonata.html", "Libellules et demoiselles", "Libellules");
-		ul.addListItem().addLink("Coleoptera.html", "Coléoptères", "Coléoptères");
-		ul.addListItem().addLink("Hemiptera.html", "Punaises", "Punaises");
-		ul.addListItem().addLink("Squamata.html", "Reptiles", "Reptiles");
+		ul = new ListHtmlTag();
+		tableCat.addCell(ul);
+		ul.addItem(HtmlTagFactory.link("Odonata.html", "Libellules", "Libellules et demoiselles"));
+		ul.addItem(HtmlTagFactory.link("Coleoptera.html", "Coléoptères", "Coléoptères"));
+		ul.addItem(HtmlTagFactory.link("Hemiptera.html", "Punaises", "Punaises"));
+		ul.addItem(HtmlTagFactory.link("Squamata.html", "Reptiles", "Reptiles"));
 		
 		// About
-		HtmlComposite divAbout = addBoxDiv(tdLeft, "A propos de cette galerie");
+		HtmlTag divAbout = HtmlTagFactory.blueBox("A propos de cette galerie");
+		tdLeft.addTag(divAbout);
 		
-		divAbout.addPar("Cette galerie de photos de nature me sert d'aide-mémoire pour retrouver les noms " +
+		divAbout.addParagraph("Cette galerie de photos de nature me sert d'aide-mémoire pour retrouver les noms " +
 				"des plantes et insectes que je croise en montagne, en voyage ou autour de chez moi.");
 		
 		Map<TaxonRank, Integer> mapRankStats = getRankStats();
-		HtmlComposite stats = divAbout.addPar("C'est aussi une collection de taxons qui compte actuellement <b>");
-		stats.addText(PictureCache.getInstance().size() + "</b> photos dans <b>");
-		stats.addText(mapRankStats.get(TaxonRank.SPECIES) + "</b> espèces, <b>");
-		stats.addText(mapRankStats.get(TaxonRank.GENUS) + "</b> genres et <b>");
-		stats.addText(mapRankStats.get(TaxonRank.FAMILY) + "</b> familles.");
+		String sStats = "C'est aussi une collection de taxons qui compte actuellement <b>";
+		sStats += PictureCache.getInstance().size() + "</b> photos dans <b>";
+		sStats += mapRankStats.get(TaxonRank.SPECIES) + "</b> espèces, <b>";
+		sStats += mapRankStats.get(TaxonRank.GENUS) + "</b> genres et <b>";
+		sStats += mapRankStats.get(TaxonRank.FAMILY) + "</b> familles.";
+		divAbout.addParagraph(sStats);
 		
 		// Latest species
-		HtmlComposite divSpecies = addBoxDiv(tdRight, "Dernières espèces");
+		HtmlTag divSpecies = tdRight.addBox("Dernières espèces");
 		Vector<Taxon> vecSpeciesRaw = Controller.getInstance().getLatestSpecies(nLatestSpecies + 4);
 		Vector<Taxon> vecSpecies = new Vector<>();
 		for (Taxon species : vecSpeciesRaw) {
@@ -149,47 +164,51 @@ public class HomePageExporter extends BaseExporter {
 			if (pic != null) {
 				//String picFile = pic.getFileName().replace(".jpg", ".html");
 				String picFile = getTaxonHtmlFileName(species);
-				HtmlComposite li = ul.addListItem();
-				li.addLink("pages/" + picFile, getTooltiptext(species), species.getNameFr());
-				li.addText(" <font color='gray'>" + dateFormat.format(pic.getShotAt()) + "</font>");
+				HtmlTag li = ul.addItem();
+				li.addLink("pages/" + picFile, species.getNameFr(), getTooltiptext(species), false);
+				li.addGrayFont(" " + dateFormat.format(pic.getShotAt()));
 			}
 		}
 		
 		// Latest excursions
-		HtmlComposite divExpeditions = addBoxDiv(tdRight, "Excursions récentes");
+		HtmlTag divExpeditions = tdRight.addBox("Excursions récentes");
 		List<Expedition> vecExpeditions = Controller.getInstance().getRecentExpeditions(nLatestLocations);
 		ul = divExpeditions.addList();
 		for (Expedition exp : vecExpeditions) {
-			HtmlComposite li = ul.addListItem();
+			HtmlTag li = ul.addItem();
 			String url = "excursion" + exp.getIdx() + ".html";
-			li.addLink(url, exp.getTitle(), exp.getTitle());
-			li.addText(" <font color='gray'>" + dateFormat.format(exp.getDateFrom()) + "</font>");
+			li.addLink(url, exp.getTitle(), exp.getTitle(), false);
+			li.addGrayFont(" " + dateFormat.format(exp.getDateFrom()));
 		}
 		
-		createSearchForm(tdRight);
+		// TODO restore createSearchForm(tdRight);
 		
 		// Photo hardware
-		HtmlComposite divMatos = addBoxDiv(tdRight, "Matériel photo");
+		HtmlTag divMatos = tdRight.addBox("Matériel photo");
 		ul = divMatos.addList();
-		ul.addListItem().addLinkExternal("https://fr.wikipedia.org/wiki/Nikon_D300", "Nikon D300");
-		HtmlComposite li = ul.addListItem();
-		li.addLinkExternal("https://fr.wikipedia.org/wiki/Nikon_D800", "Nikon D800");
-		li.addText(" (depuis novembre 2017)");
-		ul.addListItem().addText("AF-S Micro Nikkor 105mm 1:2.8");
-		ul.addListItem().addText("AF-S Nikkor 80-400mm 1:4.5-5.6");
+		ul.addItem().addLink("https://fr.wikipedia.org/wiki/Nikon_D300", "Nikon D300", "Wikipedia : Nikon D300", true);
+		HtmlTag li = ul.addItem();
+		li.addLink("https://fr.wikipedia.org/wiki/Nikon_D800", "Nikon D800", "Wikipedia : Nikon D800", true);
+		li.addGrayFont(" (depuis novembre 2017)");
+		ul.addItem("AF-S Micro Nikkor 105mm 1:2.8");
+		ul.addItem("AF-S Nikkor 80-400mm 1:4.5-5.6");
 		//ul.addListItem().addText("Sony Nex 5T");
 		
 		// External links
-		HtmlComposite divLinks = addBoxDiv(tdRight, "Liens externes");
+		HtmlTag divLinks = tdRight.addBox("Liens externes");
 		ul = divLinks.addList();
-		ul.addListItem().addLinkExternal("https://www.inaturalist.org/observations/nicz", "iNaturalist");
-		ul.addListItem().addLinkExternal("http://www.insecte.org/forum/", "Le monde des insectes");
-		ul.addListItem().addLinkExternal("http://www.quelestcetanimal.com/", "Quel est cet animal ?");
-		//ul.addListItem().addLinkExternal("http://www.visoflora.com/", "Visoflora");
-		ul.addListItem().addLinkExternal("https://www.infoflora.ch/fr/", "Infoflora");
-		ul.addListItem().addLinkExternal("https://noc.social/@nicz", "Mastodon @nicz@noc.social", "Mastodon", "me");
+		ul.addItem().addLink("https://www.inaturalist.org/observations/nicz", "iNaturalist",
+				"Mes observations sur iNaturalist", true);
+		ul.addItem().addLink("http://www.insecte.org/forum/", "Le monde des insectes",
+				"Le monde des insectes - forum", true);
+		ul.addItem().addLink("http://www.quelestcetanimal.com/", "Quel est cet animal ?",
+				"Quel est cet animal ?", true);
+		//ul.addItem().addLink("http://www.visoflora.com/", "Visoflora");
+		ul.addItem().addLink("https://www.infoflora.ch/fr/", "Infoflora", "Flore Suisse", true);
+		HtmlTag link = ul.addItem().addLink("https://noc.social/@nicz", "Mastodon", "Mastodon @nicz@noc.social", true);
+		link.addAttribute("rel", "me");
 		
-		page.saveAs(htmlPath + "index.html");
+		page.save();
 	}
 	
 	/**
@@ -216,11 +235,12 @@ public class HomePageExporter extends BaseExporter {
 	 * Adds a search form, with redirection to dedicated search page.
 	 * @param parent  the parent html composite
 	 */
-	private void createSearchForm(HtmlComposite parent) {
-		HtmlComposite divSearch = addBoxDiv(parent, "Chercher");
-		HtmlComposite form = divSearch.addForm("get", "search.html");
-		form.addInput("text", "search");
-		form.addButton("Chercher");
+	private void createSearchForm(HtmlTag parent) {
+		HtmlTag divSearch = parent.addBox("Chercher");
+		// TODO search form
+		//HtmlTag form = divSearch.addForm("get", "search.html");
+		//form.addInput("text", "search");
+		//form.addButton("Chercher");
 	}
 
 	private Map<TaxonRank, Integer> getRankStats() {
