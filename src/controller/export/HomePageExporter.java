@@ -58,8 +58,7 @@ public class HomePageExporter extends BaseExporter {
 		tdLeft.addTitle(1, "Photos de nature");
 		
 		// Sample pictures
-		HtmlTag divSamplePics = HtmlTagFactory.blueBox("Quelques photos", "myBox myBox-wide");
-		tdLeft.addTag(divSamplePics);
+		HtmlTag divSamplePics = tdLeft.addBox("Quelques photos", "myBox myBox-wide");
 		TableHtmlTag tablePics = new TableHtmlTag(nColumns, true);
 		tablePics.addAttribute("width", "100%");
 		divSamplePics.addTag(tablePics);
@@ -71,14 +70,12 @@ public class HomePageExporter extends BaseExporter {
 			HtmlTag td = tablePics.addCell();
 			String picFile = getTaxonHtmlFileName(hpic.getTaxon());
 			String picAnchor = "#" + hpic.getFileName().replace(".jpg", "");
-			HtmlTag link = HtmlTagFactory.imageLink("pages/" + picFile + picAnchor, getTooltiptext(hpic.getTaxon()),
+			td.addImageLink("pages/" + picFile + picAnchor, getTooltiptext(hpic.getTaxon()),
 					"thumbs/" + hpic.getFileName(), name);
-			td.addTag(link);
 		}
 		
 		// Categories
-		HtmlTag divCategories = HtmlTagFactory.blueBox("Quelques catégories", "myBox myBox-wide");
-		tdLeft.addTag(divCategories);
+		HtmlTag divCategories = tdLeft.addBox("Quelques catégories", "myBox myBox-wide");
 		TableHtmlTag tableCat = new TableHtmlTag(5, true);
 		tableCat.addAttribute("width", "100%");
 		divCategories.addTag(tableCat);
@@ -181,7 +178,7 @@ public class HomePageExporter extends BaseExporter {
 			li.addGrayFont(" " + dateFormat.format(exp.getDateFrom()));
 		}
 		
-		// TODO restore createSearchForm(tdRight);
+		createSearchForm(tdRight);
 		
 		// Photo hardware
 		HtmlTag divMatos = tdRight.addBox("Matériel photo");
@@ -236,8 +233,8 @@ public class HomePageExporter extends BaseExporter {
 	 * @param parent  the parent html composite
 	 */
 	private void createSearchForm(HtmlTag parent) {
-		HtmlTag divSearch = parent.addBox("Chercher");
-		// TODO search form
+		//HtmlTag divSearch = parent.addBox("Chercher");
+		// TODO search form once search works
 		//HtmlTag form = divSearch.addForm("get", "search.html");
 		//form.addInput("text", "search");
 		//form.addButton("Chercher");

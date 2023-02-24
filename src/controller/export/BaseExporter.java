@@ -3,7 +3,6 @@ package controller.export;
 import java.text.DateFormat;
 import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,10 +12,8 @@ import model.Taxon;
 import model.TaxonRank;
 import common.base.Logger;
 import common.html.HtmlTag;
-import common.html.HtmlTagFactory;
 import common.html.JavascriptHtmlTag;
 import common.html.TableHtmlTag;
-import common.io.HtmlComposite;
 
 import controller.Controller;
 import controller.TaxonCache;
@@ -123,36 +120,34 @@ public class BaseExporter {
 	 */
 	protected void exportPicture(final HerbierPic hpic, final TableHtmlTag table, boolean bWithDate, Integer nPics) {
 		String name = hpic.getName();
-		Vector<HtmlTag> vecCell = new Vector<>();
+		HtmlTag td = table.addCell();
 		
 		// image with link
 		String picFile = getTaxonHtmlFileName(hpic.getTaxon());
 		String picAnchor = "#" + hpic.getFileName().replace(".jpg", "");
-		HtmlTag link = HtmlTagFactory.imageLink("pages/" + picFile + picAnchor, name, 
+		HtmlTag link = td.addImageLink("pages/" + picFile + picAnchor, name, 
 				"thumbs/" + hpic.getFileName(), name);
 		TaxonRank rank = hpic.getTaxon().getRank();
 		if (rank == TaxonRank.SPECIES || rank == TaxonRank.GENUS) {
 			link.addTag(new HtmlTag("i", "<br>" + name));
 		} else {
-			link.addTag(HtmlTagFactory.grayFont("<br>Genre indéterminé"));
+			link.addGrayFont("<br>Genre indéterminé");
 		}
-		vecCell.add(link);
 
-		vecCell.add(HtmlTagFactory.anchor(name));
-		vecCell.add(new HtmlTag("span", "<br>" + hpic.getFrenchName()));
+		td.addAnchor(name);
+		td.addSpan("<br>" + hpic.getFrenchName());
 		
 		if (nPics != null) {
-			vecCell.add(HtmlTagFactory.grayFont("<br>" + nPics.intValue() + " photo" + 
-					(nPics.intValue() > 1 ? "s" : "")));
+			td.addGrayFont("<br>" + nPics.intValue() + " photo" + 
+					(nPics.intValue() > 1 ? "s" : ""));
 		} else {
-			vecCell.add(new HtmlTag("span", "<br>" + hpic.getFamily()));
+			td.addSpan("<br>" + hpic.getFamily());
 		}
 		
 		
 		if (bWithDate) {
-			vecCell.add(HtmlTagFactory.grayFont("<br>" + dateFormat.format(hpic.getShotAt())));
+			td.addGrayFont("<br>" + dateFormat.format(hpic.getShotAt()));
 		}
-		table.addCell(vecCell);
 	}
 	
 	/**
@@ -203,32 +198,6 @@ public class BaseExporter {
 	}
 	
 	/**
-	 * Creates an html box div with the specified title text and default 'myBox' CSS class.
-	 * 
-	 * @param parent    the parent html element where to add the box
-	 * @param title     the box title
-	 * @return  the created div.
-	 */
-	protected HtmlComposite addBoxDiv(HtmlComposite parent, String title) {
-		return addBoxDiv(parent, title, "myBox");
-	}
-	
-	/**
-	 * Creates an html box div with the specified title text and CSS class.
-	 * 
-	 * @param parent    the parent html element where to add the box
-	 * @param title     the box title
-	 * @param cssClass  the box CSS class
-	 * @return  the created div.
-	 */
-	protected HtmlComposite addBoxDiv(HtmlComposite parent, String title, String cssClass) {
-		HtmlComposite box = parent.addDiv();
-		box.setCssClass(cssClass);
-		box.addTitle(2, title);
-		return box;
-	}
-	
-	/**
 	 * Adds a geographical map for the specified location if possible.
 	 * To enable the map, the location must have valid coordinates.
 	 * 
@@ -249,10 +218,9 @@ public class BaseExporter {
 		if (bValidCoords) {
 			// Add headers and a map div
 			addOpenLayersHeaders(page);
-			HtmlTag divMap = HtmlTagFactory.div("ol-map");
-			parent.addTag(divMap);
+			HtmlTag divMap = parent.addDiv("ol-map");
 			divMap.setClass("ol-map");
-			divMap.addTag(HtmlTagFactory.div("ol-popup"));
+			divMap.addDiv("ol-popup");
 			
 			// Call map rendering Javascript code
 			final JavascriptHtmlTag jsRenderMap = new JavascriptHtmlTag();
@@ -302,8 +270,8 @@ public class BaseExporter {
 	 * @param page  the HTML page
 	 */
 	protected void addOpenLayersHeaders(final PanorpaHtmlPage page) {
-		page.getHead().addTag(HtmlTagFactory.script("js/OpenLayers-v5.3.0.js"));
-		page.getHead().addTag(HtmlTagFactory.script("js/panorpa-maps.js"));
-		page.getHead().addTag(HtmlTagFactory.cssLink("css/OpenLayers-v5.3.0.css"));
+		page.getHead().addScript("js/OpenLayers-v5.3.0.js");
+		page.getHead().addScript("js/panorpa-maps.js");
+		page.getHead().addCss("css/OpenLayers-v5.3.0.css");
 	}
 }

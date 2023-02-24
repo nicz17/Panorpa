@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Locale;
 
 import common.html.HtmlTag;
-import common.html.HtmlTagFactory;
 import common.html.ListHtmlTag;
 import common.html.ParHtmlTag;
 import common.html.TableHtmlTag;
@@ -92,16 +91,15 @@ public class ExpeditionsExporter extends BaseExporter {
 		addOpenStreetMap(exp.getLocation(), page, tdLeft, null, listPics, sGpxFile);
 
 		// Description
-		HtmlTag div = HtmlTagFactory.blueBox("Excursion");
-		tdRight.addTag(div);
+		HtmlTag div = tdRight.addBox("Excursion");
 		Location loc = exp.getLocation();
 		String filenameLoc = "lieu" + loc.getIdx() + ".html";
 		ParHtmlTag par = new ParHtmlTag(null);
-		par.addTag(HtmlTagFactory.link(filenameLoc, loc.getName(), loc.getName()));
+		par.addLink(filenameLoc, loc.getName(), loc.getName(), false);
 		div.addTag(par);
 		par = new ParHtmlTag(null);
-		par.addTag(HtmlTagFactory.grayFont(dateFormat.format(exp.getDateFrom()) + 
-				" &mdash; " + exp.getPics().size() + " photos"));
+		par.addGrayFont(dateFormat.format(exp.getDateFrom()) + 
+				" &mdash; " + exp.getPics().size() + " photos");
 		div.addTag(par);
 		div.addTag(new ParHtmlTag(exp.getNotes()));
 		div.addTag(new ParHtmlTag("Durée " + durationFormat.format(exp.getDuration(), false)));
@@ -126,15 +124,14 @@ public class ExpeditionsExporter extends BaseExporter {
 			sLastMonthYear = sYear;
 			String sAnchor = dateFormatAnchor.format(exp.getDateFrom());
 			parent.addMenuItem(3, "#" + sAnchor, sYear); //, "Voir les observations de " + sYear.toLowerCase()));
-			HtmlTag tAnchor = HtmlTagFactory.anchor(sAnchor);
-			tAnchor.addTag(HtmlTagFactory.title(2, sYear));
-			parent.add(tAnchor);
+			HtmlTag tAnchor = parent.addAnchor(sAnchor);
+			tAnchor.addTitle(2, sYear);
 			ul = parent.addList();
 		}
 		
 		HtmlTag li = ul.addItem();
 		String filename = "excursion" + exp.getIdx() + ".html";
-		li.addTag(HtmlTagFactory.link(filename, exp.getTitle(), "Voir le journal"));
-		li.addTag(HtmlTagFactory.grayFont(" &mdash; " + dateFormat.format(exp.getDateFrom())));
+		li.addLink(filename, exp.getTitle(), "Voir le journal", false);
+		li.addGrayFont(" &mdash; " + dateFormat.format(exp.getDateFrom()));
 	}
 }
