@@ -5,7 +5,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import common.base.Logger;
-import common.io.HtmlComposite;
+import common.html.HtmlTag;
 import common.io.SpecialChars;
 
 import controller.Controller;
@@ -32,20 +32,19 @@ public class BookExporter extends BaseExporter {
 		int nPics = vecPics.size();
 		log.info("Exporting " + nPics + " images for a book.");
 		
-		HtmlPage page = new HtmlPage("Projet de livre");
+		PanorpaHtmlPage page = new PanorpaHtmlPage("Projet de livre", Controller.exportPath + "book/index.html");
 		page.getHead().addScript("https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js");
 		page.getHead().addScript("js/freewall.js");
 		
-		HtmlComposite main = page.getMainDiv();
-		main.addTitle(1, "Projet de livre");
-		main.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
+		page.addTitle(1, "Projet de livre");
+		page.addSpan("pics-count", String.valueOf(nPics) + " photo" + (nPics == 1 ? "" : "s"));
 		
-		HtmlComposite divFreewall = main.addDiv("freewall");
+		HtmlTag divFreewall = page.addDiv("freewall");
 		
 		for (HerbierPic hpic : vecPics) {
 			HerbierPic pic = PictureCache.getInstance().getPicture(hpic.getIdx());
-			HtmlComposite div = divFreewall.addDiv();
-			div.setCssClass("item");
+			HtmlTag div = divFreewall.addDiv(null);
+			div.setClass("item");
 			div.addImage("../html/medium/" + pic.getFileName(), pic.getFileName());
 			
 			String nameFr = pic.getTaxon().getNameFr();
@@ -54,25 +53,25 @@ public class BookExporter extends BaseExporter {
 			if (!name.equals(nameFr)) {
 				namePar += " (" + name + ")";
 			}
-			div.addPar(namePar);
+			div.addParagraph(namePar);
 			
 			Location location = hpic.getLocation();
-			HtmlComposite par = div.addPar();
-			par.addText(location.getName());
+			String sLocation = location.getName();
 			int altitude = location.getAltitude();
 			if (altitude >= 1000) {
-				par.addText(" (" + altitude + "m)");
+				sLocation += " (" + altitude + "m)";
 			}
-			par.addText(", " + location.getRegion());
+			sLocation += ", " + location.getRegion();
 			if (!"Suisse".equals(location.getState())) {
-				par.addText(", " + location.getState());
+				sLocation += ", " + location.getState();
 			}
-			par.addText(", " + dateFormat.format(pic.getShotAt()));
+			sLocation += ", " + dateFormat.format(pic.getShotAt());
+			div.addParagraph(sLocation);
 			
 			String remarks = hpic.getRemarks();
 			if (remarks != null && !remarks.isEmpty()) {
 				remarks = replaceRemarkLinks(remarks);
-				div.addPar(remarks);
+				div.addParagraph(remarks);
 			}
 		}
 		
@@ -80,9 +79,9 @@ public class BookExporter extends BaseExporter {
 		script += "wall.reset({ selector: '.item', animate: true, cellW: 520, cellH: 610, " +
 				"onResize: function() { wall.fitWidth(); } }); ";
 		script += "wall.fitWidth(); });";
-		main.addTag("script", script);
+		page.addJavascript(script);
 		
-		page.saveAs(Controller.exportPath + "book/index.html");
+		page.save();
 	}
 	
 	@Override

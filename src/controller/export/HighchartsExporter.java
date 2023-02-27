@@ -7,7 +7,9 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import common.base.Logger;
-import common.io.HtmlComposite;
+import common.html.HtmlTag;
+import common.html.JavascriptHtmlTag;
+import common.html.TableHtmlTag;
 import controller.TaxonCache;
 
 /**
@@ -28,9 +30,8 @@ public class HighchartsExporter extends BaseExporter {
 	}
 	
 	private void createTestChart() {
-		HtmlPage page = new HtmlPage("Nature - Graphiques");
-		HtmlComposite main = page.getMainDiv();
-		HtmlComposite head = page.getHead();
+		PanorpaHtmlPage page = new PanorpaHtmlPage("Nature - Graphiques", htmlPath + "charts.html");
+		HtmlTag head = page.getHead();
 		
 		// add Highcharts JS files
 		head.addScript("https://code.jquery.com/jquery-3.1.1.min.js");
@@ -38,25 +39,29 @@ public class HighchartsExporter extends BaseExporter {
 		head.addScript("https://code.highcharts.com/modules/exporting.js");
 		head.addScript("https://code.highcharts.com/modules/networkgraph.js");
 		
-		main.addTitle(1, "Graphiques");
+		page.addTitle(1, "Graphiques");
 
-		HtmlComposite table = main.addFillTable(2, "600px");
+		TableHtmlTag table = page.addFillTable(2, "600px");
 		
 		// Pie chart
-		HtmlComposite divPieChart = table.addTableData().addDiv("chart-pie");
-		divPieChart.setCssClass("highchart");
+		HtmlTag divPieChart = table.addCell().addDiv("chart-pie");
+		divPieChart.setClass("highchart");
 		JSONObject json = generatePieChart();
 		String script = "  Highcharts.chart('chart-pie', " + json.toJSONString() + ");";
-		main.addDocumentReady(script);
+		JavascriptHtmlTag jsTag = new JavascriptHtmlTag(true);
+		jsTag.addLine(script);
+		page.add(jsTag);
 		
 		// Network chart
-		HtmlComposite divNetworkChart = table.addTableData().addDiv("chart-network");
-		divNetworkChart.setCssClass("highchart");
+		HtmlTag divNetworkChart = table.addCell().addDiv("chart-network");
+		divNetworkChart.setClass("highchart");
 		json = generateNetworkChart();
 		script = "  Highcharts.chart('chart-network', " + json.toJSONString() + ");";
-		main.addDocumentReady(script);
+		jsTag = new JavascriptHtmlTag(true);
+		jsTag.addLine(script);
+		page.add(jsTag);
 		
-		page.saveAs(htmlPath + "charts.html");
+		page.save();
 	}
 
 	@SuppressWarnings("unchecked")
