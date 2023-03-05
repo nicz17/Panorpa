@@ -194,6 +194,9 @@ public class LocationExporter extends BaseExporter {
 			divNeighbors.addTag(HtmlTagFactory.grayFont("Pas encore de lieux dans le voisinage."));
 		}
 		
+		// Map links
+		tdRight.addTag(getLocationLinks(location));
+		
 		// OpenStreetMap
 		addOpenStreetMap(location, page, tdLeft, listNeighbors, null, null);
 		
@@ -264,6 +267,38 @@ public class LocationExporter extends BaseExporter {
 		double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
 		double d = r * c; // Distance in km
 		return d;
+	}
+	
+	/**
+	 * Adds external links to map sites like OpenStreetmap and MacroStrat.
+	 * @param loc  the location to get links to
+	 * @return  a paragraph with the map links
+	 */
+	private ParHtmlTag getLocationLinks(final Location loc) {
+		final String sSeparator = " | ";
+		ParHtmlTag par = new ParHtmlTag("Liens ");
+		par.addAttribute("style", "padding-top: 10px;");
+		par.addNewLine(7);
+		
+		// https://www.openstreetmap.org/#map=16/46.3292/7.0795
+		final String sUrlOSM = "https://www.openstreetmap.org/#map=" + loc.getMapZoom() + 
+				"/" + loc.getLatitude() + "/" + loc.getLongitude();
+		par.addLinkExternal(sUrlOSM, "Voir sur OpenStreetMap", "OpenStreetMap");
+		par.addText(sSeparator);
+		par.addNewLine(7);
+		
+		// https://macrostrat.org/map/#x=6.8162&y=46.3731&z=8.6
+		final String sUrlMacroStrat = "https://macrostrat.org/map/#x=" + loc.getLongitude() + 
+				"&y=" + loc.getLatitude() + "&z=" + loc.getMapZoom();
+		par.addLinkExternal(sUrlMacroStrat, "Voir sur MacroStrat", "MacroStrat");
+		par.addText(sSeparator);
+		par.addNewLine(7);
+		
+		// https://www.google.com/maps/@46.424776,6.981259,13.71z
+		final String sUrlGoogleMaps = "https://www.google.com/maps/@" + loc.getLatitude() + 
+				"," + loc.getLongitude() + "," + loc.getMapZoom() + "z";
+		par.addLinkExternal(sUrlGoogleMaps, "Voir sur Google Maps", "Google Maps");
+		return par;
 	}
 
 	private double deg2rad(double deg) {
