@@ -65,6 +65,8 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 	private static final int iCenterWidth = 600;
 	
+	private boolean bGeoTrackApplied;
+	
 	private File dirOrig;
 	private File dirPhotos;
 	private OriginalPic selectedPic;
@@ -99,6 +101,7 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 		nameGenerator = null;
 		vecSelectedNames = new Vector<>();
 		lastSelectedFile = null;
+		bGeoTrackApplied = false;
 		
 		loadWidgets();
 		setDirectory(new File(FileManager.getInstance().getCurrentBaseDir() + "orig/"));
@@ -271,6 +274,14 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 	}
 	
 	private void renameSelection() {
+		if (!bGeoTrackApplied) {
+			bGeoTrackApplied = true;
+			boolean bApplyGps = MessageBox.askYesNo("Ajouter les données GPS avant la sélection?");
+			if (bApplyGps) {
+				addGeoTracking();
+				return;
+			}
+		}
 		try {
 			FileManager.getInstance().preselectFile(selectedPic.getOrigFile(), txtName.getText());
 			lastSelectedFile = new File(dirPhotos.getAbsolutePath() + "/" + txtName.getText());
@@ -518,6 +529,7 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 					BusyIndicator.showWhile(getDisplay(), runGeoTagging);
 					progressBox.taskFinished();
 					FileManager.getInstance().storeGeoTrack(file);
+					bGeoTrackApplied = true;
 					enableWidgets(true);
 				}
 			}
