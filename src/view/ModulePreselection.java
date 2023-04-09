@@ -261,9 +261,12 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 		listExistingPics.removeAll();
 		if (selectedTaxon != null) {
 			for (HerbierPic hpic : selectedTaxon.getPics()) {
+				String sDetails = Panorpa.getInstance().getAppName();
+				if (hpic.getLocation() != null) {
+					sDetails = hpic.getLocation().getName();
+				}
 				listExistingPics.add(hpic.getFileName() + " (" + 
-						dateFormat.format(hpic.getShotAt()) + ", " +
-						Panorpa.getInstance().getAppName() + ")");
+						dateFormat.format(hpic.getShotAt()) + ", " + sDetails + ")");
 			}
 			
 			// add pics from current photos/ dir matching taxon name

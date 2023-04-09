@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.Shell;
 import view.base.MultiPhotoBox;
 import view.base.PhotoBox;
 import view.base.ViewTools;
-
+import common.base.Logger;
 import common.view.WidgetsFactory;
 
 import controller.Controller;
@@ -32,7 +32,8 @@ import controller.Controller;
  *
  */
 public class DialogComparePicture {
-	
+
+	private static final Logger log = new Logger("DialogComparePic", true);
 	private static final WidgetsFactory widgetsFactory =
 			WidgetsFactory.getInstance();
 
@@ -90,16 +91,17 @@ public class DialogComparePicture {
 			}
 		});
 
-		showObject(pic);
 
 		shell.pack();
 		shell.open();
+		showObject(pic);
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
 		}
 	}
 
 	private void showObject(HasPhoto pic) {
+		log.info("Displaying pictures for " + pic + " and taxon " + taxon);
 		if (taxon != null) {
 			photoBoxTaxon.setPics(new Vector<HerbierPic>(taxon.getPicsCascade()), taxon.getName());
 		} else {
