@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import common.html.HtmlTag;
 import common.html.HtmlTagFactory;
+import common.html.ListHtmlTag;
 import common.html.TableHtmlTag;
 import common.html.ParHtmlTag;
 import model.HerbierPic;
@@ -106,12 +107,16 @@ public class TaxonExporter extends BaseExporter {
 			tablePhotos.addCell("");
 		}
 		
+		// Classification and links table
+		TableHtmlTag tableLinks = page.addTable(2, "1040px");
+		tableLinks.setClass("align-top");
+		
 		// External links
-		ParHtmlTag par = page.addParagraph("Pages ");
-		taxonUrlProvider.addLinks(par, taxon);
+		//ParHtmlTag par = page.addParagraph("Pages ");
+		//taxonUrlProvider.addLinks(par, taxon);
 		
 		// Classification box
-		HtmlTag boxClassif = page.addBox("Classification");
+		HtmlTag boxClassif = tableLinks.addCell().addBox("Classification");
 		TableHtmlTag tableClassif = new TableHtmlTag(3);
 		tableClassif.addAttribute("width", "500px");
 		boxClassif.addTag(tableClassif);
@@ -129,6 +134,11 @@ public class TaxonExporter extends BaseExporter {
 			addClassificationTableData(tableClassif, tax);
 			tableClassif.addCell(tax.getNameFr());
 		}
+		
+		// External links
+		HtmlTag boxLinks = tableLinks.addCell().addBox("Plus d'informations");
+		ListHtmlTag listLinks = boxLinks.addList();
+		taxonUrlProvider.addLinks(listLinks, taxon);
 		
 		// Navigation links
 		Taxon family = taxon.getAncestor(TaxonRank.FAMILY);
@@ -168,7 +178,7 @@ public class TaxonExporter extends BaseExporter {
 		TaxonRank rank = taxon.getRank();
 		HtmlTag tIcon = HtmlTagFactory.image("rank" + rank.getOrder() + ".svg", rank.getGuiName(), rank.getGuiName());
 		String sIcon = tIcon.toHtml(0, true);
-		table.addCell(sIcon + " " + rank.getGuiName());
+		table.addCell(sIcon + "&nbsp;" + rank.getGuiName());
 	}
 
 	/**

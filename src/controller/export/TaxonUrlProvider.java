@@ -6,8 +6,8 @@ import java.util.Set;
 
 import model.Taxon;
 import model.TaxonRank;
-//import common.io.ParHtmlTag;
-import common.html.ParHtmlTag;
+import common.html.HtmlTagFactory;
+import common.html.ListHtmlTag;
 
 /**
  * This class provides html links to external websites offering additional info about taxa,
@@ -19,7 +19,7 @@ import common.html.ParHtmlTag;
  */
 public class TaxonUrlProvider {
 	
-	private static final String sSeparator = " | ";
+	//private static final String sSeparator = " | ";
 	
 	private final Set<String> setClassInGalerieInsecte;
 	private final Set<String> setFamilyInHomoptera;
@@ -45,17 +45,14 @@ public class TaxonUrlProvider {
 	 * Adds relevant html links for the specified taxon.
 	 * Always adds a wikipedia and wikispecies link, sometimes more.
 	 * 
-	 * @param par    the html composite to add links to
+	 * @param ul    the html composite to add links to
 	 * @param taxon  the taxon to find links for
 	 */
-	public void addLinks(ParHtmlTag par, Taxon taxon) {
-		par.addLinkExternal(getWikipediaUrl(taxon, "fr"), "Wikipedia", "Wikipedia [fr]");
-		par.addText(sSeparator);
-		par.addNewLine(4);
-		par.addLinkExternal(getWikipediaUrl(taxon, "en"), "Wikipedia in English", "Wikipedia [en]");
-		par.addText(sSeparator);
-		par.addNewLine(4);
-		par.addLinkExternal(getWikispeciesUrl(taxon), "Wikispecies", "Wikispecies");
+	public void addLinks(ListHtmlTag ul, Taxon taxon) {
+		addLink(ul, taxon, getWikipediaUrl(taxon, "fr"), "Wikipédia [fr]", "Wikipédia");
+		addLink(ul, taxon, getWikipediaUrl(taxon, "en"), "Wikipedia [en]", "Wikipedia in English");
+		addLink(ul, taxon, getWikispeciesUrl(taxon), "Wikispecies", "Wikispecies");
+		addLink(ul, taxon, getINaturalistUrl(taxon), "iNaturalist", "iNaturalist");
 		
 		// TODO use a switch on rank and class to avoid multiple taxon lookups
 		if (TaxonRank.SPECIES == taxon.getRank()) {
@@ -63,40 +60,46 @@ public class TaxonUrlProvider {
 			
 			// link to galerie-insecte ?
 			if (setClassInGalerieInsecte.contains(taxClass.getName())) {
-				addLink(par, taxon, getGalerieInsecteUrl(taxon), "Galerie insecte", "Galerie insecte");
+				addLink(ul, taxon, getGalerieInsecteUrl(taxon), "Galerie insecte", "Galerie insecte");
 			}
 			
 			if ("Insecta".equals(taxClass.getName())) {
 				// link to Pyrgus.de ?
-				addLink(par, taxon, getPyrgusUrl(taxon), "Pyrgus", "www.pyrgus.de");
+				addLink(ul, taxon, getPyrgusUrl(taxon), "Pyrgus", "www.pyrgus.de");
 				
 				// link to BritishBugs ?
-				addLink(par, taxon, getBritishBugsUrl(taxon), "British Bugs", "www.britishbugs.org.uk");
+				addLink(ul, taxon, getBritishBugsUrl(taxon), "British Bugs", "www.britishbugs.org.uk");
 				
 				// link to AntWiki ?
-				addLink(par, taxon, getAntWikiUrl(taxon), "AntWiki", "www.antwiki.org");
+				addLink(ul, taxon, getAntWikiUrl(taxon), "AntWiki", "www.antwiki.org");
 				
 				// link to LibellenSchutz ?
-				addLink(par, taxon, getLibellenSchutzUrl(taxon), "LibellenSchutz", "libellenschutz.ch");
+				addLink(ul, taxon, getLibellenSchutzUrl(taxon), "LibellenSchutz", "libellenschutz.ch");
 				
 			} else if ("Arachnida".equals(taxClass.getName())) {
 				// link to Arages ?
-				addLink(par, taxon, getAragesUrl(taxon), "Arages", "wiki.arages.de");
+				addLink(ul, taxon, getAragesUrl(taxon), "Arages", "wiki.arages.de");
 				
 			} else if ("Aves".equals(taxClass.getName())) {
 				// link to Vogelwarte ?
-				addLink(par, taxon, getVogelwarteUrl(taxon), "Vogelwarte", "Oiseaux de Suisse");
+				addLink(ul, taxon, getVogelwarteUrl(taxon), "Vogelwarte", "Oiseaux de Suisse");
 				
 			} else {
 				// link to infoflora ?
 				Taxon taxPhylum = taxClass.getAncestor(TaxonRank.PHYLUM);
 				if (setPhylumInInfoFlora.contains(taxPhylum.getName())) {
-					addLink(par, taxon, getInfoFloraUrl(taxon), "InfoFlora", "infoflora.ch");
-					
+					addLink(ul, taxon, getInfoFloraUrl(taxon), "InfoFlora", "infoflora.ch");
 				// link to mycoDB ?
 				} else if (setPhylumInMycoDb.contains(taxPhylum.getName())) {
-					addLink(par, taxon, getMycoDbUrl(taxon), "MycoDB", "mycodb.fr");
+					addLink(ul, taxon, getMycoDbUrl(taxon), "MycoDB", "mycodb.fr");
+				} else if ("Bryophyta".equals(taxPhylum.getName())) {
+					addLink(ul, taxon, getSwissBryophytesUrl(taxon), "Swiss bryophytes", "swissbryophytes.ch");
 				}
+			}
+		} else if (TaxonRank.GENUS == taxon.getRank()) {
+			Taxon taxPhylum = taxon.getAncestor(TaxonRank.PHYLUM);
+			if ("Bryophyta".equals(taxPhylum.getName())) {
+				addLink(ul, taxon, getSwissBryophytesUrl(taxon), "Swiss bryophytes", "swissbryophytes.ch");
 			}
 		}
 	}
@@ -104,17 +107,15 @@ public class TaxonUrlProvider {
 	/**
 	 * Adds a possible external link for the specified taxon.
 	 * 
-	 * @param par     the html element to add to
+	 * @param ul      the html element to add to
 	 * @param taxon   the taxon
 	 * @param url     the external URL (may be null)
 	 * @param text    the link text
 	 * @param tooltip the link tooltip text
 	 */
-	private void addLink(ParHtmlTag par, Taxon taxon, String url, String text, String tooltip) {
+	private void addLink(ListHtmlTag ul, Taxon taxon, String url, String text, String tooltip) {
 		if (url != null) {
-			par.addText(sSeparator);
-			par.addNewLine(4);
-			par.addLinkExternal(url, taxon.getNameFr() + " chez " + tooltip, text);
+			ul.addItem(HtmlTagFactory.link(url, text, taxon.getNameFr() + " chez " + tooltip, true));
 		}
 	}
 
@@ -259,6 +260,11 @@ public class TaxonUrlProvider {
 		return url;
 	}
 	
+	protected String getSwissBryophytesUrl(Taxon taxon) {
+		String url = "https://www.swissbryophytes.ch/index.php/fr/";
+		return url;
+	}
+	
 	/**
 	 * Get a Wikipedia link.
 	 * @param taxon  the taxon to link to
@@ -272,6 +278,11 @@ public class TaxonUrlProvider {
 	
 	private String getWikispeciesUrl(Taxon taxon) {
 		String url = "http://species.wikimedia.org/wiki/" + taxon.getName();
+		return url;
+	}
+	
+	private String getINaturalistUrl(Taxon taxon) {
+		String url = "https://www.inaturalist.org/search?q=" + taxon.getName();
 		return url;
 	}
 }
