@@ -79,7 +79,7 @@ public abstract class AbstractModule<T extends DataObject> extends TabbedModule 
 		tblData.setHeaderVisible(true);
 		data = new GridData(SWT.FILL, SWT.FILL, true, true);
 		data.widthHint = tblWidth;
-		data.verticalIndent = 10;
+		data.verticalIndent = 0;
 		//data.horizontalIndent = 8;
 		tblData.setLayoutData(data);
 		tblData.addListener(SWT.Selection, new Listener() {

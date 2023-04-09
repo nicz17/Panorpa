@@ -42,7 +42,7 @@ public class Panorpa extends AbstractMain {
 	 * The application version. 
 	 * Only increment before exporting a new jar.
 	 */
-	private static final String appVersion = "1.7.7";
+	private static final String appVersion = "1.7.8 Dev";
 
 	public static final DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG, Locale.FRANCE);
 
@@ -134,7 +134,7 @@ public class Panorpa extends AbstractMain {
 		folder = new CTabFolder(shell, SWT.BORDER);
 
 		GridData data = new GridData(GridData.FILL_BOTH);
-	    data.verticalIndent = 16;
+	    data.verticalIndent = 0;
 	    folder.setLayoutData(data);
 	    folder.setSimple(false);
 	    folder.setMaximizeVisible(true);

@@ -61,8 +61,8 @@ public abstract class AbstractEditor extends Composite implements DataListener {
 		
 		int nButtonCols = 4;
 		
-		cMain    = widgetsFactory.createComposite(gEdit, 2, false, 6);
-		cButtons = widgetsFactory.createComposite(gEdit, nButtonCols, true, 6);
+		cMain    = widgetsFactory.createComposite(gEdit, 2, false, 2);
+		cButtons = widgetsFactory.createComposite(gEdit, nButtonCols, true, 0);
 	    
 		widgetsFactory.createHorizontalSeparator(cButtons, nButtonCols);
 
