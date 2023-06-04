@@ -319,6 +319,49 @@ public class FileManager {
 	}
 	
 	/**
+	 * Copy new GeoTrack files (*.gpx) from Dropbox
+	 * to the current month directory.
+	 * @throws AppException  if failed to find Dropbox dir
+	 */
+	public void getNewGeoTracks() throws AppException {
+		final String path = Controller.geoTrackPath;
+		final SimpleDateFormat dateFormat = new SimpleDateFormat("yyMM");
+		final String sRegexFilter = ".*" + dateFormat.format(new Date()) + "..\\.gpx";
+		log.info("Upload new GeoTracks: looking for files like " + path + sRegexFilter);
+
+		FilenameFilter filter = new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.matches(sRegexFilter);
+			}
+		};
+		
+		File dir = new File(path);
+		if (!dir.exists()) {
+			throw new AppException("Le répertoire Dropbox GeoTrack n'existe pas : " + path);
+		}
+		
+	    File[] files = dir.listFiles(filter);
+	    if (files != null) {
+	    	log.info("Found " + files.length + " GPX files");
+	    	for (File file : files) {
+	    		log.info("New GPX track: " + file.getAbsolutePath());
+	    		String cmd = "cp " + file.getAbsolutePath() + " " + getCurrentBaseDir() + "geotracker/";
+	    		
+	    		//log.info("Will execute command: " + cmd);
+	    		try {
+	    			Process proc = Runtime.getRuntime().exec(cmd);
+	    			proc.waitFor();
+	    		} catch (Exception e) {
+	    			log.error("Copying GeoTrack file failed: " + e.getMessage());
+	    		}
+	    	}
+	    } else {
+	    	log.info("Found nothing.");
+	    }
+	}
+	
+	/**
 	 * Copies the specified file to geotrack/ dir for upload
 	 * @param fileTrack  the file to store
 	 * @throws AppException  if file does not exist
@@ -386,7 +429,8 @@ public class FileManager {
 	 */
 	public static void main(String[] args) {
 		try {
-			FileManager.getInstance().getRawFiles(pathRaw + "ChampPittet/raw", null);
+			//FileManager.getInstance().getRawFiles(pathRaw + "ChampPittet/raw", null);
+			FileManager.getInstance().getNewGeoTracks();
 		} catch (AppException e) {
 			e.printStackTrace();
 		}

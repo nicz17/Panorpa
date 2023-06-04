@@ -84,9 +84,14 @@ public abstract class AbstractModule<T extends DataObject> extends TabbedModule 
 		tblData.setLayoutData(data);
 		tblData.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
-				T selObj = vecObjects.get(tblData.getSelectionIndex());
-				selIdx = Integer.valueOf(selObj.getIdx());
-				onTableSelection(selObj);
+				int idxTableSelection = tblData.getSelectionIndex();
+				if (idxTableSelection >= 0 && idxTableSelection < vecObjects.size()) {
+					T selObj = vecObjects.get(idxTableSelection);
+					selIdx = Integer.valueOf(selObj.getIdx());
+					onTableSelection(selObj);
+				} else {
+					
+				}
 			}
 		});
 

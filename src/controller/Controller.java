@@ -49,6 +49,7 @@ public class Controller {
 	
 	public static final String appPath      = "/home/nicz/Documents/HerbierApp/";
 	public static final String picturesPath = "/home/nicz/Pictures/eHerbier/";
+	public static final String geoTrackPath = "/home/nicz/Dropbox/GeoTrack/";
 	public static final String thumbsPath   = appPath + "thumbs/";
 	public static final String mediumPath   = appPath + "medium/";
 	public static final String exportPath   = appPath + "export/";

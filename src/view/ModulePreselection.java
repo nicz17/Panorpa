@@ -243,6 +243,12 @@ public class ModulePreselection extends AbstractModule<OriginalPic> {
 		showObjects();
 		loadTaxonTree();
 		enableWidgets(true);
+		
+		try {
+			FileManager.getInstance().getNewGeoTracks();
+		} catch (AppException e) {
+			ViewTools.displayException(e);
+		}
 	}
 	
 	private void loadTaxonTree() {
